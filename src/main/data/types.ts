@@ -2,7 +2,7 @@ import { Side } from '../../shared/types'
 
 export interface ProcessedOrderBookLevel {
   price: number
-  quantity: number
+  size: number
 }
 
 export interface ProcessedOrderBook {
@@ -14,7 +14,7 @@ export interface ProcessedTrade {
   timestamp: number
   side: Side
   price: number
-  quantity: number
+  size: number
 }
 
 export interface ProcessedCandlestick {

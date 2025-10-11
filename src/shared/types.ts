@@ -15,11 +15,6 @@ export enum Exchanges {
   PHEMEX = 'phemex'
 }
 
-export enum Side {
-  BUY = 'Buy',
-  SELL = 'Sell'
-}
-
 export enum TradingMode {
   REAL = 'Real',
   PAPER = 'Paper'
@@ -27,4 +22,14 @@ export enum TradingMode {
 
 export enum MessageType {
   CREATE_ORDER = 'create_order'
+}
+
+export enum Side {
+  BUY = 'Buy',
+  SELL = 'Sell'
+}
+
+export enum PosSide {
+  LONG = 'Long',
+  SHORT = 'Short'
 }

@@ -7,7 +7,7 @@ const TradeRow = ({ trade }: { trade: ProcessedTrade }): React.JSX.Element => {
   const timestampNow = Date.now() / 1000
   const timestamp = Math.floor(Number(trade.timestamp) / 1000000000)
 
-  const { side, price, quantity } = trade
+  const { side, price, size } = trade
 
   const { tradeColor, textColor, hoverColor, isBuy } = useMemo(() => {
     const isBuySide = side === Side.BUY
@@ -98,10 +98,10 @@ const TradeRow = ({ trade }: { trade: ProcessedTrade }): React.JSX.Element => {
         </div>
       </div>
 
-      {/* Quantity */}
+      {/* Size */}
       <div>
         <div style={{ color: '#f1f5f9', fontWeight: '600', fontSize: '10px' }}>
-          {formatNumber(quantity)}
+          {formatNumber(size)}
         </div>
       </div>
     </div>

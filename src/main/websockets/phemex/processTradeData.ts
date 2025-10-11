@@ -34,7 +34,7 @@ type TradeEntry = [
   number, // timestamp
   Side, // side
   string, // price
-  string // quantity
+  string // size
 ]
 
 export const processTradeData = (data: TradeMessage): void => {
@@ -46,7 +46,7 @@ export const processTradeData = (data: TradeMessage): void => {
     timestamp: trade[0],
     side: trade[1] as Side,
     price: parseFloat(trade[2]),
-    quantity: parseFloat(trade[3])
+    size: parseFloat(trade[3])
   }))
 
   if (type === MessageType.SNAPSHOT) {
@@ -85,21 +85,21 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
 
   trades.forEach((trade) => {
     if (trade.side === Side.BUY) {
-      buyVolume += trade.quantity
+      buyVolume += trade.size
     } else if (trade.side === Side.SELL) {
-      sellVolume += trade.quantity
+      sellVolume += trade.size
     }
 
     const price = trade.price
-    const quantity = trade.quantity
+    const size = trade.size
 
     if (!tradeLiquidity[price]) {
       tradeLiquidity[price] = {
-        volume: trade.side === Side.BUY ? quantity : -quantity,
+        volume: trade.side === Side.BUY ? size : -size,
         last_updated: trade.timestamp
       }
     } else {
-      tradeLiquidity[price].volume += trade.side === Side.BUY ? quantity : -quantity
+      tradeLiquidity[price].volume += trade.side === Side.BUY ? size : -size
       tradeLiquidity[price].last_updated = trade.timestamp
     }
   })

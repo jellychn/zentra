@@ -6,6 +6,7 @@ import icon from '../../resources/icon.png?asset'
 import { cleanupWebSocket, initWebSocket } from './websockets/ws'
 import { registerStateIpc } from './ipc/state'
 import { receivedMessages } from './ipc/recivedMessages'
+import { dbStore } from './db/db_store'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
@@ -44,6 +45,16 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  dbStore.initializeStores('orders-table', 'trades-table')
+  dbStore
+    .initializeTables()
+    .then(() => {
+      console.log('Database tables ready')
+    })
+    .catch((error) => {
+      console.error('Failed to initialize tables:', error)
+    })
 
   const mainWindow = createWindow()
 

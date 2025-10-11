@@ -4,7 +4,7 @@ import { ProcessedOrderBook } from '../../data/types'
 
 interface OrderBookLevel {
   [0]: string // price
-  [1]: string // quantity
+  [1]: string // size
 }
 
 interface OrderBookData {

@@ -10,6 +10,9 @@ interface ExchangeData {
 }
 
 export interface AppState {
+  user: {
+    id: string
+  }
   settings: {
     environment: Environment
     selectedExchange: string
@@ -31,6 +34,9 @@ class MainStateStore extends EventEmitter {
     const selectedExchange = Exchanges.PHEMEX
 
     return {
+      user: {
+        id: '1'
+      },
       settings: {
         environment: config.env,
         selectedExchange,
