@@ -24,3 +24,7 @@ export enum TradingMode {
   REAL = 'Real',
   PAPER = 'Paper'
 }
+
+export enum MessageType {
+  CREATE_ORDER = 'create_order'
+}

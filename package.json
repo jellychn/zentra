@@ -26,6 +26,9 @@
     "dev:isolated": "npm run db:electron:up && wait-on tcp:8006 && electron ."
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.908.0",
+    "@aws-sdk/lib-dynamodb": "^3.908.0",
+    "@aws-sdk/util-dynamodb": "^3.908.0",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@types/ws": "^8.18.1",

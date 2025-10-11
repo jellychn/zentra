@@ -5,6 +5,7 @@ import icon from '../../resources/icon.png?asset'
 
 import { cleanupWebSocket, initWebSocket } from './websockets/ws'
 import { registerStateIpc } from './ipc/state'
+import { receivedMessages } from './ipc/recivedMessages'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
@@ -48,6 +49,8 @@ app.whenReady().then(() => {
 
   initWebSocket(mainWindow)
   registerStateIpc(mainWindow)
+
+  receivedMessages()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
