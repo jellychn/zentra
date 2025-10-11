@@ -5,7 +5,7 @@ import { mainStateStore } from '../state/stateStore'
 export interface SymbolMetrics {
   buyVolume: number
   sellVolume: number
-  tradeLiquidity: { [price: number]: number }
+  tradeLiquidity: { [price: number]: { volume: number; last_updated: number } }
   bidVolume: number
   askVolume: number
 }

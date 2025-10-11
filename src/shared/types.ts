@@ -1,5 +1,8 @@
 import { AppState } from '../main/state/stateStore'
 
+export const MAKER_FEE = 0.0001
+export const TAKER_FEE = 0.0006
+
 export type { AppState }
 
 export enum Environment {
@@ -15,4 +18,9 @@ export enum Exchanges {
 export enum Side {
   BUY = 'Buy',
   SELL = 'Sell'
+}
+
+export enum TradingMode {
+  REAL = 'Real',
+  PAPER = 'Paper'
 }

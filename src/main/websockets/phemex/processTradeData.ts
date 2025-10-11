@@ -79,7 +79,7 @@ export const processTradeData = (data: TradeMessage): void => {
 }
 
 const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => {
-  const tradeLiquidity = {}
+  const tradeLiquidity: { [price: number]: { volume: number; last_updated: number } } = {}
   let buyVolume = 0
   let sellVolume = 0
 
@@ -90,10 +90,17 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
       sellVolume += trade.quantity
     }
 
-    if (!tradeLiquidity[trade.price]) {
-      tradeLiquidity[trade.price] = trade.side === Side.BUY ? trade.quantity : -trade.quantity
+    const price = trade.price
+    const quantity = trade.quantity
+
+    if (!tradeLiquidity[price]) {
+      tradeLiquidity[price] = {
+        volume: trade.side === Side.BUY ? quantity : -quantity,
+        last_updated: trade.timestamp
+      }
     } else {
-      tradeLiquidity[trade.price] += trade.side === Side.BUY ? trade.quantity : -trade.quantity
+      tradeLiquidity[price].volume += trade.side === Side.BUY ? quantity : -quantity
+      tradeLiquidity[price].last_updated = trade.timestamp
     }
   })
 

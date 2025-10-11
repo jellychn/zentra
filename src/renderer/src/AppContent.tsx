@@ -1,5 +1,4 @@
-import OrderBook from './components/OrderBook'
-import RecentTrades from './components/RecentTrades'
+import LiquidityPool from './components/LiqudityPool'
 import { useStateStore } from './contexts/StateStoreContext'
 import Spinner from './elements/Spinner'
 
@@ -11,8 +10,7 @@ function AppContent(): React.JSX.Element {
 
   return (
     <>
-      <RecentTrades />
-      <OrderBook />
+      <LiquidityPool />
     </>
   )
 }
