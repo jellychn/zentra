@@ -18,7 +18,7 @@ export default function processWsData(data: unknown): void {
       processOrderbookData(data as OrderBookMessage)
     }
 
-    if (typeof data === 'object' && data !== null && Object.keys(data).includes('trade_p')) {
+    if (typeof data === 'object' && data !== null && Object.keys(data).includes('trades_p')) {
       processTradeData(data as TradeMessage)
     }
 
