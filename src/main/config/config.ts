@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { Environment, Exchanges } from '../../shared/shared'
+import { Environment, Exchanges } from '../../shared/types'
 
 dotenv.config()
 
@@ -43,20 +43,6 @@ const config: Config = {
         wsBase: process.env.PROD_PHEMEX_WS_BASE || 'wss://ws.phemex.com',
         apiKey: process.env.PROD_PHEMEX_API_KEY,
         apiSecret: process.env.PROD_PHEMEX_API_SECRET
-      }
-    },
-    [Exchanges.BINANCE]: {
-      development: {
-        restBase: process.env.DEV_BINANCE_REST_BASE || 'https://testnet.binance.vision',
-        wsBase: process.env.DEV_BINANCE_WS_BASE || 'wss://testnet.binance.vision/ws',
-        apiKey: process.env.DEV_BINANCE_API_KEY,
-        apiSecret: process.env.DEV_BINANCE_API_SECRET
-      },
-      production: {
-        restBase: process.env.PROD_BINANCE_REST_BASE || 'https://api.binance.com',
-        wsBase: process.env.PROD_BINANCE_WS_BASE || 'wss://stream.binance.com:9443/ws',
-        apiKey: process.env.PROD_BINANCE_API_KEY,
-        apiSecret: process.env.PROD_BINANCE_API_SECRET
       }
     }
     // Add more exchanges as needed
