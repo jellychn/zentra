@@ -1,7 +1,34 @@
-node_modules
-dist
-out
+# ========== DEPENDENCIES & BUILD OUTPUT ==========
+
+# Node.js dependencies - should be installed fresh on each machine
+node_modules/
+
+# Built/compiled output from build process
+dist/
+out/
+
+# ========== OPERATING SYSTEM & EDITOR ==========
+
+# macOS system files
 .DS_Store
-.eslintcache
+
+# Log files from various tools
 *.log*
+
+# Environment variables (sensitive configuration)
 .env
+
+# IDE/Editor configuration (personal preferences)
+.vscode/
+.idea/
+
+# ========== DOCKER & CONTAINERIZATION ==========
+
+# Docker Compose override files (local development overrides)
+docker-compose.override.yml
+
+# Dockerfile variations
+*.dockerfile
+
+# Docker-related directories (if you have a docker folder for volumes/data)
+docker/

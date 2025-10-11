@@ -1,0 +1,47 @@
+# Add to your existing docker-compose.yml
+
+# Web DB Admin: http://localhost:8100
+# Electron DB Admin: http://localhost:8101
+
+services:
+  # Your existing services...
+  dynamodb-local:
+    command: '-jar DynamoDBLocal.jar -sharedDb -dbPath ./data'
+    image: 'amazon/dynamodb-local:latest'
+    container_name: dynamodb-local
+    ports:
+      - '8005:8000'
+    volumes:
+      - './docker/dynamodb:/home/dynamodblocal/data'
+    working_dir: /home/dynamodblocal
+
+  dynamodb-admin:
+    image: 'aaronshaf/dynamodb-admin:latest'
+    container_name: dynamodb-admin
+    ports:
+      - '8100:8001'
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+    depends_on:
+      - dynamodb-local
+
+  # NEW: Electron-specific services (optional)
+  dynamodb-electron:
+    command: '-jar DynamoDBLocal.jar -sharedDb -dbPath ./data'
+    image: 'amazon/dynamodb-local:latest'
+    container_name: dynamodb-electron
+    ports:
+      - '8006:8000' # Different port for Electron
+    volumes:
+      - './docker/dynamodb-electron:/home/dynamodblocal/data' # Separate volume
+    working_dir: /home/dynamodblocal
+
+  dynamodb-admin-electron:
+    image: 'aaronshaf/dynamodb-admin:latest'
+    container_name: dynamodb-admin-electron
+    ports:
+      - '8101:8001' # Different admin port
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-electron:8000
+    depends_on:
+      - dynamodb-electron

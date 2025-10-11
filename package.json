@@ -18,7 +18,12 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux"
+    "build:linux": "electron-vite build && electron-builder --linux",
+    "db:up": "docker-compose up -d dynamodb-local dynamodb-admin",
+    "db:electron:up": "docker-compose up -d dynamodb-electron dynamodb-admin-electron",
+    "db:all:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "dev:isolated": "npm run db:electron:up && wait-on tcp:8006 && electron ."
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",

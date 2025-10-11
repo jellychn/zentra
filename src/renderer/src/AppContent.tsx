@@ -1,4 +1,4 @@
-import LiquidityPool from './components/LiqudityPool'
+import PriceLine from './components/PriceLine'
 import { useStateStore } from './contexts/StateStoreContext'
 import Spinner from './elements/Spinner'
 
@@ -10,7 +10,7 @@ function AppContent(): React.JSX.Element {
 
   return (
     <>
-      <LiquidityPool />
+      <PriceLine />
     </>
   )
 }
