@@ -53,7 +53,7 @@ const Entry = ({
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
-        flex: 2
+        flex: 3
       }}
     >
       <SectionHeader>ENTRY</SectionHeader>

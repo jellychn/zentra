@@ -592,9 +592,11 @@ export default function RecentChartIndicator(): React.JSX.Element {
         ref={chartContainerRef}
         style={{
           width: '100%',
-          height: '100%',
+          height: 'calc(100% - 120px)',
           flex: 1,
           position: 'relative',
+          marginTop: '60px',
+          marginBottom: '60px',
           minWidth: 0,
           minHeight: 0
         }}

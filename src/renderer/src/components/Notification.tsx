@@ -61,30 +61,30 @@ export default function Notification(): React.JSX.Element {
   const getNotificationColor = (type: string): string => {
     switch (type) {
       case 'success':
-        return 'rgba(34, 197, 94, 0.95)'
+        return 'rgba(34, 197, 94, 0.3)'
       case 'error':
-        return 'rgba(239, 68, 68, 0.95)'
+        return 'rgba(239, 68, 68, 0.3)'
       case 'warning':
-        return 'rgba(245, 158, 11, 0.95)'
+        return 'rgba(245, 158, 11, 0.3)'
       case 'info':
-        return 'rgba(59, 130, 246, 0.95)'
+        return 'rgba(59, 130, 246, 0.3)'
       default:
-        return 'rgba(59, 130, 246, 0.95)'
+        return 'rgba(59, 130, 246, 0.3)'
     }
   }
 
   const getGradientColor = (type: string): string => {
     switch (type) {
       case 'success':
-        return 'linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(16, 185, 129, 0.95))'
+        return 'linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(16, 185, 129, 0.3))'
       case 'error':
-        return 'linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95))'
+        return 'linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.3))'
       case 'warning':
-        return 'linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.95))'
+        return 'linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.3))'
       case 'info':
-        return 'linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95))'
+        return 'linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.3))'
       default:
-        return 'linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95))'
+        return 'linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.3))'
     }
   }
 
