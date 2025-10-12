@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { Environment, Exchanges } from '../../shared/types'
+import { Environment, Exchanges, TradingMode } from '../../shared/types'
 import config from '../config/config'
 import { SymbolMetrics } from '../data/dataStore'
 import { UserSettings, userSettingsState } from '../db/dbUserSettings'
@@ -19,6 +19,7 @@ export interface AppState {
     environment: Environment
     selectedExchange: string
     selectedSymbol: string
+    tradingMode: TradingMode
   }
   exchangeData: ExchangeData
   metrics: SymbolMetrics
@@ -44,7 +45,8 @@ class MainStateStore extends EventEmitter {
       settings: {
         environment: config.env,
         selectedExchange,
-        selectedSymbol: 'BTCUSDT'
+        selectedSymbol: 'BTCUSDT',
+        tradingMode: TradingMode.PAPER
       },
       exchangeData: {
         lastPrice: 0,

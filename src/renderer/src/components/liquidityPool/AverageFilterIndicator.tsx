@@ -17,7 +17,7 @@ const AverageFilterIndicator = ({
       style={{
         position: 'absolute',
         bottom: '12px',
-        right: '12px',
+        right: '20px',
         background: 'rgba(245, 158, 11, 0.15)',
         backdropFilter: 'blur(10px)',
         border: `1px solid rgba(245, 158, 11, 0.3)`,
