@@ -1,8 +1,8 @@
 // db-store.ts
 
-import { OrderStore } from './db_orders'
-import { TradeStore } from './db_trades'
-import { UserSettingsStore } from './db_user_settings'
+import { OrderStore } from './dbOrders'
+import { TradeStore } from './dbTrades'
+import { UserSettingsStore } from './dbUserSettings'
 
 export class DBStore {
   private static instance: DBStore
@@ -21,7 +21,12 @@ export class DBStore {
     return DBStore.instance
   }
 
-  initializeStores(orderTableName: string, tradeTableName: string): void {
+  initializeStores(
+    userSettingsTableName: string,
+    orderTableName: string,
+    tradeTableName: string
+  ): void {
+    this._userSettingsStore = new UserSettingsStore(userSettingsTableName)
     this._orderStore = new OrderStore(orderTableName)
     this._tradeStore = new TradeStore(tradeTableName)
   }

@@ -1,16 +1,11 @@
-import { PosSide, Side } from '../../../shared/types'
-import { OrderType } from '../../db/db_orders'
-import { create_order } from '../../db/orders/orders_operations'
+import { PosSide, Side, OrderType } from '../../../shared/types'
+import { createOrder } from '../../db/orders/ordersOperations'
 
-export const processCreateOrder = (): void => {
-  const order = {
-    order_id: '1',
-    order_type: OrderType.LIMIT,
-    side: Side.BUY,
-    pos_side: PosSide.LONG,
-    size: 1,
-    price: 1,
-    symbol: 'S'
-  }
-  create_order(order)
+export const processCreateOrder = (data: {
+  orderType: OrderType
+  side: Side
+  posSide: PosSide
+}): void => {
+  const { orderType, side, posSide } = data
+  createOrder({ orderType: orderType, side: side, posSide: posSide })
 }

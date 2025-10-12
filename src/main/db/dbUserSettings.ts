@@ -3,7 +3,28 @@ import {
   CreateTableCommandInput,
   ScalarAttributeType
 } from '@aws-sdk/client-dynamodb'
-import { dynamoClient } from './helper'
+import { docClient, dynamoClient } from './helper'
+import { PutCommand } from '@aws-sdk/lib-dynamodb'
+import { toCamel, toSnake } from '../../shared/helper'
+
+export interface UserSettings {
+  userId: string
+  initialCapital: number
+  capitalAllocation: number
+  leverage: number
+  makerFee: number
+  takerFee: number
+}
+
+// TODO: temp, will need to fetch from dynamoDb and convert to toCamel
+export const userSettingsState = toCamel({
+  user_id: '1',
+  initial_capital: 10_000,
+  capital_allocation: 0.8,
+  leverage: 3,
+  maker_fee: 0.0001,
+  taker_fee: 0.0006
+})
 
 export class UserSettingsStore {
   constructor(private tableName: string) {}
@@ -29,5 +50,18 @@ export class UserSettingsStore {
         throw error
       }
     }
+  }
+
+  async putUserSettings(userSettings: UserSettings): Promise<void> {
+    const item = {
+      ...toSnake(userSettings)
+    }
+
+    const command = new PutCommand({
+      TableName: this.tableName,
+      Item: item
+    })
+
+    await docClient.send(command)
   }
 }

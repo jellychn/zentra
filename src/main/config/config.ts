@@ -16,8 +16,8 @@ interface Config {
   isProd: boolean
   exchanges: {
     [exchange: string]: {
-      development: ExchangeConfig
-      production: ExchangeConfig
+      [Environment.DEVELOPMENT]: ExchangeConfig
+      [Environment.PRODUCTION]: ExchangeConfig
     }
   }
 }
@@ -32,13 +32,13 @@ const config: Config = {
   },
   exchanges: {
     [Exchanges.PHEMEX]: {
-      development: {
+      [Environment.DEVELOPMENT]: {
         restBase: process.env.DEV_PHEMEX_REST_BASE || 'https://testnet-api.phemex.com',
         wsBase: process.env.DEV_PHEMEX_WS_BASE || 'wss://testnet-api.phemex.com/ws',
         apiKey: process.env.DEV_PHEMEX_API_KEY,
         apiSecret: process.env.DEV_PHEMEX_API_SECRET
       },
-      production: {
+      [Environment.PRODUCTION]: {
         restBase: process.env.PROD_PHEMEX_REST_BASE || 'https://api.phemex.com',
         wsBase: process.env.PROD_PHEMEX_WS_BASE || 'wss://ws.phemex.com',
         apiKey: process.env.PROD_PHEMEX_API_KEY,

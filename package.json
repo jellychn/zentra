@@ -36,6 +36,7 @@
     "dotenv": "^17.2.3",
     "electron-updater": "^6.3.9",
     "react-router-dom": "^7.9.4",
+    "uuid": "^13.0.0",
     "ws": "^8.18.3"
   },
   "devDependencies": {

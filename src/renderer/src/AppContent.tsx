@@ -2,6 +2,8 @@ import PriceLine from './components/PriceLine'
 import TradePanel from './components/TradePanel'
 import { useStateStore } from './contexts/StateStoreContext'
 import Spinner from './elements/Spinner'
+import Notification from './components/Notification'
+import LiquidityPool from './components/LiqudityPool'
 
 function AppContent(): React.JSX.Element {
   const { state } = useStateStore()
@@ -11,7 +13,11 @@ function AppContent(): React.JSX.Element {
 
   return (
     <>
-      <PriceLine />
+      <Notification />
+      <div style={{ display: 'flex' }}>
+        <PriceLine />
+        <LiquidityPool />
+      </div>
       <TradePanel />
     </>
   )

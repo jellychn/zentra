@@ -1,11 +1,11 @@
 import ActionButton from '@renderer/elements/ActionButton'
 import { sendIpcMessage } from '@renderer/ipcMain/message'
 import React from 'react'
-import { MessageType } from '../../../../shared/types'
+import { MessageSenderType, OrderType, PosSide, Side } from '../../../../shared/types'
 
 const TradeAction = (): React.JSX.Element => {
-  const sendCreateOrder = (): void => {
-    sendIpcMessage({ message: MessageType.CREATE_ORDER })
+  const sendCreateOrder = (orderType: OrderType, side: Side, posSide: PosSide): void => {
+    sendIpcMessage({ message: MessageSenderType.CREATE_ORDER, data: { orderType, side, posSide } })
   }
 
   return (
@@ -41,7 +41,11 @@ const SectionHeader = ({ children }: { children: React.ReactNode }): React.JSX.E
   </div>
 )
 
-const Entry = ({ sendCreateOrder }: { sendCreateOrder: () => void }): React.JSX.Element => {
+const Entry = ({
+  sendCreateOrder
+}: {
+  sendCreateOrder: (orderType: OrderType, side: Side, posSide: PosSide) => void
+}): React.JSX.Element => {
   return (
     <div
       style={{
@@ -79,7 +83,7 @@ const Entry = ({ sendCreateOrder }: { sendCreateOrder: () => void }): React.JSX.
               flex: 1
             }}
             tooltip="Open long position at market price"
-            onClick={sendCreateOrder}
+            onClick={() => sendCreateOrder(OrderType.MARKET, Side.BUY, PosSide.LONG)}
           >
             LONG
           </ActionButton>
@@ -94,7 +98,7 @@ const Entry = ({ sendCreateOrder }: { sendCreateOrder: () => void }): React.JSX.
               flex: 1
             }}
             tooltip="Open short position at market price"
-            onClick={sendCreateOrder}
+            onClick={() => sendCreateOrder(OrderType.MARKET, Side.SELL, PosSide.SHORT)}
           >
             SHORT
           </ActionButton>
@@ -118,7 +122,7 @@ const Entry = ({ sendCreateOrder }: { sendCreateOrder: () => void }): React.JSX.
               flex: 1
             }}
             tooltip="Place limit order for long position"
-            onClick={sendCreateOrder}
+            onClick={() => sendCreateOrder(OrderType.LIMIT, Side.BUY, PosSide.LONG)}
           >
             LIMIT L
           </ActionButton>
@@ -133,7 +137,7 @@ const Entry = ({ sendCreateOrder }: { sendCreateOrder: () => void }): React.JSX.
               flex: 1
             }}
             tooltip="Place limit order for short position"
-            onClick={sendCreateOrder}
+            onClick={() => sendCreateOrder(OrderType.LIMIT, Side.SELL, PosSide.SHORT)}
           >
             LIMIT S
           </ActionButton>

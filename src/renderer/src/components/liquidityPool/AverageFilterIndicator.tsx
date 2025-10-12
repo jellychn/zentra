@@ -33,8 +33,7 @@ const AverageFilterIndicator = ({
     >
       {hasLiquidityPool && hasOrderBook ? (
         <div>
-          ABOVE AVERAGE: POOL ≥ ${formatNumber(leftAvgLiquidity)} • ORDERS ≥ $
-          {formatNumber(rightAvgLiquidity)}
+          {`ABOVE AVERAGE: POOL ≥ ${formatNumber(leftAvgLiquidity)} • ORDERS ≥ ${formatNumber(rightAvgLiquidity)}`}
         </div>
       ) : hasLiquidityPool ? (
         <div>ABOVE AVERAGE LIQUIDITY: ≥ {formatNumber(leftAvgLiquidity)}</div>

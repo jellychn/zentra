@@ -4,14 +4,16 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
 import { cleanupWebSocket, initWebSocket } from './websockets/ws'
-import { registerStateIpc } from './ipc/state'
+import { registerStateIpc } from './ipc/stateIpc'
 import { receivedMessages } from './ipc/recivedMessages'
-import { dbStore } from './db/db_store'
+import { dbStore } from './db/dbStore'
+import { registerNotificationIpc } from './ipc/notificationIpc'
+import { mainStateStore } from './state/stateStore'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    fullscreen: true,
+    frame: false,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -46,7 +48,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  dbStore.initializeStores('orders-table', 'trades-table')
+  dbStore.initializeStores('user-settings-table', 'orders-table', 'trades-table')
   dbStore
     .initializeTables()
     .then(() => {
@@ -58,8 +60,9 @@ app.whenReady().then(() => {
 
   const mainWindow = createWindow()
 
-  initWebSocket(mainWindow)
   registerStateIpc(mainWindow)
+  registerNotificationIpc(mainWindow)
+  initWebSocket(mainWindow)
 
   receivedMessages()
 
@@ -69,10 +72,15 @@ app.whenReady().then(() => {
 })
 
 app.on('before-quit', () => {
+  console.log('🔄 Cleaning up before quit...')
   cleanupWebSocket()
+  mainStateStore.destroy() // Add this line
 })
 
 app.on('window-all-closed', () => {
+  console.log('🔄 All windows closed, cleaning up...')
+  cleanupWebSocket()
+  mainStateStore.destroy()
   if (process.platform !== 'darwin') {
     app.quit()
   }

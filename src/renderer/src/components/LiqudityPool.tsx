@@ -304,7 +304,7 @@ const Main = ({
     <div
       style={{
         position: 'relative',
-        height: 'calc(80vh - 80px)',
+        height: '60vh',
         background: 'rgba(15, 23, 42, 0.3)',
         borderRadius: '8px',
         margin: '8px',

@@ -1,3 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function toCamel(obj: any): any {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [
+      key.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
+      value
+    ])
+  )
+}
+
+export function toSnake(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => toSnake(v))
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce((result, key) => {
+      const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+      result[snakeKey] = toSnake(obj[key])
+      return result
+    }, {} as any)
+  }
+  return obj
+}
+
 export const formatNumber = (value: number | string, dp = 4): string => {
   const number = Number(value)
 

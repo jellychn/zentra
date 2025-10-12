@@ -1,18 +1,15 @@
 import { AppState } from '../main/state/stateStore'
 
-export const MAKER_FEE = 0.0001
-export const TAKER_FEE = 0.0006
-
 export type { AppState }
 
 export enum Environment {
-  DEVELOPMENT = 'development',
-  PRODUCTION = 'production'
+  DEVELOPMENT = 'Development',
+  PRODUCTION = 'Production'
 }
 
 export enum Exchanges {
-  BINANCE = 'binance',
-  PHEMEX = 'phemex'
+  BINANCE = 'Binance',
+  PHEMEX = 'Phemex'
 }
 
 export enum TradingMode {
@@ -20,8 +17,12 @@ export enum TradingMode {
   PAPER = 'Paper'
 }
 
-export enum MessageType {
+export enum MessageSenderType {
   CREATE_ORDER = 'create_order'
+}
+
+export const enum MessageReceiverType {
+  NOTIFY = 'notify'
 }
 
 export enum Side {
@@ -32,4 +33,18 @@ export enum Side {
 export enum PosSide {
   LONG = 'Long',
   SHORT = 'Short'
+}
+
+export enum OrderType {
+  MARKET = 'Market',
+  LIMIT = 'Limit',
+  STOP = 'Stop',
+  MARKET_IF_TOUCHED = 'MarketIfTouched',
+  STOP_LIMIT = 'StopLimit',
+  LIMIT_IF_TOUCHED = 'LimitIfTouched'
+}
+
+export enum TradeStatus {
+  OPEN = 'Open',
+  CLOSED = 'Closed'
 }
