@@ -23,6 +23,7 @@ export interface AppState {
     selectedSymbol: string
     tradingMode: TradingMode
     selectedCandleTimeframe: string
+    selectedLiquidityPoolTimeFrame: string
   }
   exchangeData: ExchangeData
   metrics: SymbolMetrics
@@ -48,9 +49,10 @@ class MainStateStore extends EventEmitter {
       settings: {
         environment: config.env,
         selectedExchange,
-        selectedSymbol: 'BTCUSDT',
+        selectedSymbol: 'ADAUSDT',
         tradingMode: TradingMode.PAPER,
-        selectedCandleTimeframe: '1M'
+        selectedCandleTimeframe: '1M',
+        selectedLiquidityPoolTimeFrame: '1M'
       },
       exchangeData: {
         lastPrice: 0,

@@ -2,10 +2,14 @@ import { EventEmitter } from 'events'
 import { ProcessedCandlestick, ProcessedOrderBook, ProcessedTrade } from './types'
 import { mainStateStore } from '../state/stateStore'
 
+interface LiquidityPool {
+  [price: number]: { volume: number; last_updated: number }
+}
+
 export interface SymbolMetrics {
   buyVolume: number
   sellVolume: number
-  tradeLiquidity: { [price: number]: { volume: number; last_updated: number } }
+  tradeLiquidity: LiquidityPool
   bidVolume: number
   askVolume: number
 }
@@ -17,6 +21,7 @@ interface SymbolData {
   [DataStoreType.CANDLES_1M]?: ProcessedCandlestick[]
   [DataStoreType.CANDLES_15M]?: ProcessedCandlestick[]
   [DataStoreType.CANDLES_1D]?: ProcessedCandlestick[]
+  [DataStoreType.LIQUIDITY_POOL]?: LiquidityPool
   [DataStoreType.METRICS]?: SymbolMetrics
 }
 export interface DataStore {
@@ -31,6 +36,7 @@ export enum DataStoreType {
   CANDLES_1M = 'candles_1m',
   CANDLES_15M = 'candles_15m',
   CANDLES_1D = 'candles_1d',
+  LIQUIDITY_POOL = 'liquidity_pool',
   METRICS = 'metrics'
 }
 

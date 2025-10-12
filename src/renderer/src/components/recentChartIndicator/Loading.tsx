@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { COLORS } from './colors'
 
-const Loading = ({ loading }: { loading: boolean }): React.JSX.Element => {
+const Loading = memo(({ loading }: { loading: boolean }): React.JSX.Element => {
   if (!loading) {
     return <></>
   }
@@ -63,6 +64,8 @@ const Loading = ({ loading }: { loading: boolean }): React.JSX.Element => {
       </div>
     </div>
   )
-}
+})
+
+Loading.displayName = 'Loading'
 
 export default Loading

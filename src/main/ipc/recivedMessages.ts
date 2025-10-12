@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron'
 import { MessageSenderType } from '../../shared/types'
 import { processCreateOrder } from './processMessages/orderMessages'
+import { processChangeLiquidityPoolTimeframe } from './processMessages/settingMessages'
 
 export const receivedMessages = (): void => {
   ipcMain.on(MessageSenderType.CREATE_ORDER, (_event, data) => {
@@ -8,5 +9,13 @@ export const receivedMessages = (): void => {
     processCreateOrder(data)
 
     // _event.reply('log-reply', 'Message received ✅')
+  })
+
+  ipcMain.on(MessageSenderType.CHANGE_LIQUIDITY_POOL_TIMEFRAME, (_event, data) => {
+    console.log(
+      `Received from frontend: ${MessageSenderType.CHANGE_LIQUIDITY_POOL_TIMEFRAME}`,
+      data
+    )
+    processChangeLiquidityPoolTimeframe(data)
   })
 }

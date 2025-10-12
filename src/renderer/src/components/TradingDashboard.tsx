@@ -8,7 +8,9 @@ export default function TradingDashboard(): React.JSX.Element {
       style={{
         flex: 1,
         background: 'rgba(255, 255, 255, 0.1)',
-        height: '100%'
+        height: '100%',
+        minWidth: 0,
+        overflow: 'hidden'
       }}
     >
       <div
@@ -20,7 +22,7 @@ export default function TradingDashboard(): React.JSX.Element {
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
           flex: 1,
           height: '100%',
-          minWidth: '280px',
+          minWidth: 0,
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',

@@ -1,11 +1,23 @@
+import { memo, useMemo } from 'react'
 import { formatNumber } from '../../../../shared/helper'
 import { COLORS } from './colors'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
 
-const Footer = (): React.JSX.Element => {
+const Footer = memo((): React.JSX.Element => {
   const { state } = useStateStore()
   const { exchangeData } = state || {}
   const { lastPrice = 0 } = exchangeData || {}
+
+  const formattedPrice = useMemo(() => formatNumber(lastPrice), [lastPrice])
+
+  const legendItems = useMemo(
+    () => [
+      { color: COLORS.chart.up, label: 'BULLISH' },
+      { color: COLORS.chart.down, label: 'BEARISH' },
+      { color: COLORS.primary, label: 'CURRENT PRICE', isLine: true }
+    ],
+    []
+  )
 
   return (
     <div
@@ -31,34 +43,20 @@ const Footer = (): React.JSX.Element => {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <div
-          style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '2px',
-            background: COLORS.chart.up
-          }}
-        />
-        <span>BULLISH</span>
-        <div
-          style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '2px',
-            background: COLORS.chart.down,
-            marginLeft: '8px'
-          }}
-        />
-        <span>BEARISH</span>
-        <div
-          style={{
-            width: '8px',
-            height: '2px',
-            background: COLORS.primary,
-            marginLeft: '16px'
-          }}
-        />
-        <span>CURRENT PRICE</span>
+        {legendItems.map((item, index) => (
+          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {index > 0 && <div style={{ width: '16px' }} />}
+            <div
+              style={{
+                width: '8px',
+                height: item.isLine ? '2px' : '8px',
+                borderRadius: item.isLine ? '0' : '2px',
+                background: item.color
+              }}
+            />
+            <span>{item.label}</span>
+          </div>
+        ))}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -68,7 +66,7 @@ const Footer = (): React.JSX.Element => {
             padding: '6px 12px',
             borderRadius: '6px',
             border: `1px solid ${COLORS.border}`,
-            animation: 'pulse 0.5s ease-in-out'
+            animation: lastPrice !== 0 ? 'pulse 0.5s ease-in-out' : 'none'
           }}
         >
           <div
@@ -79,12 +77,14 @@ const Footer = (): React.JSX.Element => {
               fontFamily: 'monospace'
             }}
           >
-            {formatNumber(lastPrice)}
+            {formattedPrice}
           </div>
         </div>
       </div>
     </div>
   )
-}
+})
+
+Footer.displayName = 'Footer'
 
 export default Footer

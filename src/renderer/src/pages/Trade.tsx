@@ -13,17 +13,34 @@ export default function Trade(): React.JSX.Element {
       <div style={{ display: 'flex', width: '100%', flex: 1, minHeight: 0 }}>
         <PriceLine />
         <LiquidityPool />
-        <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            minHeight: 0,
+            minWidth: 0,
+            overflow: 'hidden'
+          }}
+        >
           <div
             style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
               background: 'rgba(22, 25, 41, 0.9)',
-              minHeight: 0
+              minHeight: 0,
+              minWidth: 0,
+              overflow: 'hidden'
             }}
           >
-            <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+            <div
+              style={{
+                display: 'flex',
+                flex: 1,
+                minHeight: 0,
+                minWidth: 0
+              }}
+            >
               <div
                 style={{
                   display: 'flex',
@@ -39,7 +56,13 @@ export default function Trade(): React.JSX.Element {
                 <OrderBook />
                 <RecentTrades />
               </div>
-              <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: 'hidden'
+                }}
+              >
                 <TradingDashboard />
               </div>
             </div>

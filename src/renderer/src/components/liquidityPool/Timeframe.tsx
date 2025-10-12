@@ -1,15 +1,29 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { COLORS } from './colors'
+import { useStateStore } from '@renderer/contexts/StateStoreContext'
+import { sendIpcMessage } from '@renderer/ipcMain/message'
+import { MessageSenderType } from '../../../../shared/types'
 
 const TIMEFRAME_OPTIONS = ['1M', '15M', '30M', '1H']
 
 const Timeframe: React.FC = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [selectedTimeframe, setSelectedTimeframe] = useState('1M')
+  const { state } = useStateStore()
+  const { settings } = state || {}
+  const { selectedLiquidityPoolTimeFrame } = settings || {}
 
-  // TODO
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedTimeframe, setSelectedTimeframe] = useState(selectedLiquidityPoolTimeFrame)
+
+  useEffect(() => {
+    setSelectedTimeframe(selectedLiquidityPoolTimeFrame)
+  }, [selectedLiquidityPoolTimeFrame])
+
   const handleTimeframeChange = (timeframe: string): void => {
     setSelectedTimeframe(timeframe)
+    sendIpcMessage({
+      message: MessageSenderType.CHANGE_LIQUIDITY_POOL_TIMEFRAME,
+      data: { timeframe }
+    })
     setIsDropdownOpen(false)
   }
 

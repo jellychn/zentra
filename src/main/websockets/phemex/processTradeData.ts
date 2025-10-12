@@ -21,6 +21,7 @@
 import { Side } from '../../../shared/types'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedTrade } from '../../data/types'
+import { mainStateStore } from '../../state/stateStore'
 import { MessageType } from './types'
 
 export interface TradeMessage {
@@ -104,12 +105,48 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
     }
   })
 
+  mainDataStore.updateDataStore({
+    symbol: symbol,
+    dataType: DataStoreType.LIQUIDITY_POOL,
+    data: tradeLiquidity
+  })
+
+  const state = mainStateStore.getState()
+  const selectedLiquidityPoolTimeFrame = state.settings.selectedLiquidityPoolTimeFrame
+
+  let timeWindowMinutes = 30
+  if (selectedLiquidityPoolTimeFrame === '1M') {
+    timeWindowMinutes = 1
+  } else if (selectedLiquidityPoolTimeFrame === '15M') {
+    timeWindowMinutes = 15
+  } else if (selectedLiquidityPoolTimeFrame === '30M') {
+    timeWindowMinutes = 30
+  } else if (selectedLiquidityPoolTimeFrame === '1H') {
+    timeWindowMinutes = 60
+  }
+
+  const minSizeThreshold = 0.001
+  const currentTimeNs = BigInt(Date.now()) * 1_000_000n
+  const windowNanoseconds = BigInt(timeWindowMinutes * 60 * 1_000_000_000)
+
+  const filteredTradeLiquidity: { [price: number]: { volume: number; last_updated: number } } = {}
+  Object.entries(tradeLiquidity).forEach(([price, data]) => {
+    const lastUpdatedNs = BigInt(data.last_updated)
+
+    if (
+      currentTimeNs - lastUpdatedNs <= windowNanoseconds &&
+      Math.abs(data.volume) > minSizeThreshold
+    ) {
+      filteredTradeLiquidity[parseFloat(price)] = data
+    }
+  })
+
   mainDataStore.updateMetrics({
     symbol: symbol,
     data: {
       buyVolume,
       sellVolume,
-      tradeLiquidity
+      tradeLiquidity: filteredTradeLiquidity
     }
   })
 }

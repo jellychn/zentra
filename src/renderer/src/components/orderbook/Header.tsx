@@ -1,4 +1,6 @@
-const Header = ({ selectedSymbol }: { selectedSymbol?: string }): React.JSX.Element => {
+import { memo } from 'react'
+
+const Header = memo(({ selectedSymbol }: { selectedSymbol?: string }): React.JSX.Element => {
   if (!selectedSymbol) {
     return <></>
   }
@@ -40,5 +42,8 @@ const Header = ({ selectedSymbol }: { selectedSymbol?: string }): React.JSX.Elem
       </div>
     </div>
   )
-}
+})
+
+Header.displayName = 'Header'
+
 export default Header

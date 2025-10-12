@@ -18,7 +18,8 @@ export enum TradingMode {
 }
 
 export enum MessageSenderType {
-  CREATE_ORDER = 'create_order'
+  CREATE_ORDER = 'create_order',
+  CHANGE_LIQUIDITY_POOL_TIMEFRAME = 'change_liquidity_pool_timeframe'
 }
 
 export const enum MessageReceiverType {
