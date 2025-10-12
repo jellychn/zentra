@@ -9,7 +9,7 @@ const TradeAction = (): React.JSX.Element => {
   }
 
   return (
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, width: '100%' }}>
       <div
         style={{
           display: 'flex',

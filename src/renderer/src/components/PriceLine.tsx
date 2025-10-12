@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useMemo, useRef, useState } from 'react'
+import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { COLORS } from './priceLine/colors'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import PriceLevels from './priceLine/PriceLevels'
@@ -34,7 +34,12 @@ export default function PriceLine(): React.JSX.Element {
   )
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
       <Timeline selectedTimeline={selectedTimeline} setSelectedTimeline={setSelectedTimeline} />
 
       <Main
@@ -61,13 +66,28 @@ const Main = ({
   priceRange: number
   getTopPercentage: (price: number) => number
 }): React.JSX.Element => {
+  const [containerHeight, setContainerHeight] = useState(0)
+
+  useEffect(() => {
+    const updateHeight = (): void => {
+      if (containerRef.current) {
+        setContainerHeight(containerRef.current.clientHeight)
+      }
+    }
+
+    updateHeight()
+    window.addEventListener('resize', updateHeight)
+
+    return () => window.removeEventListener('resize', updateHeight)
+  }, [])
+
   return (
     <div
       ref={containerRef}
       style={{
         position: 'relative',
         background: COLORS.background,
-        height: '80vh',
+        height: '100%',
         width: '120px',
         boxShadow: `
               0 8px 32px rgba(0, 0, 0, 0.4),
@@ -76,13 +96,15 @@ const Main = ({
             `,
         borderRight: `1px solid ${COLORS.border}`,
         cursor: 'crosshair',
-        backdropFilter: 'blur(20px)'
+        backdropFilter: 'blur(20px)',
+        zIndex: 2
       }}
     >
       <PriceLevels
         max={max}
         min={min}
         priceRange={priceRange}
+        containerHeight={containerHeight}
         getTopPercentage={getTopPercentage}
       />
       <CurrentPrice getTopPercentage={getTopPercentage} />

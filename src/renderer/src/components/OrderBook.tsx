@@ -7,6 +7,7 @@ import RatioBar from '@renderer/elements/RatioBar'
 import React, { useMemo, useState, useRef, useEffect } from 'react'
 import ColumnHeader from './orderbook/ColumnHeader'
 import OrderRow from './orderbook/OrderRow'
+import { formatNumber } from '../../../shared/helper'
 
 export default function OrderBook(): React.JSX.Element {
   const { state } = useStateStore()
@@ -109,8 +110,7 @@ export default function OrderBook(): React.JSX.Element {
           flex: 1,
           overflowY: 'auto',
           minHeight: 0,
-          paddingRight: '4px',
-          maxHeight: '300px'
+          paddingRight: '4px'
         }}
       >
         <div style={{ marginBottom: '8px' }}>
@@ -138,18 +138,17 @@ export default function OrderBook(): React.JSX.Element {
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '12px',
-            textAlign: 'center' as const,
+            textAlign: 'center',
             fontSize: '12px',
-            fontWeight: '600' as const,
+            fontWeight: '600',
             color: '#e2e8f0',
-            cursor: 'pointer',
             transition: 'all 0.2s ease',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
           }}
         >
-          {lastPrice}
+          {formatNumber(lastPrice)}
         </div>
 
         <div style={{ marginTop: '8px' }}>

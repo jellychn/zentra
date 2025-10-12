@@ -11,7 +11,8 @@ export default function TradePanel(): React.JSX.Element {
         display: 'flex',
         gap: '20px',
         alignItems: 'stretch',
-        minHeight: '140px'
+        width: '100%',
+        zIndex: 1
       }}
     >
       <TradeActions />

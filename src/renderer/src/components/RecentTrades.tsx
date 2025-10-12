@@ -55,8 +55,7 @@ export default function RecentTrades(): React.JSX.Element {
             minHeight: 0,
             overflowY: 'auto',
             display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '300px'
+            flexDirection: 'column'
           }}
         >
           <div

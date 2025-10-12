@@ -193,10 +193,13 @@ export default function LiquidityPool(): React.JSX.Element {
         background: COLORS.background,
         borderRight: `1px solid ${COLORS.border}`,
         overflow: 'hidden',
-        padding: '0 0 80px 80px',
+        padding: '0 0 10px 20px',
         zIndex: 1,
         backdropFilter: 'blur(20px)',
-        maxWidth: '600px'
+        maxWidth: '500px',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       <Header hasLiquidityPool={hasLiquidityPool} hasOrderBook={hasOrderBook} />
@@ -304,12 +307,12 @@ const Main = ({
     <div
       style={{
         position: 'relative',
-        height: '60vh',
+        height: '100%',
         background: 'rgba(15, 23, 42, 0.3)',
         borderRadius: '8px',
         margin: '8px',
         border: `1px solid ${COLORS.border}`,
-        minWidth: '500px'
+        flex: 1
       }}
     >
       {filteredLeftData.map((item) => (

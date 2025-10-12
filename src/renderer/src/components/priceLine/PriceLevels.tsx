@@ -7,10 +7,12 @@ const PriceLevels = memo(
     max,
     min,
     priceRange,
+    containerHeight,
     getTopPercentage
   }: {
     max: number
     min: number
+    containerHeight: number
     priceRange: number
     getTopPercentage: (price: number) => number
   }) => {
@@ -82,9 +84,19 @@ const PriceLevels = memo(
       return levels
     }, [min, max, step])
 
+    const visiblePriceLevels = useMemo(() => {
+      return priceLevels.filter((price) => {
+        const topPercentage = getTopPercentage(price)
+        const topPixels = (topPercentage / 100) * containerHeight
+        const levelHeight = 20 // Approximate height of level element
+
+        return topPixels >= levelHeight / 2 && topPixels <= containerHeight - levelHeight / 2
+      })
+    }, [priceLevels, getTopPercentage, containerHeight])
+
     return (
       <>
-        {priceLevels.map((price) => (
+        {visiblePriceLevels.map((price) => (
           <div
             key={price}
             style={{
