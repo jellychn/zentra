@@ -1,4 +1,6 @@
+import { sendIpcMessage } from '@renderer/ipcMain/message'
 import { COLORS } from '../colors'
+import { MessageSenderType } from '../../../../../shared/types'
 
 const Timeframe = ({
   selectedTimeframe,
@@ -15,7 +17,10 @@ const Timeframe = ({
 
   const handleTimeframeChange = (timeframe: string): void => {
     setSelectedTimeframe(timeframe)
-
+    sendIpcMessage({
+      message: MessageSenderType.CHANGE_CANDLE_TIMEFRAME,
+      data: { timeframe }
+    })
     setIsDropdownOpen(false)
   }
 

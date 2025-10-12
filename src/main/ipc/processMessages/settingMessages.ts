@@ -1,4 +1,5 @@
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
+import { ProcessedCandlestick } from '../../data/types'
 import { mainStateStore } from '../../state/stateStore'
 
 export const processChangeLiquidityPoolTimeframe = (data: { timeframe: string }): void => {
@@ -48,4 +49,22 @@ export const processChangeLiquidityPoolTimeframe = (data: { timeframe: string })
       tradeLiquidity: filteredTradeLiquidity
     }
   })
+}
+
+export const processChangeCandleTimeframe = (data: { timeframe: string }): void => {
+  const { timeframe } = data
+  mainStateStore.updateSettings({ selectedCandleTimeframe: timeframe })
+
+  const state = mainStateStore.getState()
+  const selectedSymbol = state.settings.selectedSymbol
+
+  let dataType = DataStoreType.CANDLES_1M
+  if (timeframe === '15M') {
+    dataType = DataStoreType.CANDLES_15M
+  } else if (timeframe === '1D') {
+    dataType = DataStoreType.CANDLES_1D
+  }
+
+  const candles = mainDataStore.getByDataType(selectedSymbol, dataType)
+  mainStateStore.updateExchangeData({ candles: candles as ProcessedCandlestick[] })
 }

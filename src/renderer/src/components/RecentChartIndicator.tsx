@@ -12,45 +12,8 @@ import {
   LineStyle
 } from 'lightweight-charts'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
-
-const formatPrice = (price: number): string => {
-  if (price === 0) return '$0'
-
-  if (price >= 1000) {
-    return `$${price.toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })}`
-  } else if (price >= 1) {
-    return `$${price.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })}`
-  } else if (price >= 0.01) {
-    return `$${price.toLocaleString('en-US', {
-      minimumFractionDigits: 4,
-      maximumFractionDigits: 4
-    })}`
-  } else if (price >= 0.0001) {
-    return `$${price.toLocaleString('en-US', {
-      minimumFractionDigits: 6,
-      maximumFractionDigits: 6
-    })}`
-  } else {
-    return `$${price.toFixed(8)}`
-  }
-}
-
-const getPricePrecision = (prices: number[]): number => {
-  if (prices.length === 0) return 2
-  const minPrice = Math.min(...prices.filter((p) => p > 0))
-
-  if (minPrice >= 1000) return 0
-  if (minPrice >= 1) return 2
-  if (minPrice >= 0.01) return 4
-  if (minPrice >= 0.0001) return 6
-  return 8
-}
+import { formatPrice, getPricePrecision } from './recentChartIndicator/helper'
+import ResetIndicator from './recentChartIndicator/ResetIndicator'
 
 // Constants for viewport behavior
 const VIEWPORT_CANDLES = 60
@@ -603,49 +566,10 @@ export default function RecentChartIndicator(): React.JSX.Element {
       />
 
       <Footer />
-
-      {showResetIndicator && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '70px',
-            left: '20px',
-            zIndex: 10,
-            pointerEvents: 'auto'
-          }}
-        >
-          <button
-            onClick={handleManualReset}
-            style={{
-              background: 'rgba(59, 130, 246, 0.9)',
-              color: 'white',
-              border: 'none',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '10px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(59, 130, 246, 1)'
-              e.currentTarget.style.transform = 'scale(1.05)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.9)'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-          >
-            RESET VIEW
-          </button>
-        </div>
-      )}
-
+      <ResetIndicator
+        showResetIndicator={showResetIndicator}
+        handleManualReset={handleManualReset}
+      />
       <Loading loading={isLoading} />
 
       {/* CSS Animations */}
