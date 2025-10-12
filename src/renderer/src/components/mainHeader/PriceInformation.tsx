@@ -17,14 +17,14 @@ const PriceInformation = (): React.JSX.Element => {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '24px',
+        marginLeft: '20px',
         flexShrink: 0
       }}
     >
       <div>
         <div
           style={{
-            fontSize: '18px',
+            fontSize: '12px',
             fontWeight: '700',
             color: '#f1f5f9',
             marginBottom: '2px'
@@ -34,7 +34,7 @@ const PriceInformation = (): React.JSX.Element => {
         </div>
         <div
           style={{
-            fontSize: '12px',
+            fontSize: '10px',
             fontWeight: '600',
             color: isPricePositive ? '#10b981' : isPriceNegative ? '#ef4444' : '#94a3b8',
             display: 'flex',

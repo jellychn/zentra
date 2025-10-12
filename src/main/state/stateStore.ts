@@ -49,10 +49,10 @@ class MainStateStore extends EventEmitter {
       settings: {
         environment: config.env,
         selectedExchange,
-        selectedSymbol: 'ADAUSDT',
+        selectedSymbol: 'BTCUSDT',
         tradingMode: TradingMode.PAPER,
         selectedCandleTimeframe: '1M',
-        selectedLiquidityPoolTimeFrame: '1M'
+        selectedLiquidityPoolTimeFrame: '15M'
       },
       exchangeData: {
         lastPrice: 0,

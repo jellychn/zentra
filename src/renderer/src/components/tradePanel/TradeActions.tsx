@@ -9,14 +9,13 @@ const TradeAction = (): React.JSX.Element => {
   }
 
   return (
-    <div style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'right' }}>
+    <div style={{ flex: 1, width: '100%', display: 'flex' }}>
       <div
         style={{
           display: 'flex',
           gap: '15px',
           flex: 1,
-          justifyContent: 'space-between',
-          maxWidth: '500px'
+          justifyContent: 'space-between'
         }}
       >
         <Entry sendCreateOrder={sendCreateOrder} />
@@ -53,7 +52,7 @@ const Entry = ({
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
-        flex: 3
+        flex: 2
       }}
     >
       <SectionHeader>ENTRY</SectionHeader>

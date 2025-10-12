@@ -20,7 +20,8 @@ const SymbolInformation = (): React.JSX.Element => {
           fontWeight: 'bold',
           color: 'white',
           boxShadow: '0 4px 12px rgba(126, 87, 194, 0.3)',
-          flexShrink: 0
+          flexShrink: 0,
+          margin: '0 10px 0 20px'
         }}
       >
         {selectedSymbol?.charAt(0) || 'B'}
