@@ -34,16 +34,7 @@ export default function TradingDashboard(): React.JSX.Element {
         }}
       >
         <Header />
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            gap: '20px'
-          }}
-        >
-          <RecentChartIndicator />
-        </div>
+        <RecentChartIndicator />
       </div>
     </div>
   )

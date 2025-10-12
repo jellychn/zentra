@@ -54,7 +54,8 @@ const Loading = ({ loading }: { loading: boolean }): React.JSX.Element => {
             fontSize: '10px',
             color: COLORS.text.secondary,
             textAlign: 'center',
-            maxWidth: '200px'
+            maxWidth: '200px',
+            fontWeight: 'bold'
           }}
         >
           Connecting to real-time price feed

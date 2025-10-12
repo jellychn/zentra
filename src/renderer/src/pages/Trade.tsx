@@ -32,6 +32,7 @@ export default function Trade(): React.JSX.Element {
                   flex: 1,
                   minHeight: 0,
                   gap: '12px',
+                  minWidth: '380px',
                   maxWidth: '380px'
                 }}
               >

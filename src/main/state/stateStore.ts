@@ -3,11 +3,13 @@ import { Environment, Exchanges, TradingMode } from '../../shared/types'
 import config from '../config/config'
 import { SymbolMetrics } from '../data/dataStore'
 import { UserSettings, userSettingsState } from '../db/dbUserSettings'
+import { ProcessedCandlestick } from '../data/types'
 
 interface ExchangeData {
   orderbook: object
   trades: object[]
   lastPrice: number
+  candles: ProcessedCandlestick[]
 }
 
 export interface AppState {
@@ -20,6 +22,7 @@ export interface AppState {
     selectedExchange: string
     selectedSymbol: string
     tradingMode: TradingMode
+    selectedCandleTimeframe: string
   }
   exchangeData: ExchangeData
   metrics: SymbolMetrics
@@ -46,12 +49,14 @@ class MainStateStore extends EventEmitter {
         environment: config.env,
         selectedExchange,
         selectedSymbol: 'BTCUSDT',
-        tradingMode: TradingMode.PAPER
+        tradingMode: TradingMode.PAPER,
+        selectedCandleTimeframe: '1M'
       },
       exchangeData: {
         lastPrice: 0,
         orderbook: {},
-        trades: []
+        trades: [],
+        candles: []
       },
       metrics: {
         buyVolume: 0,

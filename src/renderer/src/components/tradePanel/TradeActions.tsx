@@ -9,13 +9,14 @@ const TradeAction = (): React.JSX.Element => {
   }
 
   return (
-    <div style={{ flex: 1, width: '100%' }}>
+    <div style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'right' }}>
       <div
         style={{
           display: 'flex',
           gap: '15px',
           flex: 1,
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          maxWidth: '500px'
         }}
       >
         <Entry sendCreateOrder={sendCreateOrder} />
@@ -78,7 +79,7 @@ const Entry = ({
             fill
             style={{
               fontSize: '9px',
-              padding: '4px 8px',
+              padding: '8px',
               minHeight: '28px',
               flex: 1
             }}
@@ -93,7 +94,7 @@ const Entry = ({
             fill
             style={{
               fontSize: '9px',
-              padding: '4px 8px',
+              padding: '8px',
               minHeight: '28px',
               flex: 1
             }}
@@ -117,7 +118,7 @@ const Entry = ({
             glass
             style={{
               fontSize: '9px',
-              padding: '4px 8px',
+              padding: '8px',
               minHeight: '28px',
               flex: 1
             }}
@@ -132,7 +133,7 @@ const Entry = ({
             glass
             style={{
               fontSize: '9px',
-              padding: '4px 8px',
+              padding: '8px',
               minHeight: '28px',
               flex: 1
             }}
@@ -173,7 +174,7 @@ const Exit = (): React.JSX.Element => {
           fill
           style={{
             fontSize: '9px',
-            padding: '4px 8px',
+            padding: '8px',
             minHeight: '28px',
             flex: 1
           }}
@@ -188,7 +189,7 @@ const Exit = (): React.JSX.Element => {
           glass
           style={{
             fontSize: '9px',
-            padding: '4px 8px',
+            padding: '8px',
             minHeight: '28px',
             flex: 1
           }}
@@ -228,7 +229,7 @@ const RiskManagement = (): React.JSX.Element => {
           fill
           style={{
             fontSize: '9px',
-            padding: '4px 8px',
+            padding: '8px',
             minHeight: '28px',
             flex: 1
           }}
@@ -243,7 +244,7 @@ const RiskManagement = (): React.JSX.Element => {
           glass
           style={{
             fontSize: '9px',
-            padding: '4px 8px',
+            padding: '8px',
             minHeight: '28px',
             flex: 1
           }}

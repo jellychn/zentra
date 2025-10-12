@@ -4,11 +4,15 @@ import { formatNumber } from '../../../../shared/helper'
 import Timeframe from './header/Timeframe'
 
 const Header = ({
+  highPrice,
+  lowPrice,
   selectedTimeframe,
   isDropdownOpen,
   setIsDropdownOpen,
   setSelectedTimeframe
 }: {
+  highPrice: number
+  lowPrice: number
   selectedTimeframe: string
   isDropdownOpen: boolean
   setIsDropdownOpen: (isOpen: boolean) => void
@@ -67,7 +71,7 @@ const Header = ({
             />
             <span style={{ color: COLORS.text.secondary }}>HIGH:</span>
             <span style={{ color: COLORS.text.primary, fontFamily: 'monospace' }}>
-              {formatNumber(20000)}
+              {formatNumber(highPrice)}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -81,7 +85,7 @@ const Header = ({
             />
             <span style={{ color: COLORS.text.secondary }}>LOW:</span>
             <span style={{ color: COLORS.text.primary, fontFamily: 'monospace' }}>
-              {formatNumber(10000)}
+              {formatNumber(lowPrice)}
             </span>
           </div>
           <div

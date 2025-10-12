@@ -196,6 +196,7 @@ export default function LiquidityPool(): React.JSX.Element {
         padding: '0 0 10px 20px',
         zIndex: 1,
         backdropFilter: 'blur(20px)',
+        minWidth: '500px',
         maxWidth: '500px',
         height: '100%',
         display: 'flex',

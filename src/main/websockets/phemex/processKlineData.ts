@@ -98,7 +98,7 @@ export const processKlineData = (data: KlineMessage): void => {
     updatedCandles = mergeCandlesticks(existingCandles, processedCandlesticks)
   }
 
-  updatedCandles.sort((a, b) => a.timestamp - b.timestamp)
+  updatedCandles.sort((a, b) => a.time - b.time)
 
   mainDataStore.updateDataStore({
     symbol: symbol,
@@ -109,13 +109,13 @@ export const processKlineData = (data: KlineMessage): void => {
 
 function processKlineEntry(entry: KlineEntry): ProcessedCandlestick {
   return {
-    timestamp: entry[0],
-    interval: entry[1],
+    time: entry[0],
+    // interval: entry[1],
     open: parseFloat(entry[3]),
     high: parseFloat(entry[4]),
     low: parseFloat(entry[5]),
-    close: parseFloat(entry[6]),
-    volume: parseFloat(entry[7])
+    close: parseFloat(entry[6])
+    // volume: parseFloat(entry[7])
   }
 }
 
@@ -127,12 +127,12 @@ function mergeCandlesticks(
 
   // Add all existing candles
   existing.forEach((candle) => {
-    timestampMap.set(candle.timestamp, candle)
+    timestampMap.set(candle.time, candle)
   })
 
   // Update or add new candles
   updates.forEach((candle) => {
-    timestampMap.set(candle.timestamp, candle)
+    timestampMap.set(candle.time, candle)
   })
 
   return Array.from(timestampMap.values())

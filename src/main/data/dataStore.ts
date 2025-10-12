@@ -79,10 +79,21 @@ class MainDataStore extends EventEmitter {
     if (dataType === DataStoreType.LAST_PRICE) {
       mainStateStore.updateExchangeData({ lastPrice: data as number })
     } else if (
-      dataType !== DataStoreType.CANDLES_1D &&
-      dataType !== DataStoreType.CANDLES_15M &&
-      dataType !== DataStoreType.CANDLES_1M
+      dataType === DataStoreType.CANDLES_1D ||
+      dataType === DataStoreType.CANDLES_15M ||
+      dataType === DataStoreType.CANDLES_1M
     ) {
+      const state = mainStateStore.getState()
+      const selectedCandleTimeframe = state.settings.selectedCandleTimeframe
+
+      if (
+        (dataType === DataStoreType.CANDLES_1M && selectedCandleTimeframe === '1M') ||
+        (dataType === DataStoreType.CANDLES_15M && selectedCandleTimeframe === '15M') ||
+        (dataType === DataStoreType.CANDLES_1D && selectedCandleTimeframe === '1D')
+      ) {
+        mainStateStore.updateExchangeData({ candles: data as ProcessedCandlestick[] })
+      }
+    } else {
       mainStateStore.updateExchangeData({ [dataType]: data })
     }
   }

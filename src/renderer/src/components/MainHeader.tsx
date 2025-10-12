@@ -1,5 +1,6 @@
 import React from 'react'
 import PriceInformation from './mainHeader/PriceInformation'
+import SymbolInformation from './mainHeader/SymbolInformation'
 
 export default function MainHeader(): React.JSX.Element {
   return (
@@ -35,6 +36,7 @@ const LeftSection = (): React.JSX.Element => {
         flexShrink: 0
       }}
     >
+      <SymbolInformation />
       <PriceInformation />
     </div>
   )

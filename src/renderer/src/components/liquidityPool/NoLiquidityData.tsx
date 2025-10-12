@@ -48,7 +48,7 @@ const NoLiquidityData = ({
           fontSize: '14px',
           textAlign: 'center',
           marginBottom: showAverageWarning ? '12px' : '0',
-          color: COLORS.text.primary,
+          color: COLORS.text.secondary,
           fontWeight: '600'
         }}
       >
