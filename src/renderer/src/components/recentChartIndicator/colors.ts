@@ -22,7 +22,8 @@ export const COLORS = {
     up: '#10b981',
     down: '#ef4444',
     grid: '#2a2e39',
-    background: '#1e222d'
+    background: '#1e222d',
+    hoverLine: '#FFB74D'
   }
 }
 

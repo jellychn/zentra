@@ -5,8 +5,11 @@ import PriceLevels from './priceLine/PriceLevels'
 import { getRange } from './priceLine/helper'
 import CurrentPrice from './priceLine/CurrentPrice'
 import Timeline from './priceLine/Timeframe'
+import HoveredPriceLine from './priceLine/HoveredPriceLine'
+import { usePriceLine } from '@renderer/contexts/PriceLineContext'
 
 export default function PriceLine(): React.JSX.Element {
+  const { setHoverPrice } = usePriceLine()
   const { state } = useStateStore()
   const { exchangeData } = state || {}
   const { lastPrice = 0 } = exchangeData || {}
@@ -33,6 +36,24 @@ export default function PriceLine(): React.JSX.Element {
     [max, priceRange]
   )
 
+  const handleMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!containerRef.current) return
+
+      const rect = containerRef.current.getBoundingClientRect()
+      const y = event.clientY - rect.top
+      const percentage = (y / rect.height) * 100
+
+      const hoveredPrice = max - (percentage / 100) * priceRange
+      setHoverPrice(hoveredPrice)
+    },
+    [max, priceRange, setHoverPrice]
+  )
+
+  const handleMouseLeave = useCallback(() => {
+    setHoverPrice(null)
+  }, [setHoverPrice])
+
   return (
     <div
       style={{
@@ -48,6 +69,8 @@ export default function PriceLine(): React.JSX.Element {
         min={min}
         priceRange={priceRange}
         getTopPercentage={getTopPercentage}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
       />
     </div>
   )
@@ -58,13 +81,17 @@ const Main = ({
   max,
   min,
   priceRange,
-  getTopPercentage
+  getTopPercentage,
+  onMouseMove,
+  onMouseLeave
 }: {
   containerRef: RefObject<HTMLDivElement | null>
   max: number
   min: number
   priceRange: number
   getTopPercentage: (price: number) => number
+  onMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void
+  onMouseLeave: () => void
 }): React.JSX.Element => {
   const [containerHeight, setContainerHeight] = useState(0)
 
@@ -84,6 +111,8 @@ const Main = ({
   return (
     <div
       ref={containerRef}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       style={{
         position: 'relative',
         background: COLORS.background,
@@ -108,6 +137,7 @@ const Main = ({
         getTopPercentage={getTopPercentage}
       />
       <CurrentPrice getTopPercentage={getTopPercentage} />
+      <HoveredPriceLine max={max} priceRange={priceRange} />
     </div>
   )
 }

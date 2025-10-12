@@ -1,7 +1,8 @@
 import React, { memo, useMemo } from 'react'
 import { COLORS } from './colors'
-import { formatNumber } from '../../../../shared/helper'
+import { formatDuration, formatNumber } from '../../../../shared/helper'
 import Timeframe from './header/Timeframe'
+import { ProcessedCandlestick } from 'src/main/data/types'
 
 const Header = memo(
   ({
@@ -9,6 +10,7 @@ const Header = memo(
     lowPrice,
     selectedTimeframe,
     isDropdownOpen,
+    candles,
     setIsDropdownOpen,
     setSelectedTimeframe
   }: {
@@ -16,9 +18,17 @@ const Header = memo(
     lowPrice: number
     selectedTimeframe: string
     isDropdownOpen: boolean
+    candles: ProcessedCandlestick[]
     setIsDropdownOpen: (isOpen: boolean) => void
     setSelectedTimeframe: (timeframe: string) => void
   }): React.JSX.Element => {
+    const duration = useMemo(() => {
+      if (!candles.length) return 0
+      const firstCandle = candles[0].time as number
+      const lastCandle = candles[candles.length - 1].time as number
+      return lastCandle - firstCandle
+    }, [candles])
+
     const formattedPrices = useMemo(
       () => ({
         high: formatNumber(highPrice),
@@ -86,6 +96,12 @@ const Header = memo(
               fontWeight: '600'
             }}
           >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ color: COLORS.text.secondary }}>DURATION:</span>
+              <span style={{ color: COLORS.text.primary, fontFamily: 'monospace' }}>
+                {formatDuration(duration)}
+              </span>
+            </div>
             {priceDisplays.map((item) => (
               <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <div

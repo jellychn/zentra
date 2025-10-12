@@ -549,6 +549,7 @@ export default function RecentChartIndicator(): React.JSX.Element {
         setIsDropdownOpen={setIsDropdownOpen}
         highPrice={highPrice}
         lowPrice={lowPrice}
+        candles={candles}
       />
 
       <div

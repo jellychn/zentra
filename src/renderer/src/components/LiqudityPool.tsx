@@ -31,13 +31,6 @@ export default function LiquidityPool(): React.JSX.Element {
   const { bids = {}, asks = {} } = (orderbook as ProcessedOrderBook) || {}
   const { tradeLiquidity = {} } = metrics || {}
 
-  //   const { setHoveredBarPrice } = useLiquidityOrders()
-  //   const immediateSetHoveredBarPrice = useCallback(
-  //     (price: number | null) => {
-  //       setHoveredBarPrice(price)
-  //     },
-  //     [setHoveredBarPrice]
-  //   )
   const [currentTime, setCurrentTime] = useState(Date.now())
   useEffect(() => {
     const interval = setInterval(() => {
@@ -326,7 +319,6 @@ const Main = ({
           maxLiquidity={maxLeftLiquidity}
           avgLiquidity={leftAvgLiquidity}
           isCurrentPrice={Math.abs(item.price - lastPrice) < 0.001}
-          setHoveredBarPrice={() => {}}
           side="left"
           type="pool"
           age={item.age}
@@ -344,7 +336,6 @@ const Main = ({
           maxLiquidity={maxRightLiquidity}
           avgLiquidity={rightAvgLiquidity}
           isCurrentPrice={Math.abs(item.price - lastPrice) < 0.001}
-          setHoveredBarPrice={() => {}}
           side="right"
           type={item.side}
           getAgeBasedOpacity={getAgeBasedOpacity}

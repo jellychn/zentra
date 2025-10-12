@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react'
 import { COLORS } from './colors'
 import { ProcessedLiquidityItem } from '../LiqudityPool'
+import { usePriceLine } from '@renderer/contexts/PriceLineContext'
 
 // Enhanced age color function
 const getAgeColor = (ageInSeconds: number): string => {
@@ -23,7 +24,6 @@ const LiquidityBar = memo(
     side,
     type,
     age,
-    setHoveredBarPrice,
     getAgeBasedOpacity,
     currentPricePosition
   }: {
@@ -37,10 +37,11 @@ const LiquidityBar = memo(
     side: 'left' | 'right'
     type: 'pool' | 'bid' | 'ask'
     age?: number
-    setHoveredBarPrice: (price: number | null) => void
     getAgeBasedOpacity: (item: ProcessedLiquidityItem) => number
     currentPricePosition: number
   }): React.JSX.Element => {
+    const { setHoverPrice } = usePriceLine()
+
     const [hovered, setHovered] = useState(false)
     const [clicked, setClicked] = useState(false)
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -243,17 +244,17 @@ const LiquidityBar = memo(
       // Don't show hover tooltip if popup is open
       if (!clicked) {
         setHovered(true)
-        setHoveredBarPrice(price)
+        setHoverPrice(price)
       }
-    }, [price, setHoveredBarPrice, clicked])
+    }, [price, setHoverPrice, clicked])
 
     const handleMouseLeave = useCallback(() => {
       // Only hide hover if popup is not open
       if (!clicked) {
         setHovered(false)
-        setHoveredBarPrice(null)
+        setHoverPrice(null)
       }
-    }, [setHoveredBarPrice, clicked])
+    }, [setHoverPrice, clicked])
 
     const handleClick = useCallback(
       (e: React.MouseEvent) => {
@@ -261,7 +262,7 @@ const LiquidityBar = memo(
 
         // Close any hover tooltip when clicking
         setHovered(false)
-        setHoveredBarPrice(null)
+        setHoverPrice(null)
 
         setClicked(true)
 
@@ -273,7 +274,7 @@ const LiquidityBar = memo(
           clearTimeout(clickTimeoutRef.current)
         }
       },
-      [setHoveredBarPrice]
+      [setHoverPrice]
     )
 
     // Close popup when clicking outside
@@ -283,7 +284,7 @@ const LiquidityBar = memo(
           setClicked(false)
           // Also reset hover state when clicking outside
           setHovered(false)
-          setHoveredBarPrice(null)
+          setHoverPrice(null)
         }
       }
 
@@ -291,7 +292,7 @@ const LiquidityBar = memo(
       return () => {
         document.removeEventListener('mousedown', handleClickOutside)
       }
-    }, [setHoveredBarPrice])
+    }, [setHoverPrice])
 
     // Auto-close popup after 5 seconds
     useEffect(() => {
@@ -312,9 +313,9 @@ const LiquidityBar = memo(
     useEffect(() => {
       if (clicked) {
         setHovered(false)
-        setHoveredBarPrice(null)
+        setHoverPrice(null)
       }
-    }, [clicked, setHoveredBarPrice])
+    }, [clicked, setHoverPrice])
 
     useEffect(() => {
       return () => {
