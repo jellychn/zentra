@@ -55,6 +55,8 @@ const BarTooltip = memo(() => {
         }}
       />
 
+      <div style={{ marginBottom: '10px', color: COLORS.primary }}>CLICK TO PLACE ORDER</div>
+
       <div
         style={{
           display: 'flex',

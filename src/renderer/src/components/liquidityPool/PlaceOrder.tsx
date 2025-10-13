@@ -57,16 +57,57 @@ const PlaceOrder = memo(
         }
       }, [price, lastPrice])
 
-    const popupPosition = useMemo(() => {
+    // Determine popup position based on price relative to current price
+    const { popupPosition, arrowPosition, arrowStyle } = useMemo(() => {
+      const isAboveCurrent = price > lastPrice
       const verticalOffset = 12
 
-      return {
-        bottom: `calc(100% + ${verticalOffset}px)`,
-        left: side === 'left' ? '-10px' : 'auto',
-        right: side === 'right' ? '-10px' : 'auto',
-        transform: 'translateX(0)'
+      if (isAboveCurrent) {
+        // Price is above current - show popup BELOW with arrow pointing UP
+        return {
+          popupPosition: {
+            top: `calc(100% + ${verticalOffset}px)`,
+            left: side === 'left' ? '-10px' : 'auto',
+            right: side === 'right' ? '-10px' : 'auto',
+            transform: 'translateX(0)'
+          },
+          arrowPosition: {
+            bottom: '100%',
+            [side === 'left' ? 'left' : 'right']: '20px'
+          },
+          arrowStyle: {
+            width: '0',
+            height: '0',
+            borderLeft: '8px solid transparent',
+            borderRight: '8px solid transparent',
+            borderBottom: `8px solid rgba(15, 23, 42, 0.98)`,
+            borderTop: 'none'
+          }
+        }
+      } else {
+        // Price is below current - show popup ABOVE with arrow pointing DOWN
+        return {
+          popupPosition: {
+            bottom: `calc(100% + ${verticalOffset}px)`,
+            left: side === 'left' ? '-10px' : 'auto',
+            right: side === 'right' ? '-10px' : 'auto',
+            transform: 'translateX(0)'
+          },
+          arrowPosition: {
+            top: '100%',
+            [side === 'left' ? 'left' : 'right']: '20px'
+          },
+          arrowStyle: {
+            width: '0',
+            height: '0',
+            borderLeft: '8px solid transparent',
+            borderRight: '8px solid transparent',
+            borderTop: `8px solid rgba(15, 23, 42, 0.98)`,
+            borderBottom: 'none'
+          }
+        }
       }
-    }, [side])
+    }, [price, lastPrice, side])
 
     const getButtonColor = (direction: string): string => {
       return direction === 'LONG' ? COLORS.success : COLORS.danger
@@ -94,6 +135,16 @@ const PlaceOrder = memo(
         onMouseEnter={() => setHoverPrice(price)}
         onMouseLeave={() => setHoverPrice(null)}
       >
+        {/* Arrow */}
+        <div
+          style={{
+            position: 'absolute',
+            ...arrowPosition,
+            ...arrowStyle,
+            filter: 'drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3))'
+          }}
+        />
+
         <div
           style={{
             display: 'flex',
@@ -299,20 +350,6 @@ const PlaceOrder = memo(
             </button>
           </div>
         </div>
-
-        <div
-          style={{
-            position: 'absolute',
-            top: '100%',
-            [side === 'left' ? 'left' : 'right']: '20px',
-            width: '0',
-            height: '0',
-            borderLeft: '8px solid transparent',
-            borderRight: '8px solid transparent',
-            borderTop: `8px solid rgba(15, 23, 42, 0.98)`,
-            filter: 'drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3))'
-          }}
-        />
       </div>
     )
   }
