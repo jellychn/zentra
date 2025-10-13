@@ -105,6 +105,8 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
     }
   })
 
+  const avgTradeVolume = (buyVolume + sellVolume) / trades.length
+
   mainDataStore.updateDataStore({
     symbol: symbol,
     dataType: DataStoreType.LIQUIDITY_POOL,
@@ -146,6 +148,7 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
     data: {
       buyVolume,
       sellVolume,
+      avgTradeVolume,
       tradeLiquidity: filteredTradeLiquidity
     }
   })

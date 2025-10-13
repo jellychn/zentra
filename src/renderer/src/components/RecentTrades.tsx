@@ -5,12 +5,13 @@ import Header from './recentTrades/Header'
 import { SymbolMetrics } from 'src/main/data/dataStore'
 import { ProcessedTrade } from 'src/main/data/types'
 import React, { useMemo } from 'react'
+import { formatNumber } from '../../../shared/helper'
 
 export default function RecentTrades(): React.JSX.Element {
   const { state } = useStateStore()
   const { exchangeData, metrics } = state || {}
   const { trades = [] } = (exchangeData as { trades?: ProcessedTrade[] }) || {}
-  const { buyVolume = 0, sellVolume = 0 } = (metrics as SymbolMetrics) || {}
+  const { buyVolume = 0, sellVolume = 0, avgTradeVolume = 0 } = (metrics as SymbolMetrics) || {}
 
   const recentTrades = useMemo(() => {
     const now = Date.now()
@@ -69,6 +70,24 @@ export default function RecentTrades(): React.JSX.Element {
           >
             <Content trades={recentTrades} />
           </div>
+        </div>
+        <div
+          style={{
+            background: 'rgba(245, 158, 11, 0.15)',
+            backdropFilter: 'blur(10px)',
+            border: `1px solid rgba(245, 158, 11, 0.3)`,
+            borderRadius: '8px',
+            padding: '8px 12px',
+            marginTop: '10px',
+            fontSize: '10px',
+            color: '#f59e0b',
+            zIndex: 5,
+            fontWeight: '700',
+            textAlign: 'center',
+            maxWidth: '100%'
+          }}
+        >
+          ABOVE AVERAGE TRADE: ≥ {formatNumber(avgTradeVolume)}
         </div>
       </div>
     </div>

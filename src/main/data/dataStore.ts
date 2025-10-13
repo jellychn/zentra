@@ -9,6 +9,7 @@ interface LiquidityPool {
 export interface SymbolMetrics {
   buyVolume: number
   sellVolume: number
+  avgTradeVolume: number
   tradeLiquidity: LiquidityPool
   bidVolume: number
   askVolume: number

@@ -2,9 +2,15 @@ import React, { memo, useCallback, useMemo } from 'react'
 import { formatDuration, formatNumber } from '../../../../shared/helper'
 import { Side } from '../../../../shared/types'
 import { ProcessedTrade } from 'src/main/data/types'
+import { useStateStore } from '@renderer/contexts/StateStoreContext'
+import { SymbolMetrics } from 'src/main/data/dataStore'
 
 const TradeRow = memo(
   ({ trade }: { trade: ProcessedTrade }): React.JSX.Element => {
+    const { state } = useStateStore()
+    const { metrics } = state || {}
+    const { avgTradeVolume = 0 } = (metrics as SymbolMetrics) || {}
+
     const timestampNow = Date.now() / 1000
     const timestamp = Math.floor(Number(trade.timestamp) / 1000000000)
 
@@ -50,7 +56,10 @@ const TradeRow = memo(
           fontSize: '10px',
           fontWeight: '600',
           backgroundColor: tradeColor,
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          border:
+            size > avgTradeVolume
+              ? '1px solid rgba(245, 158, 11, 0.6)'
+              : '1px solid rgba(255, 255, 255, 0.05)',
           borderRadius: '8px',
           marginBottom: '6px',
           transition: 'all 0.2s ease',

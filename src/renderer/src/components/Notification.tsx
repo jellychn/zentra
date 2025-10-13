@@ -93,7 +93,7 @@ export default function Notification(): React.JSX.Element {
       <div
         style={{
           position: 'fixed',
-          top: '24px',
+          top: '90px',
           right: '24px',
           zIndex: 1000,
           display: 'flex',

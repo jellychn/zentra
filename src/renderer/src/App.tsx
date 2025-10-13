@@ -1,4 +1,5 @@
 import AppContent from './AppContent'
+import { LiquidityPoolProvider } from './contexts/LiquidityPoolContext'
 import { PriceLineProvider } from './contexts/PriceLineContext'
 import { StateStoreProvider } from './contexts/StateStoreContext'
 
@@ -7,7 +8,9 @@ function App(): React.JSX.Element {
     <>
       <StateStoreProvider>
         <PriceLineProvider>
-          <AppContent />
+          <LiquidityPoolProvider>
+            <AppContent />
+          </LiquidityPoolProvider>
         </PriceLineProvider>
       </StateStoreProvider>
     </>

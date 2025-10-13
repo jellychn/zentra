@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from '
 import { COLORS } from './colors'
 import { ProcessedLiquidityItem } from '../LiqudityPool'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
+import { useLiquidityPool } from '@renderer/contexts/LiquidityPoolContext'
+import PlaceOrder from './PlaceOrder'
 
 // Enhanced age color function
 const getAgeColor = (ageInSeconds: number): string => {
@@ -43,6 +45,7 @@ const LiquidityBar = memo(
     setHoveredSide: (side: string) => void
   }): React.JSX.Element => {
     const { setHoverPrice } = usePriceLine()
+    const { setTooltipInfo } = useLiquidityPool()
 
     const [hovered, setHovered] = useState(false)
     const [clicked, setClicked] = useState(false)
@@ -249,7 +252,7 @@ const LiquidityBar = memo(
         setHoverPrice(price)
         setHoveredSide(side)
       }
-    }, [price, setHoverPrice, setHoveredSide, clicked])
+    }, [clicked, setHoverPrice, price, setHoveredSide, side])
 
     const handleMouseLeave = useCallback(() => {
       // Only hide hover if popup is not open
@@ -257,7 +260,7 @@ const LiquidityBar = memo(
         setHovered(false)
         setHoverPrice(null)
       }
-    }, [setHoverPrice, clicked])
+    }, [clicked, setHoverPrice])
 
     const handleClick = useCallback(
       (e: React.MouseEvent) => {
@@ -385,6 +388,33 @@ const LiquidityBar = memo(
       [barWidth, barStyles, hovered, clicked, type]
     )
 
+    const tooltipInfo: object | null = useMemo(() => {
+      if (!hovered) return null
+
+      return {
+        side,
+        position,
+        tooltipData,
+        maxLiquidity,
+        type,
+        isNegative: liquidity < 0,
+        age,
+        avgLiquidity
+      }
+    }, [hovered, side, position, tooltipData, maxLiquidity, type, liquidity, age, avgLiquidity])
+
+    // Update tooltip when tooltipInfo changes
+    useEffect(() => {
+      setTooltipInfo(tooltipInfo)
+    }, [tooltipInfo, setTooltipInfo])
+
+    // Cleanup tooltip on unmount
+    useEffect(() => {
+      return () => {
+        setTooltipInfo(null)
+      }
+    }, [setTooltipInfo])
+
     return (
       <>
         {/* Connection Band - rendered separately to span the full height */}
@@ -466,29 +496,14 @@ const LiquidityBar = memo(
             )}
           </div>
 
-          {/* TODO: {hovered && !clicked && (
-          <BarTooltip
-            price={price}
-            side={side}
-            position={position}
-            tooltipData={tooltipData}
-            type={type}
-            maxLiquidity={maxLiquidity}
-            isNegative={isNegative}
-            age={age}
-            avgLiquidity={avgLiquidity}
-          />
-        )}
-
-        {clicked && (
-          <PlaceOrder
-            price={price}
-            side={side}
-            COLORS={COLORS}
-            setClicked={setClicked}
-            setHoveredBarPrice={setHoveredBarPrice}
-          />
-        )} */}
+          {clicked && (
+            <PlaceOrder
+              price={price}
+              side={side}
+              setClicked={setClicked}
+              setHoverPrice={setHoverPrice}
+            />
+          )}
         </div>
       </>
     )
@@ -497,7 +512,6 @@ const LiquidityBar = memo(
 
 LiquidityBar.displayName = 'LiquidityBar'
 
-// Add CSS animation
 const styles = `
   @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.9) translateY(-10px); }
@@ -505,7 +519,6 @@ const styles = `
   }
 `
 
-// Add styles to document
 if (typeof document !== 'undefined') {
   const styleSheet = document.createElement('style')
   styleSheet.innerText = styles

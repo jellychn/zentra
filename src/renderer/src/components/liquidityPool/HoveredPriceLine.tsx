@@ -8,7 +8,7 @@ const HoveredPriceLine = memo(
     position,
     hoveredSide
   }: {
-    price: number
+    price: number | null
     position: number
     hoveredSide: string
   }): React.JSX.Element => {
@@ -46,7 +46,7 @@ const HoveredPriceLine = memo(
           style={{
             position: 'absolute',
 
-            [hoveredSide === 'left' ? 'right' : 'left']: '60px',
+            [hoveredSide === 'left' ? 'left' : 'right']: '60px',
             top: '50%',
             transform: 'translateY(-50%)',
             background: COLORS.hovered,
