@@ -32,6 +32,7 @@
 
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedCandlestick } from '../../data/types'
+import { mainStateStore } from '../../state/stateStore'
 import { MessageType } from './types'
 
 export interface KlineMessage {
@@ -81,6 +82,9 @@ export const processKlineData = (data: KlineMessage): void => {
     case 86400:
       dataType = DataStoreType.CANDLES_1D
       break
+    case 2592000:
+      dataType = DataStoreType.CANDLES_1MON
+      break
     default:
       console.warn(`Unknown interval ${interval}, defaulting to 1M`)
       dataType = DataStoreType.CANDLES_1M
@@ -105,6 +109,8 @@ export const processKlineData = (data: KlineMessage): void => {
     dataType: dataType,
     data: updatedCandles
   })
+
+  processKlineMetrics(interval, updatedCandles)
 }
 
 function processKlineEntry(entry: KlineEntry): ProcessedCandlestick {
@@ -136,4 +142,49 @@ function mergeCandlesticks(
   })
 
   return Array.from(timestampMap.values())
+}
+
+const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]): void => {
+  const state = mainStateStore.getState()
+  const selectedSymbol = state.settings.selectedSymbol
+
+  let max1D = 0
+  let min1D = 0
+
+  if (interval === 86400) {
+    const lastCandle = candles[candles.length - 1]
+    const high = lastCandle.high
+    const low = lastCandle.low
+
+    max1D = high
+    min1D = low
+
+    mainDataStore.updateMetrics({
+      symbol: selectedSymbol,
+      data: {
+        max1D,
+        min1D
+      }
+    })
+  }
+
+  let max1Mon = 0
+  let min1Mon = 0
+
+  if (interval === 2592000) {
+    const lastCandle = candles[candles.length - 1]
+    const high = lastCandle.high
+    const low = lastCandle.low
+
+    max1Mon = high
+    min1Mon = low
+
+    mainDataStore.updateMetrics({
+      symbol: selectedSymbol,
+      data: {
+        max1Mon,
+        min1Mon
+      }
+    })
+  }
 }

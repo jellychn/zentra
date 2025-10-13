@@ -45,6 +45,11 @@ const phemexSubscriptions = async (symbol: string): Promise<void> => {
         id: 7,
         method: 'kline_p.subscribe',
         params: [symbol, 60]
+      },
+      {
+        id: 8,
+        method: 'kline_p.subscribe',
+        params: [symbol, 2592000]
       }
     ]
 

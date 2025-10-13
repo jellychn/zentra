@@ -13,6 +13,10 @@ export interface SymbolMetrics {
   tradeLiquidity: LiquidityPool
   bidVolume: number
   askVolume: number
+  max1D: number
+  min1D: number
+  max1Mon: number
+  min1Mon: number
 }
 
 interface SymbolData {
@@ -22,6 +26,7 @@ interface SymbolData {
   [DataStoreType.CANDLES_1M]?: ProcessedCandlestick[]
   [DataStoreType.CANDLES_15M]?: ProcessedCandlestick[]
   [DataStoreType.CANDLES_1D]?: ProcessedCandlestick[]
+  [DataStoreType.CANDLES_1MON]?: ProcessedCandlestick[]
   [DataStoreType.LIQUIDITY_POOL]?: LiquidityPool
   [DataStoreType.METRICS]?: SymbolMetrics
 }
@@ -37,6 +42,7 @@ export enum DataStoreType {
   CANDLES_1M = 'candles_1m',
   CANDLES_15M = 'candles_15m',
   CANDLES_1D = 'candles_1d',
+  CANDLES_1MON = 'candles_1mon',
   LIQUIDITY_POOL = 'liquidity_pool',
   METRICS = 'metrics'
 }

@@ -7,11 +7,14 @@ import CurrentPrice from './priceLine/CurrentPrice'
 import Timeline from './priceLine/Timeframe'
 import HoveredPriceLine from './priceLine/HoveredPriceLine'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
+import WindowShort from './priceLine/WindowShort'
+import WindowLong from './priceLine/WindowLong'
 
 export default function PriceLine(): React.JSX.Element {
-  const { setHoverPrice } = usePriceLine()
+  const { hoverPrice, setHoverPrice } = usePriceLine()
   const { state } = useStateStore()
-  const { exchangeData } = state || {}
+  const { exchangeData, metrics } = state || {}
+  const { max1D = 0, min1D = 0, max1Mon = 0, min1Mon = 0 } = metrics || {}
   const { lastPrice = 0 } = exchangeData || {}
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -21,9 +24,15 @@ export default function PriceLine(): React.JSX.Element {
   const { min, max } = useMemo(
     () =>
       getRange({
-        lastPrice
+        lastPrice,
+        hoverPrice,
+        max1D,
+        min1D,
+        max1Mon,
+        min1Mon,
+        selectedTimeline
       }),
-    [lastPrice]
+    [hoverPrice, lastPrice, max1D, max1Mon, min1D, min1Mon, selectedTimeline]
   )
 
   const priceRange = max - min
@@ -62,11 +71,26 @@ export default function PriceLine(): React.JSX.Element {
       }}
     >
       <Timeline selectedTimeline={selectedTimeline} setSelectedTimeline={setSelectedTimeline} />
-
+      <WindowLong
+        value={max1Mon}
+        label="MAX 1MON"
+        isMax={true}
+        selectedTimeline={selectedTimeline}
+        getTopPercentage={getTopPercentage}
+      />
+      <WindowLong
+        value={min1Mon}
+        label="MIN 1MON"
+        isMax={false}
+        selectedTimeline={selectedTimeline}
+        getTopPercentage={getTopPercentage}
+      />
       <Main
         containerRef={containerRef}
         max={max}
         min={min}
+        max1D={max1D}
+        min1D={min1D}
         priceRange={priceRange}
         getTopPercentage={getTopPercentage}
         onMouseMove={handleMouseMove}
@@ -80,6 +104,8 @@ const Main = ({
   containerRef,
   max,
   min,
+  max1D,
+  min1D,
   priceRange,
   getTopPercentage,
   onMouseMove,
@@ -88,6 +114,8 @@ const Main = ({
   containerRef: RefObject<HTMLDivElement | null>
   max: number
   min: number
+  max1D: number
+  min1D: number
   priceRange: number
   getTopPercentage: (price: number) => number
   onMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void
@@ -106,7 +134,7 @@ const Main = ({
     window.addEventListener('resize', updateHeight)
 
     return () => window.removeEventListener('resize', updateHeight)
-  }, [])
+  }, [containerRef])
 
   return (
     <div
@@ -138,6 +166,8 @@ const Main = ({
       />
       <CurrentPrice getTopPercentage={getTopPercentage} />
       <HoveredPriceLine max={max} priceRange={priceRange} />
+      <WindowShort value={max1D} label="MAX 1D" isMax={true} getTopPercentage={getTopPercentage} />
+      <WindowShort value={min1D} label="MIN 1D" isMax={false} getTopPercentage={getTopPercentage} />
     </div>
   )
 }
