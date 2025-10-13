@@ -6,22 +6,23 @@ import { ProcessedCandlestick } from 'src/main/data/types'
 
 const Header = memo(
   ({
-    highPrice,
-    lowPrice,
     selectedTimeframe,
     isDropdownOpen,
     candles,
     setIsDropdownOpen,
     setSelectedTimeframe
   }: {
-    highPrice: number
-    lowPrice: number
     selectedTimeframe: string
     isDropdownOpen: boolean
     candles: ProcessedCandlestick[]
     setIsDropdownOpen: (isOpen: boolean) => void
     setSelectedTimeframe: (timeframe: string) => void
   }): React.JSX.Element => {
+    const highPrice =
+      candles.length > 0 ? Math.max(...candles.map((d: { high: number }) => d.high)) : 0
+    const lowPrice =
+      candles.length > 0 ? Math.min(...candles.map((d: { low: number }) => d.low)) : 0
+
     const duration = useMemo(() => {
       if (!candles.length) return 0
       const firstCandle = candles[0].time as number

@@ -1,27 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { COLORS } from './recentChartIndicator/colors'
 import Header from './recentChartIndicator/Header'
 import Footer from './recentChartIndicator/Footer'
 import Loading from './recentChartIndicator/Loading'
-import {
-  ColorType,
-  createChart,
-  CrosshairMode,
-  IChartApi,
-  ISeriesApi,
-  LineStyle
-} from 'lightweight-charts'
+import { IChartApi, ISeriesApi } from 'lightweight-charts'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
-import { formatPrice, getPricePrecision } from './recentChartIndicator/helper'
 import ResetIndicator from './recentChartIndicator/ResetIndicator'
+import { useInitializeChart } from './recentChartIndicator/hooks/useInitializeChart'
+import { useCleanUp } from './recentChartIndicator/hooks/useCleanUp'
+import {
+  useUpdateCandles,
+  useUpdateCandlesRef
+} from './recentChartIndicator/hooks/useUpdateCandles'
+import { useSynchronizeCurrentPriceLine } from './recentChartIndicator/hooks/useSynchronizeCurrentPriceLine'
+import { useResetIndicator } from './recentChartIndicator/hooks/useResetIndicator'
+import { useUpdateLastCandle } from './recentChartIndicator/hooks/useUpdateLastCandle'
+import { useUpdateDisplayPrice } from './recentChartIndicator/hooks/useUpdateDisplayPrice'
+import { usePriceLine } from '@renderer/contexts/PriceLineContext'
+import {
+  useUpdateHoverLine,
+  useUpdateHoverLineWhenVisibleRangeChange
+} from './recentChartIndicator/hooks/useHoverPrice'
 
-// Constants for viewport behavior
 const VIEWPORT_CANDLES = 60
 const RESET_TIMEOUT = 10000
-const INTERACTION_TIMEOUT = 1000 // Increased timeout for better UX
+const INTERACTION_TIMEOUT = 1000
 const BEHIND_THRESHOLD = 3
 
 export default function RecentChartIndicator(): React.JSX.Element {
+  const { hoverPrice } = usePriceLine()
   const { state } = useStateStore()
   const { exchangeData } = state || {}
   const { candles = [], lastPrice = 0 } = exchangeData || {}
@@ -30,12 +37,12 @@ export default function RecentChartIndicator(): React.JSX.Element {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
   const lineSeriesRef = useRef<ISeriesApi<'Line'> | null>(null)
+  const hoverLineSeriesRef = useRef<ISeriesApi<'Line'> | null>(null)
 
   const [isLoading, setIsLoading] = useState(true)
   const [selectedTimeframe, setSelectedTimeframe] = useState('1M')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-  // New state variables for movable chart functionality
   const [isUserInteracting, setIsUserInteracting] = useState(false)
   const [showResetIndicator, setShowResetIndicator] = useState(false)
   const [previousDataLength, setPreviousDataLength] = useState(0)
@@ -45,22 +52,51 @@ export default function RecentChartIndicator(): React.JSX.Element {
   const interactionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastVisibleRangeRef = useRef<{ from: number; to: number } | null>(null)
   const currentCandlestickDataRef = useRef<any[]>([])
-  const isProgrammaticScrollRef = useRef(false) // Track programmatic scrolls
+  const isProgrammaticScrollRef = useRef(false)
+  const [isChartHovered, setIsChartHovered] = useState(false)
 
-  const pricePrecision = getPricePrecision(candles.map((d: { close: number }) => d.close))
+  const updateHoverPriceLine = (): void => {
+    if (!hoverLineSeriesRef.current || !chartRef.current || isChartHovered) return
 
-  // Update the ref whenever candles change
-  useEffect(() => {
-    currentCandlestickDataRef.current = candles
-  }, [candles])
+    try {
+      if (hoverPrice !== null && hoverPrice > 0) {
+        const timeScale = chartRef.current.timeScale()
+        const visibleRange = timeScale.getVisibleRange()
 
-  // Calculate price stats - using lastPrice instead of currentPrice
-  const currentPrice = lastPrice // Changed from candles-based calculation to lastPrice
-  const highPrice =
-    candles.length > 0 ? Math.max(...candles.map((d: { high: number }) => d.high)) : 0
-  const lowPrice = candles.length > 0 ? Math.min(...candles.map((d: { low: number }) => d.low)) : 0
+        if (!visibleRange) return
 
-  // Check if we're significantly behind the latest data - FIXED VERSION
+        const currentData = currentCandlestickDataRef.current
+        const latestCandleTime =
+          currentData.length > 0 ? currentData[currentData.length - 1].time : visibleRange.to
+
+        const extendedEndTime =
+          Number(latestCandleTime) + (Number(visibleRange.to) - Number(visibleRange.from)) * 0.02
+
+        const hoverLineData = [
+          {
+            time: visibleRange.from,
+            value: hoverPrice
+          },
+          {
+            time: extendedEndTime as any,
+            value: hoverPrice
+          }
+        ]
+
+        hoverLineSeriesRef.current.setData(hoverLineData)
+        hoverLineSeriesRef.current.applyOptions({
+          visible: true
+        })
+      } else {
+        hoverLineSeriesRef.current.applyOptions({
+          visible: false
+        })
+      }
+    } catch (error) {
+      console.error('Error updating hover price line:', error)
+    }
+  }
+
   const isSignificantlyBehind = (): boolean => {
     if (!chartRef.current || !currentCandlestickDataRef.current.length) return false
 
@@ -73,11 +109,9 @@ export default function RecentChartIndicator(): React.JSX.Element {
       const currentData = currentCandlestickDataRef.current
       const latestTime = currentData[currentData.length - 1].time
 
-      // Calculate how many candles we're behind
       const visibleEndTime = visibleRange.to
       const timeDifference = Number(latestTime) - Number(visibleEndTime)
 
-      // Estimate candles behind based on average time between candles
       if (currentData.length > 1) {
         const averageCandleTime = currentData[1].time - currentData[0].time
         const candlesBehind = timeDifference / averageCandleTime
@@ -92,12 +126,11 @@ export default function RecentChartIndicator(): React.JSX.Element {
     }
   }
 
-  // Set viewport to show last x candles using the ref for latest data - FIXED VERSION
-  const setViewportToRecent = () => {
+  const setViewportToRecent = (): void => {
     if (!chartRef.current) return
 
     try {
-      isProgrammaticScrollRef.current = true // Mark as programmatic scroll
+      isProgrammaticScrollRef.current = true
 
       const timeScale = chartRef.current.timeScale()
       const currentData = currentCandlestickDataRef.current
@@ -117,7 +150,6 @@ export default function RecentChartIndicator(): React.JSX.Element {
         })
       }
 
-      // Update last visible range
       const newVisibleRange = timeScale.getVisibleRange()
       if (newVisibleRange) {
         lastVisibleRangeRef.current = {
@@ -126,7 +158,6 @@ export default function RecentChartIndicator(): React.JSX.Element {
         }
       }
 
-      // Reset the programmatic scroll flag after a short delay
       setTimeout(() => {
         isProgrammaticScrollRef.current = false
       }, 100)
@@ -136,17 +167,14 @@ export default function RecentChartIndicator(): React.JSX.Element {
     }
   }
 
-  // Reset to recent viewport after inactivity - FIXED VERSION
-  const resetToRecentViewport = () => {
+  const resetToRecentViewport = (): void => {
     if (!isUserInteracting && chartRef.current && isSignificantlyBehind()) {
       setViewportToRecent()
       setShowResetIndicator(false)
     }
   }
 
-  // Handle user interaction with better logic - FIXED VERSION
-  const handleUserInteraction = () => {
-    // Ignore programmatic scrolls
+  const handleUserInteraction = (): void => {
     if (isProgrammaticScrollRef.current) {
       return
     }
@@ -158,7 +186,6 @@ export default function RecentChartIndicator(): React.JSX.Element {
       setShowResetIndicator(true)
     }
 
-    // Clear existing timeouts
     if (interactionTimeoutRef.current) {
       clearTimeout(interactionTimeoutRef.current)
     }
@@ -166,11 +193,9 @@ export default function RecentChartIndicator(): React.JSX.Element {
       clearTimeout(resetTimeoutRef.current)
     }
 
-    // Set timeout to detect end of interaction
     interactionTimeoutRef.current = setTimeout(() => {
       setIsUserInteracting(false)
 
-      // Only set reset timeout if we're still behind
       if (isSignificantlyBehind()) {
         resetTimeoutRef.current = setTimeout(() => {
           resetToRecentViewport()
@@ -181,8 +206,7 @@ export default function RecentChartIndicator(): React.JSX.Element {
     }, INTERACTION_TIMEOUT)
   }
 
-  // Manual reset handler
-  const handleManualReset = () => {
+  const handleManualReset = (): void => {
     if (resetTimeoutRef.current) {
       clearTimeout(resetTimeoutRef.current)
     }
@@ -194,21 +218,12 @@ export default function RecentChartIndicator(): React.JSX.Element {
     setShowResetIndicator(false)
   }
 
-  // Update display price with animation effect
-  useEffect(() => {
-    if (currentPrice !== displayPrice) {
-      setDisplayPrice(currentPrice)
-    }
-  }, [currentPrice, displayPrice])
-
-  // Update the last candle with real-time lastPrice
-  const updateLastCandle = () => {
+  const updateLastCandle = (): void => {
     if (!candlestickSeriesRef.current || !candles.length) return
 
     try {
       const lastCandle = candles[candles.length - 1]
 
-      // Create updated candle with lastPrice - ensure proper price comparison
       const updatedCandle = {
         time: lastCandle.time,
         open: lastCandle.open,
@@ -217,15 +232,12 @@ export default function RecentChartIndicator(): React.JSX.Element {
         close: lastPrice
       }
 
-      // Update the last candle in the series
       candlestickSeriesRef.current.update(updatedCandle)
 
-      // Also update the current price line - use the same time reference
       if (lineSeriesRef.current) {
         lineSeriesRef.current.setData([{ time: lastCandle.time, value: lastPrice }])
       }
 
-      // Update the ref data as well
       if (currentCandlestickDataRef.current.length > 0) {
         const updatedData = [...currentCandlestickDataRef.current]
         updatedData[updatedData.length - 1] = updatedCandle
@@ -236,292 +248,37 @@ export default function RecentChartIndicator(): React.JSX.Element {
     }
   }
 
-  // Periodically check if we should show reset indicator - FIXED VERSION
-  useEffect(() => {
-    if (!chartRef.current) return
-
-    const checkInterval = setInterval(() => {
-      if (!isUserInteracting) {
-        const shouldShow = isSignificantlyBehind()
-        setShowResetIndicator(shouldShow)
-      }
-    }, 2000)
-
-    return () => clearInterval(checkInterval)
-  }, [isUserInteracting])
-
-  // Update last candle when lastPrice changes
-  useEffect(() => {
-    if (candles.length > 0 && lastPrice > 0) {
-      updateLastCandle()
-    }
-  }, [lastPrice, candles])
-
-  useEffect((): void => {
-    const container = chartContainerRef.current
-    if (!container || chartRef.current) return
-
-    setIsLoading(true)
-    try {
-      const chart = createChart(container, {
-        layout: {
-          background: { type: ColorType.Solid, color: COLORS.chart.background },
-          textColor: COLORS.text.primary,
-          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
-        },
-        grid: {
-          vertLines: { visible: false },
-          horzLines: {
-            color: COLORS.chart.grid,
-            style: LineStyle.SparseDotted
-          }
-        },
-        crosshair: {
-          mode: CrosshairMode.Normal,
-          vertLine: {
-            color: COLORS.primary,
-            width: 1,
-            style: LineStyle.Dotted,
-            labelBackgroundColor: COLORS.surface
-          },
-          horzLine: {
-            color: COLORS.primary,
-            width: 1,
-            style: LineStyle.Dotted,
-            labelBackgroundColor: COLORS.surface
-          }
-        },
-        timeScale: {
-          timeVisible: true,
-          secondsVisible: false,
-          borderColor: COLORS.border,
-          rightBarStaysOnScroll: true,
-          lockVisibleTimeRangeOnResize: true,
-          minBarSpacing: 0.1
-        },
-        rightPriceScale: {
-          autoScale: true,
-          borderVisible: false,
-          scaleMargins: {
-            top: 0.05,
-            bottom: 0.05
-          },
-          entireTextOnly: true
-        }
-      })
-
-      chartRef.current = chart
-
-      // Create candlestick series with enhanced colors
-      candlestickSeriesRef.current = chart.addCandlestickSeries({
-        upColor: COLORS.chart.up,
-        downColor: COLORS.chart.down,
-        borderDownColor: COLORS.chart.down,
-        borderUpColor: COLORS.chart.up,
-        wickDownColor: COLORS.chart.down,
-        wickUpColor: COLORS.chart.up,
-        priceLineVisible: false,
-        lastValueVisible: false
-      })
-
-      // Create line series for current price indicator - FIXED CONFIG
-      lineSeriesRef.current = chart.addLineSeries({
-        color: COLORS.primary,
-        lineWidth: 2,
-        lineStyle: LineStyle.Solid,
-        priceScaleId: 'right',
-        lastValueVisible: false,
-        priceLineVisible: false,
-        crosshairMarkerVisible: true,
-        crosshairMarkerRadius: 4,
-        // Ensure it uses the same price scale as candlesticks
-        priceFormat: {
-          type: 'price',
-          precision: pricePrecision,
-          minMove: 1 / Math.pow(10, pricePrecision)
-        }
-      })
-
-      // Set the data - FIXED: Ensure both series use the same data structure
-      if (candles.length > 0) {
-        candlestickSeriesRef.current.setData(candles)
-
-        // Add current price line using lastPrice - ensure same time reference
-        const lastCandle = candles[candles.length - 1]
-        lineSeriesRef.current.setData([
-          {
-            time: lastCandle.time,
-            value: lastPrice
-          }
-        ])
-      }
-
-      // Set initial viewport to show last x candles
-      setTimeout(() => {
-        setViewportToRecent()
-      }, 100)
-
-      // Enhanced price scale formatting with dynamic decimals
-      chart.applyOptions({
-        localization: {
-          priceFormatter: (price: number) => {
-            return formatPrice(price)
-          },
-          timeFormatter: (time: number) => {
-            const date = new Date(time * 1000)
-            return date.toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })
-          }
-        }
-      })
-
-      // Apply consistent price formatting to both series
-      if (candlestickSeriesRef.current) {
-        candlestickSeriesRef.current.applyOptions({
-          priceFormat: {
-            type: 'price',
-            precision: pricePrecision,
-            minMove: 1 / Math.pow(10, pricePrecision)
-          }
-        })
-      }
-
-      if (lineSeriesRef.current) {
-        lineSeriesRef.current.applyOptions({
-          priceFormat: {
-            type: 'price',
-            precision: pricePrecision,
-            minMove: 1 / Math.pow(10, pricePrecision)
-          }
-        })
-      }
-
-      // Add event listeners for user interaction
-      chart.timeScale().subscribeVisibleTimeRangeChange(handleUserInteraction)
-      chart.timeScale().subscribeVisibleLogicalRangeChange(handleUserInteraction)
-
-      const handleResize = (): void => {
-        if (chartContainerRef.current && chartRef.current) {
-          chartRef.current.applyOptions({
-            width: chartContainerRef.current.clientWidth,
-            height: chartContainerRef.current.clientHeight
-          })
-        }
-      }
-
-      const resizeObserver = new ResizeObserver(handleResize)
-      if (container) {
-        resizeObserver.observe(container)
-      }
-
-      window.addEventListener('resize', handleResize)
-
-      setIsLoading(false)
-      setPreviousDataLength(candles.length)
-
-      return () => {
-        window.removeEventListener('resize', handleResize)
-        resizeObserver.disconnect()
-
-        if (interactionTimeoutRef.current) {
-          clearTimeout(interactionTimeoutRef.current)
-        }
-        if (resetTimeoutRef.current) {
-          clearTimeout(resetTimeoutRef.current)
-        }
-
-        if (chartRef.current) {
-          try {
-            chartRef.current.timeScale().unsubscribeVisibleTimeRangeChange(handleUserInteraction)
-            chartRef.current.timeScale().unsubscribeVisibleLogicalRangeChange(handleUserInteraction)
-            chartRef.current.remove()
-          } catch (error) {
-            console.warn('Chart cleanup error:', error)
-          } finally {
-            chartRef.current = null
-            candlestickSeriesRef.current = null
-            lineSeriesRef.current = null
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Chart initialization error:', error)
-      setIsLoading(false)
-    }
-  }, [])
-
-  // Update chart when candles change - FIXED VERSION
-  useEffect(() => {
-    if (!candlestickSeriesRef.current || !candles.length) return
-
-    try {
-      const currentLength = candles.length
-      const lastCandle = candles[candles.length - 1]
-
-      // Always update the data
-      candlestickSeriesRef.current.setData(candles)
-
-      // Update current price line with lastPrice - ensure perfect alignment
-      if (lineSeriesRef.current) {
-        lineSeriesRef.current.setData([
-          {
-            time: lastCandle.time,
-            value: lastPrice
-          }
-        ])
-      }
-
-      // Update the last candle with current price for perfect alignment
-      updateLastCandle()
-
-      // Only auto-scroll if user isn't interacting AND we have new data
-      if (!isUserInteracting && currentLength > previousDataLength) {
-        setTimeout(() => {
-          setViewportToRecent()
-        }, 100)
-      }
-
-      setPreviousDataLength(currentLength)
-    } catch (error) {
-      console.error('Chart data update error:', error)
-    }
-  }, [candles, lastPrice, isUserInteracting, previousDataLength])
-
-  useEffect(() => {
-    if (!candlestickSeriesRef.current || !lineSeriesRef.current || !candles.length) return
-
-    // Force synchronization when lastPrice changes significantly
-    const lastCandle = candles[candles.length - 1]
-
-    // Check if the line needs to be updated to match the candle
-    if (Math.abs(lastCandle.close - lastPrice) > 0.000001) {
-      lineSeriesRef.current.setData([
-        {
-          time: lastCandle.time,
-          value: lastPrice
-        }
-      ])
-
-      // Also update the candlestick to ensure consistency
-      updateLastCandle()
-    }
-  }, [lastPrice, candles])
-
-  // Cleanup timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (interactionTimeoutRef.current) {
-        clearTimeout(interactionTimeoutRef.current)
-      }
-      if (resetTimeoutRef.current) {
-        clearTimeout(resetTimeoutRef.current)
-      }
-    }
-  }, [])
+  useUpdateHoverLine({ updateHoverPriceLine })
+  useUpdateHoverLineWhenVisibleRangeChange({ chartRef, updateHoverPriceLine })
+  useUpdateCandlesRef({ currentCandlestickDataRef })
+  useUpdateDisplayPrice({ displayPrice, setDisplayPrice })
+  useResetIndicator({ chartRef, isUserInteracting, isSignificantlyBehind, setShowResetIndicator })
+  useUpdateLastCandle({ updateLastCandle })
+  useUpdateCandles({
+    candlestickSeriesRef,
+    lineSeriesRef,
+    isUserInteracting,
+    updateLastCandle,
+    setViewportToRecent,
+    previousDataLength,
+    setPreviousDataLength
+  })
+  useSynchronizeCurrentPriceLine({ candlestickSeriesRef, lineSeriesRef, updateLastCandle })
+  useInitializeChart({
+    chartRef,
+    chartContainerRef,
+    candlestickSeriesRef,
+    lineSeriesRef,
+    hoverLineSeriesRef,
+    handleUserInteraction,
+    setViewportToRecent,
+    setPreviousDataLength,
+    interactionTimeoutRef,
+    resetTimeoutRef,
+    setIsLoading,
+    setIsChartHovered
+  })
+  useCleanUp({ interactionTimeoutRef, resetTimeoutRef })
 
   return (
     <div
@@ -547,8 +304,6 @@ export default function RecentChartIndicator(): React.JSX.Element {
         isDropdownOpen={isDropdownOpen}
         setSelectedTimeframe={setSelectedTimeframe}
         setIsDropdownOpen={setIsDropdownOpen}
-        highPrice={highPrice}
-        lowPrice={lowPrice}
         candles={candles}
       />
 
@@ -573,7 +328,6 @@ export default function RecentChartIndicator(): React.JSX.Element {
       />
       <Loading loading={isLoading} />
 
-      {/* CSS Animations */}
       <style>
         {`
           @keyframes spin {
