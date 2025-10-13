@@ -25,7 +25,8 @@ const LiquidityBar = memo(
     type,
     age,
     getAgeBasedOpacity,
-    currentPricePosition
+    currentPricePosition,
+    setHoveredSide
   }: {
     price: number
     liquidity: number
@@ -39,6 +40,7 @@ const LiquidityBar = memo(
     age?: number
     getAgeBasedOpacity: (item: ProcessedLiquidityItem) => number
     currentPricePosition: number
+    setHoveredSide: (side: string) => void
   }): React.JSX.Element => {
     const { setHoverPrice } = usePriceLine()
 
@@ -245,8 +247,9 @@ const LiquidityBar = memo(
       if (!clicked) {
         setHovered(true)
         setHoverPrice(price)
+        setHoveredSide(side)
       }
-    }, [price, setHoverPrice, clicked])
+    }, [price, setHoverPrice, setHoveredSide, clicked])
 
     const handleMouseLeave = useCallback(() => {
       // Only hide hover if popup is not open

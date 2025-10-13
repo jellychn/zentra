@@ -34,6 +34,7 @@ export default function LiquidityPool(): React.JSX.Element {
   const { bids = {}, asks = {} } = (orderbook as ProcessedOrderBook) || {}
   const { tradeLiquidity = {} } = metrics || {}
 
+  const [hoveredSide, setHoveredSide] = useState('left')
   const [currentTime, setCurrentTime] = useState(Date.now())
   useEffect(() => {
     const interval = setInterval(() => {
@@ -213,7 +214,9 @@ export default function LiquidityPool(): React.JSX.Element {
         rightAvgLiquidity={rightAvgLiquidity}
         displayMax={displayMax}
         displayMin={displayMin}
+        hoveredSide={hoveredSide}
         getPositionPercentage={getPositionPercentage}
+        setHoveredSide={setHoveredSide}
       />
       <AverageFilterIndicator
         hasLiquidityPool={hasLiquidityPool}
@@ -253,7 +256,9 @@ const Main = ({
   rightAvgLiquidity,
   displayMax,
   displayMin,
-  getPositionPercentage
+  hoveredSide,
+  getPositionPercentage,
+  setHoveredSide
 }: {
   lastPrice: number
   hoverPrice: number
@@ -265,7 +270,9 @@ const Main = ({
   rightAvgLiquidity: number
   displayMax: number
   displayMin: number
+  hoveredSide: string
   getPositionPercentage: (price: number) => number
+  setHoveredSide: (side: string) => void
 }): React.JSX.Element => {
   const getBarWidth = useCallback(
     (liquidity: number, side: 'left' | 'right') => {
@@ -330,6 +337,7 @@ const Main = ({
           age={item.age}
           getAgeBasedOpacity={getAgeBasedOpacity}
           currentPricePosition={getPositionPercentage(lastPrice)}
+          setHoveredSide={setHoveredSide}
         />
       ))}
       {filteredRightData.map((item) => (
@@ -346,11 +354,16 @@ const Main = ({
           type={item.side}
           getAgeBasedOpacity={getAgeBasedOpacity}
           currentPricePosition={getPositionPercentage(lastPrice)}
+          setHoveredSide={setHoveredSide}
         />
       ))}
 
       <CurrentPriceLine price={lastPrice} position={getPositionPercentage(lastPrice)} />
-      <HoveredPriceLine price={hoverPrice} position={getPositionPercentage(hoverPrice)} />
+      <HoveredPriceLine
+        price={hoverPrice}
+        position={getPositionPercentage(hoverPrice)}
+        hoveredSide={hoveredSide}
+      />
 
       {/* TODO: <PositionLines getPositionPercentage={getPositionPercentage} />
       <PositionBands getPositionPercentage={getPositionPercentage} />
