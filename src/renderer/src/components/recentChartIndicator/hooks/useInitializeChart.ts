@@ -95,8 +95,8 @@ export const useInitializeChart = ({
       chartRef.current = chart
 
       chart.subscribeCrosshairMove((param) => {
-        setIsChartHovered(true)
         if (param.point && param.time) {
+          setIsChartHovered(true)
           const candlestickData = param.seriesData.get(candlestickSeriesRef.current)
 
           if (candlestickData && typeof candlestickData === 'object') {
@@ -127,6 +127,7 @@ export const useInitializeChart = ({
             setHoverPrice(null)
           }
         } else {
+          setIsChartHovered(false)
           setHoverPrice(null)
         }
       })

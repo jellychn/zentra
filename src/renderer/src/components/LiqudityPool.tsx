@@ -9,6 +9,8 @@ import { ProcessedOrderBook } from 'src/main/data/types'
 import CurrentPriceLine from './liquidityPool/CurrentPriceLine'
 import PriceLabel from './liquidityPool/PriceLabel'
 import LiquidityBar from './liquidityPool/LiquidityBar'
+import { usePriceLine } from '@renderer/contexts/PriceLineContext'
+import HoveredPriceLine from './liquidityPool/HoveredPriceLine'
 
 interface LiquidityData {
   volume: number
@@ -25,6 +27,7 @@ export interface ProcessedLiquidityItem {
 }
 
 export default function LiquidityPool(): React.JSX.Element {
+  const { hoverPrice } = usePriceLine()
   const { state } = useStateStore()
   const { metrics, exchangeData } = state || {}
   const { lastPrice = 0, orderbook = {} } = exchangeData || {}
@@ -201,6 +204,7 @@ export default function LiquidityPool(): React.JSX.Element {
       <Timeframe />
       <Main
         lastPrice={lastPrice}
+        hoverPrice={hoverPrice}
         filteredLeftData={filteredLeftData}
         filteredRightData={filteredRightData}
         maxLeftLiquidity={maxLeftLiquidity}
@@ -240,6 +244,7 @@ const Instruction = (): React.JSX.Element => {
 
 const Main = ({
   lastPrice,
+  hoverPrice,
   filteredLeftData,
   filteredRightData,
   maxLeftLiquidity,
@@ -251,6 +256,7 @@ const Main = ({
   getPositionPercentage
 }: {
   lastPrice: number
+  hoverPrice: number
   filteredLeftData: ProcessedLiquidityItem[]
   filteredRightData: ProcessedLiquidityItem[]
   maxLeftLiquidity: number
@@ -344,6 +350,7 @@ const Main = ({
       ))}
 
       <CurrentPriceLine price={lastPrice} position={getPositionPercentage(lastPrice)} />
+      <HoveredPriceLine price={hoverPrice} position={getPositionPercentage(hoverPrice)} />
 
       {/* TODO: <PositionLines getPositionPercentage={getPositionPercentage} />
       <PositionBands getPositionPercentage={getPositionPercentage} />

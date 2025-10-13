@@ -5,6 +5,7 @@ export const COLORS = {
   success: '#10b981',
   danger: '#ef4444',
   warning: '#f59e0b',
+  hovered: '#FFB74D',
   text: {
     primary: '#f8fafc',
     secondary: '#94a3b8',
@@ -14,6 +15,7 @@ export const COLORS = {
   glow: {
     success: 'rgba(16, 185, 129, 0.4)',
     danger: 'rgba(239, 68, 68, 0.4)',
-    primary: 'rgba(59, 130, 246, 0.4)'
+    primary: 'rgba(59, 130, 246, 0.4)',
+    hover: 'rgba(255, 183, 77, 0.4)'
   }
 }
