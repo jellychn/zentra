@@ -19,10 +19,10 @@ export interface ProcessedTrade {
 
 export interface ProcessedCandlestick {
   time: number // timestamp (seconds)
-  // interval: number // interval (seconds)
+  interval: number // interval (seconds)
   open: number // '0.7774'
   high: number // '0.7768'
   low: number // '0.7768'
   close: number // '0.7768'
-  // volume: number // '238023.07'
+  volume: number // '238023.07'
 }

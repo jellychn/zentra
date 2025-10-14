@@ -238,10 +238,33 @@ const Instruction = (): React.JSX.Element => {
         fontWeight: '600',
         textAlign: 'center',
         marginTop: '8px',
-        letterSpacing: '0.3px'
+        letterSpacing: '0.3px',
+        lineHeight: '1.4'
       }}
     >
-      SHIFT KEY TO HIDE HOVER PRICE • HOVER BARS FOR DETAILS
+      <div>SHIFT: HIDE HOVER • HOVER BARS FOR DETAILS</div>
+      <div
+        style={{
+          marginTop: '2px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '12px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div
+            style={{ width: '8px', height: '2px', background: '#8b5cf6', borderRadius: '1px' }}
+          />
+          <span>PRICE FREQ (12H)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div
+            style={{ width: '8px', height: '2px', background: '#22c55e', borderRadius: '1px' }}
+          />
+          <span>VOLUME (12H)</span>
+        </div>
+      </div>
     </div>
   )
 }

@@ -136,16 +136,44 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
   const state = mainStateStore.getState()
   const selectedSymbol = state.settings.selectedSymbol
 
-  let max1D = 0
-  let min1D = 0
+  if (interval === 60) {
+    const priceFrequency: { [price: number]: number } = {}
+    const volumeProfile: { [price: number]: number } = {}
+
+    if (candles.length > 0) {
+      // Take only the last 720 candles (12 hours * 60 minutes)
+      const recentCandles = candles.slice(-720)
+
+      recentCandles.forEach((candle) => {
+        const priceLevels = generateKeyPriceLevels(candle.low, candle.high)
+
+        priceLevels.forEach((price) => {
+          priceFrequency[price] = (priceFrequency[price] || 0) + 1
+        })
+
+        const volumePerLevel = candle.volume / priceLevels.length
+        priceLevels.forEach((price) => {
+          volumeProfile[price] = (volumeProfile[price] || 0) + volumePerLevel
+        })
+      })
+    }
+
+    mainDataStore.updateMetrics({
+      symbol: selectedSymbol,
+      data: {
+        priceFrequency,
+        volumeProfile
+      }
+    })
+  }
 
   if (interval === 86400) {
     const lastCandle = candles[candles.length - 1]
     const high = lastCandle.high
     const low = lastCandle.low
 
-    max1D = high
-    min1D = low
+    const max1D = high
+    const min1D = low
 
     mainDataStore.updateMetrics({
       symbol: selectedSymbol,
@@ -156,16 +184,13 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
     })
   }
 
-  let max1Mon = 0
-  let min1Mon = 0
-
   if (interval === 2592000) {
     const lastCandle = candles[candles.length - 1]
     const high = lastCandle.high
     const low = lastCandle.low
 
-    max1Mon = high
-    min1Mon = low
+    const max1Mon = high
+    const min1Mon = low
 
     mainDataStore.updateMetrics({
       symbol: selectedSymbol,
@@ -175,4 +200,21 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
       }
     })
   }
+}
+
+function generateKeyPriceLevels(low: number, high: number): number[] {
+  const range = high - low
+  const keyLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1]
+
+  return keyLevels.map((level) => {
+    const price = low + range * level
+    return roundToSignificant(price, 4)
+  })
+}
+
+function roundToSignificant(num: number, significantDigits: number): number {
+  if (num === 0) return 0
+  const magnitude = Math.floor(Math.log10(Math.abs(num)))
+  const scale = Math.pow(10, significantDigits - magnitude - 1)
+  return Math.round(num * scale) / scale
 }

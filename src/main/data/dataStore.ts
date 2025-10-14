@@ -20,6 +20,8 @@ export interface SymbolMetrics {
   min1Mon: number
   agoPrice: number
   atr: number
+  priceFrequency: { [price: number]: number }
+  volumeProfile: { [price: number]: number }
 }
 
 export const initSymbolMetrics: SymbolMetrics = {
@@ -34,7 +36,9 @@ export const initSymbolMetrics: SymbolMetrics = {
   max1Mon: 0,
   min1Mon: 0,
   agoPrice: 0,
-  atr: 0
+  atr: 0,
+  priceFrequency: {},
+  volumeProfile: {}
 }
 
 interface SymbolData {

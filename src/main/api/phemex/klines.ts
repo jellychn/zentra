@@ -50,12 +50,12 @@ async function getCandles(
 function processKlineEntry(entry: KlineEntry): ProcessedCandlestick {
   return {
     time: entry[0],
-    // interval: entry[1],
+    interval: entry[1],
     open: parseFloat(entry[3]),
     high: parseFloat(entry[4]),
     low: parseFloat(entry[5]),
-    close: parseFloat(entry[6])
-    // volume: parseFloat(entry[7])
+    close: parseFloat(entry[6]),
+    volume: parseFloat(entry[7])
   }
 }
 

@@ -34,17 +34,41 @@ const CurrentPrice = memo(({ getTopPercentage }: CurrentPriceProps): React.JSX.E
           pointerEvents: 'auto'
         }}
       >
+        {/* Main line with stronger gradient */}
         <div
           style={{
-            height: '2px',
+            height: '3px',
             background:
-              'linear-gradient(90deg, transparent 0%, #3f51b5 20%, #3f51b5 80%, transparent 100%)',
+              'linear-gradient(90deg, transparent 0%, #ff6b6b 20%, #ff6b6b 80%, transparent 100%)',
             width: '100%',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
-            position: 'relative'
+            position: 'relative',
+            boxShadow: '0 0 10px rgba(255, 107, 107, 0.8), 0 0 20px rgba(255, 107, 107, 0.4)',
+            borderRadius: '2px'
           }}
         />
+
+        {/* Price label */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-25px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(255, 107, 107, 0.9)',
+            color: 'white',
+            padding: '2px 8px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: 'bold',
+            whiteSpace: 'nowrap',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}
+        >
+          ${lastPrice.toFixed(4)}
+        </div>
       </div>
     </div>
   )

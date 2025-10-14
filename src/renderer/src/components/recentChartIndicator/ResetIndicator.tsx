@@ -15,7 +15,7 @@ const ResetIndicator = ({
         position: 'absolute',
         top: '70px',
         left: '20px',
-        zIndex: 10,
+        zIndex: 5,
         pointerEvents: 'auto'
       }}
     >

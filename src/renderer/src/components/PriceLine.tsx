@@ -9,7 +9,9 @@ import HoveredPriceLine from './priceLine/HoveredPriceLine'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
 import WindowShort from './priceLine/WindowShort'
 import WindowLong from './priceLine/WindowLong'
-import AtrBand from './recentChartIndicator/ATRBand'
+import AtrBand from './recentChartIndicator/AtrBand'
+import PriceFrequencyHeatmap from './priceLine/PriceFrequencyHeatmap'
+import VolumeProfileBars from './priceLine/VolumeProfileBars'
 
 export default function PriceLine(): React.JSX.Element {
   const { hoverPrice, setHoverPrice } = usePriceLine()
@@ -156,7 +158,8 @@ const Main = ({
         borderRight: `1px solid ${COLORS.border}`,
         cursor: 'crosshair',
         backdropFilter: 'blur(20px)',
-        zIndex: 2
+        zIndex: 2,
+        overflow: 'hidden'
       }}
     >
       <PriceLevels
@@ -166,6 +169,9 @@ const Main = ({
         containerHeight={containerHeight}
         getTopPercentage={getTopPercentage}
       />
+      <PriceFrequencyHeatmap getTopPercentage={getTopPercentage} />
+      <VolumeProfileBars getTopPercentage={getTopPercentage} />
+
       <CurrentPrice getTopPercentage={getTopPercentage} />
       <HoveredPriceLine max={max} priceRange={priceRange} />
       <WindowShort value={max1D} label="MAX 1D" isMax={true} getTopPercentage={getTopPercentage} />
