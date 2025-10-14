@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from '
 import { COLORS } from './colors'
 import { ProcessedLiquidityItem } from '../LiqudityPool'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
-import { useLiquidityPool } from '@renderer/contexts/LiquidityPoolContext'
 import PlaceOrder from './PlaceOrder'
+import BarTooltip from './BarTooltip'
 
 // Pre-calculate age colors to avoid function calls
 const AGE_COLORS = {
@@ -71,7 +71,6 @@ const LiquidityBar = memo(
     setHoveredSide: (side: string) => void
   }): React.JSX.Element => {
     const { setHoverPrice } = usePriceLine()
-    const { setTooltipInfo } = useLiquidityPool()
 
     const [hovered, setHovered] = useState(false)
     const [clicked, setClicked] = useState(false)
@@ -259,41 +258,6 @@ const LiquidityBar = memo(
       }
     }, [clicked])
 
-    // Tooltip management
-    useEffect(() => {
-      if (!hovered) {
-        setTooltipInfo(null)
-        return
-      }
-
-      const timeoutId = setTimeout(() => {
-        const tooltipInfo = {
-          side,
-          position,
-          tooltipData,
-          maxLiquidity,
-          type,
-          isNegative: liquidity < 0,
-          age,
-          avgLiquidity
-        }
-        setTooltipInfo(tooltipInfo)
-      }, 50) // Small delay to prevent flickering during quick hovers
-
-      return () => clearTimeout(timeoutId)
-    }, [
-      hovered,
-      side,
-      position,
-      tooltipData,
-      maxLiquidity,
-      type,
-      liquidity,
-      age,
-      avgLiquidity,
-      setTooltipInfo
-    ])
-
     // Optimized style calculations
     const containerStyle = useMemo(
       () => ({
@@ -405,6 +369,19 @@ const LiquidityBar = memo(
               />
             )}
           </div>
+
+          {hovered && (
+            <BarTooltip
+              tooltipData={tooltipData}
+              side={side}
+              position={position}
+              maxLiquidity={maxLiquidity}
+              type={type}
+              isNegative={liquidity < 0}
+              age={age}
+              avgLiquidity={avgLiquidity}
+            />
+          )}
 
           {clicked && (
             <PlaceOrder

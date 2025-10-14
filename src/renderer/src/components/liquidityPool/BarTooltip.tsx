@@ -2,142 +2,325 @@ import { memo } from 'react'
 import { COLORS } from './colors'
 import { formatNumber } from '../../../../shared/helper'
 import StrengthMeter from './StrengthMeter'
-import { useLiquidityPool } from '@renderer/contexts/LiquidityPoolContext'
 
-const BarTooltip = memo(() => {
-  const { tooltipInfo } = useLiquidityPool()
+const BarTooltip = memo(
+  ({
+    tooltipData,
+    side,
+    position,
+    maxLiquidity,
+    type,
+    isNegative,
+    age,
+    avgLiquidity
+  }: {
+    tooltipData
+    side
+    position
+    maxLiquidity
+    type
+    isNegative
+    age
+    avgLiquidity
+  }) => {
+    const { absLiquidity, relativeStrength, ageColor, formatAge, ageDescription } = tooltipData
 
-  if (!tooltipInfo) {
-    return <></>
-  }
+    // Get type color
+    const getTypeColor = (): string => {
+      if (type === 'bid' || (type === 'pool' && !isNegative)) {
+        return COLORS.success
+      } else if (type === 'ask' || (type === 'pool' && isNegative)) {
+        return COLORS.danger
+      }
+      return COLORS.primary
+    }
 
-  const { tooltipData, side, position, maxLiquidity, type, isNegative, age, avgLiquidity } =
-    tooltipInfo
-  const { absLiquidity, relativeStrength, ageColor, formatAge, ageDescription } = tooltipData
+    const typeColor = getTypeColor()
 
-  return (
-    <div
-      id="myDiv"
-      style={{
-        position: 'absolute',
-        left: side === 'left' ? '160px' : 'auto',
-        right: side === 'right' ? '160px' : 'auto',
-        top: `${position}%`,
-        transform: 'translateY(-50%)',
-        background: COLORS.surface,
-        backdropFilter: 'blur(20px)',
-        padding: '16px',
-        borderRadius: '12px',
-        fontSize: '12px',
-        fontWeight: '600',
-        color: COLORS.text.primary,
-        whiteSpace: 'nowrap',
-        zIndex: 100,
-        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)',
-        minWidth: '280px',
-        maxWidth: '320px',
-        pointerEvents: 'none',
-        border: `1px solid ${COLORS.border}`
-      }}
-    >
-      {/* Arrow pointing to the bar */}
+    return (
       <div
+        id="myDiv"
         style={{
           position: 'absolute',
-          top: '50%',
-          [side === 'left' ? 'left' : 'right']: '-6px',
+          left: side === 'left' ? '140px' : 'auto',
+          right: side === 'right' ? '140px' : 'auto',
+          top: `${position}%`,
           transform: 'translateY(-50%)',
-          width: '0',
-          height: '0',
-          borderTop: '6px solid transparent',
-          borderBottom: '6px solid transparent',
-          [side === 'left' ? 'borderRight' : 'borderLeft']: `6px solid ${COLORS.border}`
-        }}
-      />
-
-      <div style={{ marginBottom: '10px', color: COLORS.primary }}>CLICK TO PLACE ORDER</div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '8px'
+          background: 'rgba(15, 23, 42, 0.98)',
+          backdropFilter: 'blur(20px)',
+          border: `1px solid ${COLORS.border}`,
+          borderRadius: '12px',
+          padding: '16px',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
+          zIndex: 100,
+          minWidth: '200px',
+          maxWidth: '280px',
+          pointerEvents: 'none'
         }}
       >
-        <span style={{ color: COLORS.text.secondary }}>Size:</span>
-        <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>
-          {formatNumber(absLiquidity)}
-        </span>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '8px'
-        }}
-      >
-        <span style={{ color: COLORS.text.secondary }}>Strength:</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontFamily: 'monospace' }}>
-            {Math.round((tooltipData.absLiquidity / maxLiquidity) * 100)}%
-          </span>
-          <StrengthMeter intensity={relativeStrength} />
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '8px'
-        }}
-      >
-        <span style={{ color: COLORS.text.secondary }}>Type:</span>
-        <span
-          style={{
-            color:
-              type === 'bid' || (type === 'pool' && !isNegative) ? COLORS.success : COLORS.danger,
-            fontWeight: '700'
-          }}
-        >
-          {type === 'bid' && 'BID'}
-          {type === 'ask' && 'ASK'}
-          {type === 'pool' && (isNegative ? 'SELL' : 'BUY')}
-        </span>
-      </div>
-
-      {type === 'pool' && age !== undefined && (
+        {/* Header */}
         <div
           style={{
             display: 'flex',
+            alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '8px'
+            marginBottom: '12px',
+            paddingBottom: '8px',
+            borderBottom: `1px solid ${COLORS.border}`
           }}
         >
-          <span style={{ color: COLORS.text.secondary }}>Age:</span>
-          <span style={{ color: ageColor, fontWeight: '700' }}>
-            {formatAge} ({ageDescription})
-          </span>
+          <div
+            style={{
+              fontSize: '10px',
+              fontWeight: '700',
+              color: COLORS.text.primary,
+              letterSpacing: '0.5px'
+            }}
+          >
+            LIQUIDITY INFO
+          </div>
+          <div
+            style={{
+              fontSize: '10px',
+              fontWeight: '600',
+              color: typeColor,
+              background: `${typeColor}20`,
+              padding: '4px 8px',
+              borderRadius: '4px'
+            }}
+          >
+            {type === 'bid' && 'BID'}
+            {type === 'ask' && 'ASK'}
+            {type === 'pool' && (isNegative ? 'SELL' : 'BUY')}
+          </div>
         </div>
-      )}
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '0'
-        }}
-      >
-        <span style={{ color: COLORS.text.secondary }}>Average:</span>
-        <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>
-          {formatNumber(avgLiquidity)}
-        </span>
+        {/* Content */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* Size */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '8px',
+              padding: '12px',
+              border: `1px solid ${typeColor}20`
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '6px'
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '8px',
+                  fontWeight: '700',
+                  color: typeColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                SIZE
+              </div>
+              <div
+                style={{
+                  fontSize: '6px',
+                  fontWeight: '600',
+                  color: COLORS.text.muted,
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  padding: '2px 6px',
+                  borderRadius: '3px'
+                }}
+              >
+                VOLUME
+              </div>
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: '700',
+                color: COLORS.text.primary,
+                fontFamily: "'IBM Plex Mono', monospace"
+              }}
+            >
+              {formatNumber(absLiquidity)}
+            </div>
+          </div>
+
+          {/* Strength */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '8px',
+              padding: '12px',
+              border: `1px solid ${COLORS.primary}20`
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '6px'
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '8px',
+                  fontWeight: '700',
+                  color: COLORS.primary,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                STRENGTH
+              </div>
+              <div
+                style={{
+                  fontSize: '6px',
+                  fontWeight: '600',
+                  color: COLORS.text.muted,
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  padding: '2px 6px',
+                  borderRadius: '3px'
+                }}
+              >
+                RELATIVE
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  color: COLORS.text.primary,
+                  fontFamily: "'IBM Plex Mono', monospace"
+                }}
+              >
+                {Math.round((tooltipData.absLiquidity / maxLiquidity) * 100)}%
+              </div>
+              <StrengthMeter intensity={relativeStrength} />
+            </div>
+          </div>
+
+          {/* Age (if available) */}
+          {type === 'pool' && age !== undefined && (
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '8px',
+                padding: '12px',
+                border: `1px solid ${ageColor}20`
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '6px'
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: '8px',
+                    fontWeight: '700',
+                    color: ageColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  AGE
+                </div>
+                <div
+                  style={{
+                    fontSize: '6px',
+                    fontWeight: '600',
+                    color: COLORS.text.muted,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    padding: '2px 6px',
+                    borderRadius: '3px'
+                  }}
+                >
+                  ACTIVITY
+                </div>
+              </div>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontWeight: '600',
+                  color: ageColor
+                }}
+              >
+                {formatAge} <span style={{ color: COLORS.text.secondary }}>({ageDescription})</span>
+              </div>
+            </div>
+          )}
+
+          {/* Average */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '8px',
+              padding: '12px',
+              border: `1px solid ${COLORS.warning}20`
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '6px'
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '8px',
+                  fontWeight: '700',
+                  color: COLORS.warning,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                AVERAGE
+              </div>
+              <div
+                style={{
+                  fontSize: '6px',
+                  fontWeight: '600',
+                  color: COLORS.text.muted,
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  padding: '2px 6px',
+                  borderRadius: '3px'
+                }}
+              >
+                COMPARISON
+              </div>
+            </div>
+            <div
+              style={{
+                fontSize: '10px',
+                fontWeight: '700',
+                color: COLORS.text.primary,
+                fontFamily: "'IBM Plex Mono', monospace"
+              }}
+            >
+              {formatNumber(avgLiquidity)}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)
 
 BarTooltip.displayName = 'BarTooltip'
 export default BarTooltip

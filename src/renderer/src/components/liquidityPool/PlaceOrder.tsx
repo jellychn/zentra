@@ -167,8 +167,8 @@ const PlaceOrder = memo(
           </div>
           <div
             style={{
-              fontSize: '12px',
-              fontWeight: '600',
+              fontSize: '8px',
+              fontWeight: 'bold',
               color: COLORS.primary,
               background: 'rgba(59, 130, 246, 0.1)',
               padding: '4px 8px',

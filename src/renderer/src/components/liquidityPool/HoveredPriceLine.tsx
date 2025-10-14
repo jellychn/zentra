@@ -23,11 +23,11 @@ const HoveredPriceLine = memo(
         style={{
           position: 'absolute',
           top: `${position}%`,
-          left: 0,
-          right: 0,
+          [hoveredSide === 'left' ? 'left' : 'right']: 0,
           transform: 'translateY(-50%)',
           zIndex: 100,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          width: '50%'
         }}
       >
         <div

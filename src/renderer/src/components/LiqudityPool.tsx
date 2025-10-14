@@ -10,7 +10,6 @@ import PriceLabel from './liquidityPool/PriceLabel'
 import LiquidityBar from './liquidityPool/LiquidityBar'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
 import HoveredPriceLine from './liquidityPool/HoveredPriceLine'
-import BarTooltip from './liquidityPool/BarTooltip'
 
 interface LiquidityData {
   volume: number
@@ -389,7 +388,7 @@ const Main = ({
         hoveredSide={hoveredSide}
       />
 
-      <BarTooltip />
+      {/* <BarTooltip /> */}
 
       {/* TODO: <PositionLines getPositionPercentage={getPositionPercentage} />
       <PositionBands getPositionPercentage={getPositionPercentage} />
