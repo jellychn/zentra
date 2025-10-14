@@ -1,6 +1,6 @@
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import React, { memo } from 'react'
-import { formatNumber } from '../../../../shared/helper'
+import { COLORS } from './colors'
 
 interface CurrentPriceProps {
   showHoverPrice: boolean
@@ -14,6 +14,8 @@ const CurrentPrice = memo(
     const { lastPrice = 0 } = exchangeData || {}
 
     const positionPercentage = getTopPercentage(lastPrice)
+
+    const glow = COLORS.glow
 
     if (!showHoverPrice) {
       return <></>
@@ -45,37 +47,18 @@ const CurrentPrice = memo(
           <div
             style={{
               height: '3px',
-              background:
-                'linear-gradient(90deg, transparent 0%, #ff6b6b 20%, #ff6b6b 80%, transparent 100%)',
+              background: `linear-gradient(90deg,
+                              transparent 0%,
+                              ${COLORS.primary} 50%,
+                              transparent 100%)`,
               width: '100%',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               position: 'relative',
-              boxShadow: '0 0 10px rgba(255, 107, 107, 0.8), 0 0 20px rgba(255, 107, 107, 0.4)',
+              boxShadow: `0 0 20px ${glow.primary}`,
               borderRadius: '2px'
             }}
           />
-
-          {/* Price label */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '-25px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(255, 107, 107, 0.9)',
-              color: 'white',
-              padding: '2px 8px',
-              borderRadius: '4px',
-              fontSize: '10px',
-              fontWeight: 'bold',
-              whiteSpace: 'nowrap',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
-            }}
-          >
-            ${formatNumber(lastPrice)}
-          </div>
         </div>
       </div>
     )

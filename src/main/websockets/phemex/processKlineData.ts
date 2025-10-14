@@ -141,8 +141,8 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
     const volumeProfile: { [price: number]: number } = {}
 
     if (candles.length > 0) {
-      // Take only the last 720 candles (12 hours * 60 minutes)
-      const recentCandles = candles.slice(-720)
+      // Take only the last 60 candles (1h)
+      const recentCandles = candles.slice(-60)
 
       recentCandles.forEach((candle) => {
         const priceLevels = generateKeyPriceLevels(candle.low, candle.high)

@@ -10,5 +10,8 @@ export const COLORS = {
   },
   chart: {
     grid: 'rgba(255, 255, 255, 0.05)'
+  },
+  glow: {
+    primary: 'rgba(59, 130, 246, 0.4)'
   }
 }

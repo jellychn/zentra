@@ -260,13 +260,13 @@ const Instruction = (): React.JSX.Element => {
           <div
             style={{ width: '8px', height: '2px', background: '#8b5cf6', borderRadius: '1px' }}
           />
-          <span>PRICE FREQ (12H)</span>
+          <span>PRICE FREQ</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <div
             style={{ width: '8px', height: '2px', background: '#22c55e', borderRadius: '1px' }}
           />
-          <span>VOLUME (12H)</span>
+          <span>VOLUME</span>
         </div>
       </div>
     </div>
