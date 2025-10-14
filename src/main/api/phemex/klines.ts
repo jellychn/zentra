@@ -55,7 +55,8 @@ function processKlineEntry(entry: KlineEntry): ProcessedCandlestick {
     high: parseFloat(entry[4]),
     low: parseFloat(entry[5]),
     close: parseFloat(entry[6]),
-    volume: parseFloat(entry[7])
+    volume: parseFloat(entry[7]),
+    turnover: parseFloat(entry[8])
   }
 }
 

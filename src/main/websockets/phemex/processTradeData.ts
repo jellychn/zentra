@@ -127,6 +127,8 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
   let timeWindowMinutes = 30
   if (selectedLiquidityPoolTimeframe === '1M') {
     timeWindowMinutes = 1
+  } else if (selectedLiquidityPoolTimeframe === '5M') {
+    timeWindowMinutes = 5
   } else if (selectedLiquidityPoolTimeframe === '15M') {
     timeWindowMinutes = 15
   } else if (selectedLiquidityPoolTimeframe === '30M') {

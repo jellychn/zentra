@@ -7,6 +7,19 @@ interface LiquidityPool {
   [price: number]: { volume: number; last_updated: number }
 }
 
+export interface VolumeSentimentData {
+  positive: number
+  negative: number
+  turnover: number
+}
+
+export interface CumulativeVolumeSentiment {
+  overallSentiment: 'positive' | 'negative' | 'neutral'
+  cumulativePressure: number
+  totalTurnover: number
+  avgTurnover: number
+}
+
 export interface SymbolMetrics {
   buyVolume: number
   sellVolume: number
@@ -23,6 +36,9 @@ export interface SymbolMetrics {
   priceFrequency: { [price: number]: number }
   volumeProfile: { [price: number]: number }
   recentTrades: ProcessedTrade[]
+
+  volumeSentimentByPrice: { [price: number]: VolumeSentimentData }
+  cumulativeVolumeSentiment: CumulativeVolumeSentiment
 }
 
 export const initSymbolMetrics: SymbolMetrics = {
@@ -40,7 +56,15 @@ export const initSymbolMetrics: SymbolMetrics = {
   atr: 0,
   priceFrequency: {},
   volumeProfile: {},
-  recentTrades: []
+  recentTrades: [],
+
+  volumeSentimentByPrice: {},
+  cumulativeVolumeSentiment: {
+    overallSentiment: 'neutral',
+    cumulativePressure: 0,
+    totalTurnover: 0,
+    avgTurnover: 0
+  }
 }
 
 interface SymbolData {

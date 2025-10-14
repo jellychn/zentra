@@ -132,14 +132,100 @@ function mergeCandlesticks(
   return Array.from(timestampMap.values()).sort((a, b) => a.time - b.time)
 }
 
+// Volume sentiment analysis functions
+interface VolumeSentiment {
+  sentiment: 'positive' | 'negative' | 'neutral'
+  strength: number
+  volumePressure: number
+  turnover: number
+}
+
+function analyzeVolumeSentiment(candle: ProcessedCandlestick): VolumeSentiment {
+  const priceChange = candle.close - candle.open
+  const priceChangePercent = (priceChange / candle.open) * 100
+
+  // Calculate turnover (use provided turnover or calculate from volume and average price)
+  const averagePrice = (candle.high + candle.low + candle.close) / 3
+  const turnover = candle.turnover || candle.volume * averagePrice
+
+  if (priceChange > 0 && candle.volume > 0) {
+    // Bullish: price up with volume = positive volume
+    return {
+      sentiment: 'positive',
+      strength: Math.abs(priceChangePercent),
+      volumePressure: candle.volume * priceChangePercent,
+      turnover
+    }
+  } else if (priceChange < 0 && candle.volume > 0) {
+    // Bearish: price down with volume = negative volume
+    return {
+      sentiment: 'negative',
+      strength: Math.abs(priceChangePercent),
+      volumePressure: candle.volume * priceChangePercent, // Will be negative
+      turnover
+    }
+  } else {
+    // Neutral or unclear
+    return {
+      sentiment: 'neutral',
+      strength: 0,
+      volumePressure: 0,
+      turnover
+    }
+  }
+}
+
+function calculateCumulativeSentiment(candles: ProcessedCandlestick[]): {
+  overallSentiment: 'positive' | 'negative' | 'neutral'
+  cumulativePressure: number
+  totalTurnover: number
+  avgTurnover: number
+} {
+  let cumulativePressure = 0
+  let totalTurnover = 0
+  let positiveCount = 0
+  let negativeCount = 0
+
+  candles.forEach((candle) => {
+    const sentiment = analyzeVolumeSentiment(candle)
+    cumulativePressure += sentiment.volumePressure
+    totalTurnover += sentiment.turnover
+
+    if (sentiment.sentiment === 'positive') positiveCount++
+    if (sentiment.sentiment === 'negative') negativeCount++
+  })
+
+  const avgTurnover = candles.length > 0 ? totalTurnover / candles.length : 0
+
+  let overallSentiment: 'positive' | 'negative' | 'neutral' = 'neutral'
+  if (positiveCount > negativeCount && cumulativePressure > 0) {
+    overallSentiment = 'positive'
+  } else if (negativeCount > positiveCount && cumulativePressure < 0) {
+    overallSentiment = 'negative'
+  }
+
+  return {
+    overallSentiment,
+    cumulativePressure,
+    totalTurnover,
+    avgTurnover
+  }
+}
+
 const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]): void => {
   const state = mainStateStore.getState()
   const selectedSymbol = state.settings.selectedSymbol
   const selectedPriceLineTimeframe = state.settings.selectedPriceLineTimeframe
 
+  // Calculate overall volume sentiment
+  const cumulativeSentiment = calculateCumulativeSentiment(candles)
+
   if (interval === 60 && selectedPriceLineTimeframe !== '1 MONTH') {
     const priceFrequency: { [price: number]: number } = {}
     const volumeProfile: { [price: number]: number } = {}
+    const volumeSentimentByPrice: {
+      [price: number]: { positive: number; negative: number; turnover: number }
+    } = {}
 
     if (candles.length > 0) {
       // 60 = 1h
@@ -147,22 +233,39 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
       let timeframe = 720
 
       if (selectedPriceLineTimeframe === 'ZOOM') {
-        timeframe = 30
+        timeframe = 15
       }
 
       const recentCandles = candles.slice(-timeframe)
 
       recentCandles.forEach((candle) => {
         const priceLevels = generateKeyPriceLevels(candle.low, candle.high)
+        const sentiment = analyzeVolumeSentiment(candle)
+        const volumePerLevel = candle.volume / priceLevels.length
+        const turnoverPerLevel = sentiment.turnover / priceLevels.length
 
         priceLevels.forEach((price) => {
           priceFrequency[price] = (priceFrequency[price] || 0) + 1
-        })
 
-        const volumePerLevel = candle.volume / priceLevels.length
-        priceLevels.forEach((price) => {
-          volumeProfile[price] = (volumeProfile[price] || 0) + volumePerLevel
+          // Accumulate volume with sentiment
+          if (!volumeSentimentByPrice[price]) {
+            volumeSentimentByPrice[price] = { positive: 0, negative: 0, turnover: 0 }
+          }
+
+          if (sentiment.sentiment === 'positive') {
+            volumeSentimentByPrice[price].positive += volumePerLevel
+          } else if (sentiment.sentiment === 'negative') {
+            volumeSentimentByPrice[price].negative += volumePerLevel
+          }
+          volumeSentimentByPrice[price].turnover += turnoverPerLevel
         })
+      })
+
+      // Calculate net volume for each price level
+      Object.keys(volumeSentimentByPrice).forEach((price) => {
+        const netVolume =
+          volumeSentimentByPrice[price].positive - volumeSentimentByPrice[price].negative
+        volumeProfile[price] = netVolume
       })
     }
 
@@ -170,7 +273,9 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
       symbol: selectedSymbol,
       data: {
         priceFrequency,
-        volumeProfile
+        volumeProfile,
+        volumeSentimentByPrice,
+        cumulativeVolumeSentiment: cumulativeSentiment
       }
     })
   }
@@ -179,6 +284,9 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
     if (selectedPriceLineTimeframe === '1 MONTH') {
       const priceFrequency: { [price: number]: number } = {}
       const volumeProfile: { [price: number]: number } = {}
+      const volumeSentimentByPrice: {
+        [price: number]: { positive: number; negative: number; turnover: number }
+      } = {}
 
       if (candles.length > 0) {
         const timeframe = 30
@@ -187,15 +295,31 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
 
         recentCandles.forEach((candle) => {
           const priceLevels = generateKeyPriceLevels(candle.low, candle.high)
+          const sentiment = analyzeVolumeSentiment(candle)
+          const volumePerLevel = candle.volume / priceLevels.length
+          const turnoverPerLevel = sentiment.turnover / priceLevels.length
 
           priceLevels.forEach((price) => {
             priceFrequency[price] = (priceFrequency[price] || 0) + 1
-          })
 
-          const volumePerLevel = candle.volume / priceLevels.length
-          priceLevels.forEach((price) => {
-            volumeProfile[price] = (volumeProfile[price] || 0) + volumePerLevel
+            if (!volumeSentimentByPrice[price]) {
+              volumeSentimentByPrice[price] = { positive: 0, negative: 0, turnover: 0 }
+            }
+
+            if (sentiment.sentiment === 'positive') {
+              volumeSentimentByPrice[price].positive += volumePerLevel
+            } else if (sentiment.sentiment === 'negative') {
+              volumeSentimentByPrice[price].negative += volumePerLevel
+            }
+            volumeSentimentByPrice[price].turnover += turnoverPerLevel
           })
+        })
+
+        // Calculate net volume for each price level
+        Object.keys(volumeSentimentByPrice).forEach((price) => {
+          const netVolume =
+            volumeSentimentByPrice[price].positive - volumeSentimentByPrice[price].negative
+          volumeProfile[price] = netVolume
         })
       }
 
@@ -203,7 +327,9 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
         symbol: selectedSymbol,
         data: {
           priceFrequency,
-          volumeProfile
+          volumeProfile,
+          volumeSentimentByPrice,
+          cumulativeVolumeSentiment: cumulativeSentiment
         }
       })
     }
@@ -219,7 +345,8 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
       symbol: selectedSymbol,
       data: {
         max1D,
-        min1D
+        min1D,
+        cumulativeVolumeSentiment: cumulativeSentiment
       }
     })
   }
@@ -236,7 +363,8 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
       symbol: selectedSymbol,
       data: {
         max1Mon,
-        min1Mon
+        min1Mon,
+        cumulativeVolumeSentiment: cumulativeSentiment
       }
     })
   }
@@ -244,7 +372,7 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
 
 function generateKeyPriceLevels(low: number, high: number): number[] {
   const range = high - low
-  const keyLevels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1]
+  const keyLevels = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
   return keyLevels.map((level) => {
     const price = low + range * level

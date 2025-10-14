@@ -25,4 +25,5 @@ export interface ProcessedCandlestick {
   low: number // '0.7768'
   close: number // '0.7768'
   volume: number // '238023.07'
+  turnover: number
 }

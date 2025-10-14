@@ -257,7 +257,10 @@ const Instruction = (): React.JSX.Element => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <div
-            style={{ width: '8px', height: '2px', background: '#22c55e', borderRadius: '1px' }}
+            style={{ width: '8px', height: '2px', background: '#ef4444', borderRadius: '1px' }}
+          />
+          <div
+            style={{ width: '8px', height: '2px', background: '#10b981', borderRadius: '1px' }}
           />
           <span>VOLUME</span>
         </div>
