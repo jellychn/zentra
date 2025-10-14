@@ -124,17 +124,13 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
   const state = mainStateStore.getState()
   const selectedLiquidityPoolTimeframe = state.settings.selectedLiquidityPoolTimeframe
 
-  let timeWindowMinutes = 30
+  let timeWindowMinutes = 15
   if (selectedLiquidityPoolTimeframe === '1M') {
     timeWindowMinutes = 1
   } else if (selectedLiquidityPoolTimeframe === '5M') {
     timeWindowMinutes = 5
   } else if (selectedLiquidityPoolTimeframe === '15M') {
     timeWindowMinutes = 15
-  } else if (selectedLiquidityPoolTimeframe === '30M') {
-    timeWindowMinutes = 30
-  } else if (selectedLiquidityPoolTimeframe === '1H') {
-    timeWindowMinutes = 60
   }
 
   const minSizeThreshold = 0.001

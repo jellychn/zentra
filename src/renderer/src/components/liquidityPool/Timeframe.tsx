@@ -4,7 +4,7 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import { sendIpcMessage } from '@renderer/ipcMain/message'
 import { MessageSenderType } from '../../../../shared/types'
 
-const TIMEFRAME_OPTIONS = ['1M', '5M', '15M', '30M', '1H']
+const TIMEFRAME_OPTIONS = ['1M', '5M', '15M']
 
 const Timeframe: React.FC = () => {
   const { state } = useStateStore()

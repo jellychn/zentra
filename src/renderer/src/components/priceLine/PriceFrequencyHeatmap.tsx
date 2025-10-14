@@ -74,17 +74,6 @@ const PriceFrequencyHeatmap = memo(
                   : `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${intensity})`,
                 borderRadius: isHighFrequency ? '3px' : '2px',
                 transform: `translateY(-${height / 2}px)`,
-                boxShadow: isHighFrequency
-                  ? `0 0 12px rgba(139, 92, 246, ${0.4 + frequencyRatio * 0.4}), 
-                     0 0 6px rgba(255, 255, 255, 0.3)`
-                  : isMediumFrequency
-                    ? `0 0 6px rgba(139, 92, 246, ${0.3 + frequencyRatio * 0.2})`
-                    : 'none',
-                border: isHighFrequency
-                  ? '1px solid rgba(255, 255, 255, 0.6)'
-                  : isMediumFrequency
-                    ? '1px solid rgba(255, 255, 255, 0.3)'
-                    : 'none',
                 transition: 'all 0.3s ease',
                 zIndex: isHighFrequency ? 3 : isMediumFrequency ? 2 : 1
               }}

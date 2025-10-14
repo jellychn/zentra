@@ -86,17 +86,6 @@ const VolumeProfileBars = memo(
                   : `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${intensity})`,
                 borderRadius: isHighVolume ? '3px' : '2px',
                 transform: `translateY(-${height / 2}px)`,
-                boxShadow: isHighVolume
-                  ? `0 0 12px rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${0.4 + volumeRatio * 0.4}), 
-                     0 0 6px rgba(255, 255, 255, 0.3)`
-                  : isMediumVolume
-                    ? `0 0 6px rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${0.3 + volumeRatio * 0.2})`
-                    : 'none',
-                border: isHighVolume
-                  ? '1px solid rgba(255, 255, 255, 0.6)'
-                  : isMediumVolume
-                    ? '1px solid rgba(255, 255, 255, 0.3)'
-                    : 'none',
                 transition: 'all 0.3s ease',
                 zIndex: isHighVolume ? 3 : isMediumVolume ? 2 : 1
               }}

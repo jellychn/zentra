@@ -284,18 +284,16 @@ const LiquidityBar = memo(
         background: barStyles.gradient,
         border: `2px solid ${barStyles.borderColor}`,
         borderRadius: `${barStyles.borderRadius}px`,
-        boxShadow:
-          hovered || clicked
-            ? `0 0 25px ${barStyles.borderColor}, 0 0 45px ${barStyles.borderColor}`
-            : `0 0 ${10 + barStyles.glowIntensity * 20}px ${barStyles.borderColor},
-        0 6px 20px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
         position: 'relative' as const,
         transition: 'all 0.3s ease',
         minWidth: '35px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        boxShadow:
+          hovered || clicked
+            ? `0 0 25px ${barStyles.borderColor}, 0 0 45px ${barStyles.borderColor}`
+            : ``,
         padding: '0 12px',
         flexShrink: 0,
         maxWidth: '100%',

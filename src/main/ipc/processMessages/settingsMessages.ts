@@ -16,15 +16,13 @@ export const processChangeLiquidityPoolTimeframe = (data: { timeframe: string })
 
   if (!existingLiquidityPool) return
 
-  let timeWindowMinutes = 30
+  let timeWindowMinutes = 15
   if (timeframe === '1M') {
     timeWindowMinutes = 1
+  } else if (timeframe === '5M') {
+    timeWindowMinutes = 5
   } else if (timeframe === '15M') {
     timeWindowMinutes = 15
-  } else if (timeframe === '30M') {
-    timeWindowMinutes = 30
-  } else if (timeframe === '1H') {
-    timeWindowMinutes = 60
   }
 
   const minSizeThreshold = 0.001
