@@ -4,7 +4,7 @@ import { processCreateOrder } from './processMessages/orderMessages'
 import {
   processChangeCandleTimeframe,
   processChangeLiquidityPoolTimeframe
-} from './processMessages/settingMessages'
+} from './processMessages/settingsMessages'
 
 export const receivedMessages = (): void => {
   ipcMain.on(MessageSenderType.CREATE_ORDER, (_event, data) => {

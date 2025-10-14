@@ -30,6 +30,7 @@
 //   type: 'incremental'
 // }
 
+import { processKlineEntry } from '../../api/phemex/klines'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedCandlestick } from '../../data/types'
 import { mainStateStore } from '../../state/stateStore'
@@ -90,19 +91,17 @@ export const processKlineData = (data: KlineMessage): void => {
       dataType = DataStoreType.CANDLES_1M
   }
 
-  const existingData = mainDataStore.getDataStore().symbolData.get(symbol)
-  const existingCandles = (existingData?.[dataType] as ProcessedCandlestick[] | undefined) || []
+  const existingCandles =
+    (mainDataStore.getByDataType(symbol, dataType) as ProcessedCandlestick[]) || []
   const type = data.type
 
-  let updatedCandles: ProcessedCandlestick[]
+  let updatedCandles: ProcessedCandlestick[] = []
 
   if (type === MessageType.SNAPSHOT) {
-    updatedCandles = processedCandlesticks
+    updatedCandles = mergeCandlesticks(existingCandles, processedCandlesticks)
   } else {
     updatedCandles = mergeCandlesticks(existingCandles, processedCandlesticks)
   }
-
-  updatedCandles.sort((a, b) => a.time - b.time)
 
   mainDataStore.updateDataStore({
     symbol: symbol,
@@ -111,18 +110,6 @@ export const processKlineData = (data: KlineMessage): void => {
   })
 
   processKlineMetrics(interval, updatedCandles)
-}
-
-function processKlineEntry(entry: KlineEntry): ProcessedCandlestick {
-  return {
-    time: entry[0],
-    // interval: entry[1],
-    open: parseFloat(entry[3]),
-    high: parseFloat(entry[4]),
-    low: parseFloat(entry[5]),
-    close: parseFloat(entry[6])
-    // volume: parseFloat(entry[7])
-  }
 }
 
 function mergeCandlesticks(
@@ -141,7 +128,8 @@ function mergeCandlesticks(
     timestampMap.set(candle.time, candle)
   })
 
-  return Array.from(timestampMap.values())
+  // Convert to array and sort by timestamp in ascending order (oldest first)
+  return Array.from(timestampMap.values()).sort((a, b) => a.time - b.time)
 }
 
 const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]): void => {

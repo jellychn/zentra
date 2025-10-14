@@ -9,14 +9,14 @@ const TIMEFRAME_OPTIONS = ['1M', '15M', '30M', '1H']
 const Timeframe: React.FC = () => {
   const { state } = useStateStore()
   const { settings } = state || {}
-  const { selectedLiquidityPoolTimeFrame } = settings || {}
+  const { selectedLiquidityPoolTimeframe } = settings || {}
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [selectedTimeframe, setSelectedTimeframe] = useState(selectedLiquidityPoolTimeFrame)
+  const [selectedTimeframe, setSelectedTimeframe] = useState(selectedLiquidityPoolTimeframe)
 
   useEffect(() => {
-    setSelectedTimeframe(selectedLiquidityPoolTimeFrame)
-  }, [selectedLiquidityPoolTimeFrame])
+    setSelectedTimeframe(selectedLiquidityPoolTimeframe)
+  }, [selectedLiquidityPoolTimeframe])
 
   const handleTimeframeChange = (timeframe: string): void => {
     setSelectedTimeframe(timeframe)

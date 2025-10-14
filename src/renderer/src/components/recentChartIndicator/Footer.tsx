@@ -77,7 +77,7 @@ const Footer = memo((): React.JSX.Element => {
               fontFamily: 'monospace'
             }}
           >
-            {formattedPrice}
+            ${formattedPrice}
           </div>
         </div>
       </div>

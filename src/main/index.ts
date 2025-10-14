@@ -9,6 +9,7 @@ import { receivedMessages } from './ipc/recivedMessages'
 import { dbStore } from './db/dbStore'
 import { registerNotificationIpc } from './ipc/notificationIpc'
 import { mainStateStore } from './state/stateStore'
+import { registerInitializeIpc } from './ipc/initializeIpc'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
@@ -60,6 +61,7 @@ app.whenReady().then(() => {
 
   const mainWindow = createWindow()
 
+  registerInitializeIpc()
   registerStateIpc(mainWindow)
   registerNotificationIpc(mainWindow)
   initWebSocket(mainWindow)

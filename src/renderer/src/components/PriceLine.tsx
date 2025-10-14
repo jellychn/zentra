@@ -9,12 +9,13 @@ import HoveredPriceLine from './priceLine/HoveredPriceLine'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
 import WindowShort from './priceLine/WindowShort'
 import WindowLong from './priceLine/WindowLong'
+import AtrBand from './recentChartIndicator/ATRBand'
 
 export default function PriceLine(): React.JSX.Element {
   const { hoverPrice, setHoverPrice } = usePriceLine()
   const { state } = useStateStore()
   const { exchangeData, metrics } = state || {}
-  const { max1D = 0, min1D = 0, max1Mon = 0, min1Mon = 0 } = metrics || {}
+  const { max1D = 0, min1D = 0, max1Mon = 0, min1Mon = 0, atr = 0 } = metrics || {}
   const { lastPrice = 0 } = exchangeData || {}
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -30,9 +31,10 @@ export default function PriceLine(): React.JSX.Element {
         min1D,
         max1Mon,
         min1Mon,
+        atr,
         selectedTimeline
       }),
-    [hoverPrice, lastPrice, max1D, max1Mon, min1D, min1Mon, selectedTimeline]
+    [hoverPrice, lastPrice, max1D, max1Mon, min1D, min1Mon, selectedTimeline, atr]
   )
 
   const priceRange = max - min
@@ -168,6 +170,7 @@ const Main = ({
       <HoveredPriceLine max={max} priceRange={priceRange} />
       <WindowShort value={max1D} label="MAX 1D" isMax={true} getTopPercentage={getTopPercentage} />
       <WindowShort value={min1D} label="MIN 1D" isMax={false} getTopPercentage={getTopPercentage} />
+      <AtrBand getTopPercentage={getTopPercentage} />
     </div>
   )
 }

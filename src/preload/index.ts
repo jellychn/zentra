@@ -39,6 +39,10 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('notification', notificationAPI)
+    contextBridge.exposeInMainWorld('electronAPI', {
+      initializeApp: () => ipcRenderer.invoke('initialize-app')
+      // ... your other APIs
+    })
   } catch (error) {
     console.error(error)
   }

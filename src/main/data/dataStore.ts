@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events'
 import { ProcessedCandlestick, ProcessedOrderBook, ProcessedTrade } from './types'
 import { mainStateStore } from '../state/stateStore'
+import { calculateATR } from '../indicators/calculations'
 
 interface LiquidityPool {
   [price: number]: { volume: number; last_updated: number }
@@ -17,6 +18,23 @@ export interface SymbolMetrics {
   min1D: number
   max1Mon: number
   min1Mon: number
+  agoPrice: number
+  atr: number
+}
+
+export const initSymbolMetrics: SymbolMetrics = {
+  buyVolume: 0,
+  sellVolume: 0,
+  avgTradeVolume: 0,
+  tradeLiquidity: {},
+  bidVolume: 0,
+  askVolume: 0,
+  max1D: 0,
+  min1D: 0,
+  max1Mon: 0,
+  min1Mon: 0,
+  agoPrice: 0,
+  atr: 0
 }
 
 interface SymbolData {
@@ -106,8 +124,36 @@ class MainDataStore extends EventEmitter {
       ) {
         mainStateStore.updateExchangeData({ candles: data as ProcessedCandlestick[] })
       }
+
+      this.recalculateATR(symbol)
     } else {
       mainStateStore.updateExchangeData({ [dataType]: data })
+    }
+  }
+
+  private recalculateATR(symbol: string): void {
+    const state = mainStateStore.getState()
+    const selectedAtrTimeframe = state.settings.selectedAtrTimeframe
+
+    let candleData: ProcessedCandlestick[] | undefined
+
+    switch (selectedAtrTimeframe) {
+      case '1M':
+        candleData = this.getByDataType(symbol, DataStoreType.CANDLES_1M) as ProcessedCandlestick[]
+        break
+      case '15M':
+        candleData = this.getByDataType(symbol, DataStoreType.CANDLES_15M) as ProcessedCandlestick[]
+        break
+    }
+
+    if (candleData && candleData.length > 0) {
+      const atr = calculateATR(candleData)
+      if (atr) {
+        this.updateMetrics({
+          symbol: symbol,
+          data: { atr }
+        })
+      }
     }
   }
 

@@ -4,7 +4,7 @@ import { mainStateStore } from '../../state/stateStore'
 
 export const processChangeLiquidityPoolTimeframe = (data: { timeframe: string }): void => {
   const { timeframe } = data
-  mainStateStore.updateSettings({ selectedLiquidityPoolTimeFrame: timeframe })
+  mainStateStore.updateSettings({ selectedLiquidityPoolTimeframe: timeframe })
 
   const state = mainStateStore.getState()
   const selectedSymbol = state.settings.selectedSymbol
@@ -51,7 +51,7 @@ export const processChangeLiquidityPoolTimeframe = (data: { timeframe: string })
   })
 }
 
-export const processChangeCandleTimeframe = (data: { timeframe: string }): void => {
+export const processChangeCandleTimeframe = async (data: { timeframe: string }): Promise<void> => {
   const { timeframe } = data
   mainStateStore.updateSettings({ selectedCandleTimeframe: timeframe })
 
@@ -65,6 +65,9 @@ export const processChangeCandleTimeframe = (data: { timeframe: string }): void 
     dataType = DataStoreType.CANDLES_1D
   }
 
-  const candles = mainDataStore.getByDataType(selectedSymbol, dataType)
-  mainStateStore.updateExchangeData({ candles: candles as ProcessedCandlestick[] })
+  const existingCandles = mainDataStore.getByDataType(
+    selectedSymbol,
+    dataType
+  ) as ProcessedCandlestick[]
+  mainStateStore.updateExchangeData({ candles: existingCandles })
 }

@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { COLORS } from './colors'
 import { formatDuration, formatNumber } from '../../../../shared/helper'
 import Timeframe from './header/Timeframe'
@@ -18,17 +18,19 @@ const Header = memo(
     setIsDropdownOpen: (isOpen: boolean) => void
     setSelectedTimeframe: (timeframe: string) => void
   }): React.JSX.Element => {
+    const [duration, setDuration] = useState(0)
+    useEffect((): void => {
+      if (candles.length > 0) {
+        const firstCandle = candles[0].time as number
+        const lastCandle = candles[candles.length - 1].time as number
+        setDuration(Math.abs(lastCandle - firstCandle))
+      }
+    }, [candles])
+
     const highPrice =
       candles.length > 0 ? Math.max(...candles.map((d: { high: number }) => d.high)) : 0
     const lowPrice =
       candles.length > 0 ? Math.min(...candles.map((d: { low: number }) => d.low)) : 0
-
-    const duration = useMemo(() => {
-      if (!candles.length) return 0
-      const firstCandle = candles[0].time as number
-      const lastCandle = candles[candles.length - 1].time as number
-      return lastCandle - firstCandle
-    }, [candles])
 
     const formattedPrices = useMemo(
       () => ({
@@ -98,7 +100,7 @@ const Header = memo(
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ color: COLORS.text.secondary }}>DURATION:</span>
+              <span style={{ color: COLORS.text.secondary }}>RANGE:</span>
               <span style={{ color: COLORS.text.primary, fontFamily: 'monospace' }}>
                 {formatDuration(duration)}
               </span>

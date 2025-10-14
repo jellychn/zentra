@@ -1,16 +1,17 @@
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
-import { formatNumber } from '../../../..//shared/helper'
+import { formatNumber } from '../../../../shared/helper'
 
 const PriceInformation = (): React.JSX.Element => {
   const { state } = useStateStore()
-  const { exchangeData } = state || {}
+  const { exchangeData, metrics } = state || {}
   const { lastPrice = 0 } = exchangeData || {}
+  const { agoPrice = 0 } = metrics || {}
 
-  const priceChange = 10
-  const priceChangePercentage = 10
+  const priceChange = lastPrice - agoPrice
+  const priceChangePercentage = agoPrice !== 0 ? (priceChange / agoPrice) * 100 : 0
 
-  const isPricePositive = true
-  const isPriceNegative = false
+  const isPricePositive = priceChange > 0
+  const isPriceNegative = priceChange < 0
 
   return (
     <div
@@ -42,10 +43,8 @@ const PriceInformation = (): React.JSX.Element => {
             gap: '4px'
           }}
         >
-          {isPricePositive ? '↗' : isPriceNegative ? '↘' : '→'}{' '}
-          {priceChange ? Math.abs(priceChange).toFixed(2) : '0.00'} (
-          {priceChangePercentage ? Math.abs(priceChangePercentage).toFixed(2) : '0.00'}
-          %) (5M)
+          {isPricePositive ? '↗' : isPriceNegative ? '↘' : '→'} {formatNumber(priceChange)} (
+          {Math.abs(priceChangePercentage).toFixed(2)}%) (5M)
         </div>
       </div>
     </div>

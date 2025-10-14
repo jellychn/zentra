@@ -9,6 +9,10 @@ export enum Environment {
 
 export enum Exchanges {
   BINANCE = 'Binance',
+  BYBIT = 'Bybit',
+  OKX = 'OKX',
+  KRAKEN = 'Kraken',
+  KUCOIN = 'KuCoin',
   PHEMEX = 'Phemex'
 }
 

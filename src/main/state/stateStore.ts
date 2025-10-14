@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import { Environment, Exchanges, TradingMode } from '../../shared/types'
 import config from '../config/config'
-import { SymbolMetrics } from '../data/dataStore'
+import { initSymbolMetrics, SymbolMetrics } from '../data/dataStore'
 import { UserSettings, userSettingsState } from '../db/dbUserSettings'
 import { ProcessedCandlestick } from '../data/types'
 
@@ -23,7 +23,8 @@ export interface AppState {
     selectedSymbol: string
     tradingMode: TradingMode
     selectedCandleTimeframe: string
-    selectedLiquidityPoolTimeFrame: string
+    selectedLiquidityPoolTimeframe: string
+    selectedAtrTimeframe: string
   }
   exchangeData: ExchangeData
   metrics: SymbolMetrics
@@ -49,10 +50,11 @@ class MainStateStore extends EventEmitter {
       settings: {
         environment: config.env,
         selectedExchange,
-        selectedSymbol: 'ADAUSDT',
+        selectedSymbol: 'BTCUSDT',
         tradingMode: TradingMode.PAPER,
         selectedCandleTimeframe: '1M',
-        selectedLiquidityPoolTimeFrame: '15M'
+        selectedLiquidityPoolTimeframe: '15M',
+        selectedAtrTimeframe: '15M'
       },
       exchangeData: {
         lastPrice: 0,
@@ -60,13 +62,7 @@ class MainStateStore extends EventEmitter {
         trades: [],
         candles: []
       },
-      metrics: {
-        buyVolume: 0,
-        sellVolume: 0,
-        tradeLiquidity: {},
-        bidVolume: 0,
-        askVolume: 0
-      }
+      metrics: initSymbolMetrics
     }
   }
 

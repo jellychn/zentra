@@ -114,16 +114,16 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
   })
 
   const state = mainStateStore.getState()
-  const selectedLiquidityPoolTimeFrame = state.settings.selectedLiquidityPoolTimeFrame
+  const selectedLiquidityPoolTimeframe = state.settings.selectedLiquidityPoolTimeframe
 
   let timeWindowMinutes = 30
-  if (selectedLiquidityPoolTimeFrame === '1M') {
+  if (selectedLiquidityPoolTimeframe === '1M') {
     timeWindowMinutes = 1
-  } else if (selectedLiquidityPoolTimeFrame === '15M') {
+  } else if (selectedLiquidityPoolTimeframe === '15M') {
     timeWindowMinutes = 15
-  } else if (selectedLiquidityPoolTimeFrame === '30M') {
+  } else if (selectedLiquidityPoolTimeframe === '30M') {
     timeWindowMinutes = 30
-  } else if (selectedLiquidityPoolTimeFrame === '1H') {
+  } else if (selectedLiquidityPoolTimeframe === '1H') {
     timeWindowMinutes = 60
   }
 
