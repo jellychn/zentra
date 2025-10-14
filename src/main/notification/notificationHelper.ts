@@ -28,7 +28,7 @@ class NotificationEmitter extends EventEmitter {
       return
     }
 
-    if (mainWindow) {
+    if (mainWindow && !mainWindow.isDestroyed()) {
       this.on('notification', (notification) => {
         console.log('📢 Sending notification to renderer:', notification)
         mainWindow.webContents.send('notification:notify', notification)

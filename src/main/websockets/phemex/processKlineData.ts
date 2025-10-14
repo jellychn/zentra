@@ -226,6 +226,7 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
     const volumeSentimentByPrice: {
       [price: number]: { positive: number; negative: number; turnover: number }
     } = {}
+    const priceAgo = candles[candles.length - 5].close
 
     if (candles.length > 0) {
       // 60 = 1h
@@ -275,7 +276,8 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
         priceFrequency,
         volumeProfile,
         volumeSentimentByPrice,
-        cumulativeVolumeSentiment: cumulativeSentiment
+        cumulativeVolumeSentiment: cumulativeSentiment,
+        agoPrice: priceAgo
       }
     })
   }

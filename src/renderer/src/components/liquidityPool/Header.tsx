@@ -28,15 +28,6 @@ const Header = memo(
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: COLORS.primary,
-                boxShadow: `0 0 10px ${COLORS.primary}`
-              }}
-            />
-            <div
-              style={{
                 fontSize: '14px',
                 fontWeight: '800',
                 color: COLORS.text.primary,
@@ -57,15 +48,6 @@ const Header = memo(
             >
               {hasOrderBook ? 'ORDER BOOK' : ''}
             </div>
-            <div
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: hasOrderBook ? COLORS.success : 'transparent',
-                boxShadow: hasOrderBook ? `0 0 10px ${COLORS.success}` : 'none'
-              }}
-            />
           </div>
         </div>
       </div>

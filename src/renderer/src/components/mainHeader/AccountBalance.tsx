@@ -1,7 +1,9 @@
 import { TradingMode } from '../../../../shared/types'
 import { formatNumber } from '../../../../shared/helper'
+import logo from '../../assets/icons/logo.svg'
+import React from 'react'
 
-const AccountBalance = () => {
+const AccountBalance = (): React.JSX.Element => {
   const usagePercentage = 12
   const isProfit = false
   const mode = TradingMode.PAPER
@@ -20,28 +22,6 @@ const AccountBalance = () => {
     return isProfit ? '#10b981' : '#ef4444'
   }
 
-  const getModeColor = (): string => {
-    switch (mode) {
-      case TradingMode.PAPER:
-        return '#3b82f6'
-      case TradingMode.REAL:
-        return '#10b981'
-      default:
-        return '#6b7280'
-    }
-  }
-
-  const getModeIcon = (): string => {
-    switch (mode) {
-      case TradingMode.PAPER:
-        return '📄'
-      case TradingMode.REAL:
-        return '💸'
-      default:
-        return '💰'
-    }
-  }
-
   return (
     <div
       style={{
@@ -52,7 +32,9 @@ const AccountBalance = () => {
               0 0 60px rgba(0, 0, 0, 0.3),
               inset 0 1px 0 rgba(255, 255, 255, 0.05)
             `,
-        flexShrink: 0
+        flexShrink: 0,
+        borderTopRightRadius: '10px',
+        borderBottomRightRadius: '10px'
       }}
     >
       <div
@@ -65,15 +47,12 @@ const AccountBalance = () => {
           borderBottomRightRadius: '10px',
           padding: '8px 16px',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          minWidth: '240px'
+          minWidth: '250px'
         }}
       >
         <div
           style={{
-            width: '32px',
-            height: '32px',
             borderRadius: '8px',
-            background: `linear-gradient(135deg, ${getModeColor()}, ${getModeColor()}80)`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -83,7 +62,9 @@ const AccountBalance = () => {
             flexShrink: 0
           }}
         >
-          {getModeIcon()}
+          <div>
+            <img src={logo} style={{ width: '40px', height: '40px' }} />
+          </div>
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
