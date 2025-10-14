@@ -7,6 +7,22 @@ export enum Environment {
   PRODUCTION = 'Production'
 }
 
+export enum TIMEFRAME {
+  MINUTE_1 = '1M',
+  MINUTE_5 = '5M',
+  MINUTE_15 = '15M',
+  MINUTE_30 = '30M',
+  HOUR_1 = '1H',
+  HOUR_4 = '4H',
+  DAY_1 = '1D',
+  WEEK_1 = '1W',
+  MONTH_1 = '1MON',
+  SEASON_1 = '1SEA',
+  YEAR_1 = '1Y'
+}
+
+export enum PRICE_LINE_TIMEFRAME {}
+
 export enum Exchanges {
   BINANCE = 'Binance',
   BYBIT = 'Bybit',

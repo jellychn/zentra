@@ -18,7 +18,7 @@
 //     "type": "snapshot"
 // }
 
-import { Side } from '../../../shared/types'
+import { Side, TIMEFRAME } from '../../../shared/types'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedTrade } from '../../data/types'
 import { mainStateStore } from '../../state/stateStore'
@@ -125,12 +125,16 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
   const selectedLiquidityPoolTimeframe = state.settings.selectedLiquidityPoolTimeframe
 
   let timeWindowMinutes = 15
-  if (selectedLiquidityPoolTimeframe === '1M') {
+  if (selectedLiquidityPoolTimeframe === TIMEFRAME.MINUTE_1) {
     timeWindowMinutes = 1
-  } else if (selectedLiquidityPoolTimeframe === '5M') {
+  } else if (selectedLiquidityPoolTimeframe === TIMEFRAME.MINUTE_5) {
     timeWindowMinutes = 5
-  } else if (selectedLiquidityPoolTimeframe === '15M') {
+  } else if (selectedLiquidityPoolTimeframe === TIMEFRAME.MINUTE_15) {
     timeWindowMinutes = 15
+  } else if (selectedLiquidityPoolTimeframe === TIMEFRAME.MINUTE_30) {
+    timeWindowMinutes = 30
+  } else if (selectedLiquidityPoolTimeframe === TIMEFRAME.HOUR_1) {
+    timeWindowMinutes = 60
   }
 
   const minSizeThreshold = 0.001

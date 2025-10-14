@@ -3,7 +3,6 @@ import MainHeader from '@renderer/components/MainHeader'
 import OrderBook from '@renderer/components/OrderBook'
 import PriceLine from '@renderer/components/PriceLine'
 import RecentTrades from '@renderer/components/RecentTrades'
-import TradePanel from '@renderer/components/TradePanel'
 import TradingDashboard from '@renderer/components/TradingDashboard'
 
 export default function Trade(): React.JSX.Element {
@@ -58,15 +57,15 @@ export default function Trade(): React.JSX.Element {
                   flex: 1,
                   minHeight: 0,
                   gap: '12px',
-                  minWidth: '380px',
-                  maxWidth: '380px'
+                  minWidth: '350px',
+                  maxWidth: '350px',
+                  background: 'linear-gradient(315deg, #1e293b 0%, #0f172a 100%)'
                 }}
               >
                 <OrderBook />
                 <RecentTrades />
               </div>
             </div>
-            <TradePanel />
           </div>
         </div>
       </div>

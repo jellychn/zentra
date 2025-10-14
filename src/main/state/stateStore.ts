@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { Environment, Exchanges, TradingMode } from '../../shared/types'
+import { Environment, Exchanges, TIMEFRAME, TradingMode } from '../../shared/types'
 import config from '../config/config'
 import { initSymbolMetrics, SymbolMetrics } from '../data/dataStore'
 import { UserSettings, userSettingsState } from '../db/dbUserSettings'
@@ -51,11 +51,11 @@ class MainStateStore extends EventEmitter {
       settings: {
         environment: config.env,
         selectedExchange,
-        selectedSymbol: 'BTCUSDT',
+        selectedSymbol: 'ETHUSDT',
         tradingMode: TradingMode.PAPER,
-        selectedCandleTimeframe: '1M',
-        selectedLiquidityPoolTimeframe: '15M',
-        selectedAtrTimeframe: '15M',
+        selectedCandleTimeframe: TIMEFRAME.MINUTE_1,
+        selectedLiquidityPoolTimeframe: TIMEFRAME.MINUTE_15,
+        selectedAtrTimeframe: TIMEFRAME.MINUTE_15,
         selectedPriceLineTimeframe: '1 DAY'
       },
       exchangeData: {

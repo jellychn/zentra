@@ -2,9 +2,15 @@ import { useEffect, useState } from 'react'
 import { COLORS } from './colors'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import { sendIpcMessage } from '@renderer/ipcMain/message'
-import { MessageSenderType } from '../../../../shared/types'
+import { MessageSenderType, TIMEFRAME } from '../../../../shared/types'
 
-const TIMEFRAME_OPTIONS = ['1M', '5M', '15M']
+const TIMEFRAME_OPTIONS = [
+  TIMEFRAME.MINUTE_1,
+  TIMEFRAME.MINUTE_5,
+  TIMEFRAME.MINUTE_15,
+  TIMEFRAME.MINUTE_30,
+  TIMEFRAME.HOUR_1
+]
 
 const Timeframe: React.FC = () => {
   const { state } = useStateStore()

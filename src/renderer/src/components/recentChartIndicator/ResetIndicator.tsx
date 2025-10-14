@@ -22,9 +22,9 @@ const ResetIndicator = ({
       <button
         onClick={handleManualReset}
         style={{
-          background: 'rgba(59, 130, 246, 0.9)',
+          background: 'rgba(30, 41, 59, 0.8)',
           color: 'white',
-          border: 'none',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           padding: '8px 12px',
           borderRadius: '6px',
           fontSize: '10px',
@@ -38,11 +38,11 @@ const ResetIndicator = ({
           gap: '6px'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'rgba(59, 130, 246, 1)'
+          e.currentTarget.style.background = 'rgba(30, 41, 59, 0.8)'
           e.currentTarget.style.transform = 'scale(1.05)'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'rgba(59, 130, 246, 0.9)'
+          e.currentTarget.style.background = 'rgba(30, 41, 59, 0.8)'
           e.currentTarget.style.transform = 'scale(1)'
         }}
       >

@@ -30,7 +30,7 @@
 //   type: 'incremental'
 // }
 
-import { processKlineEntry } from '../../api/phemex/klines'
+import { processKlineEntry, Resolution } from '../../api/phemex/klines'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedCandlestick } from '../../data/types'
 import { mainStateStore } from '../../state/stateStore'
@@ -74,16 +74,22 @@ export const processKlineData = (data: KlineMessage): void => {
 
   let dataType: DataStoreType
   switch (interval) {
-    case 60:
+    case Resolution.MINUTE_1:
       dataType = DataStoreType.CANDLES_1M
       break
-    case 900:
+    case Resolution.MINUTE_5:
+      dataType = DataStoreType.CANDLES_5M
+      break
+    case Resolution.MINUTE_15:
       dataType = DataStoreType.CANDLES_15M
       break
-    case 86400:
+    case Resolution.HOUR_4:
+      dataType = DataStoreType.CANDLES_4H
+      break
+    case Resolution.DAY_1:
       dataType = DataStoreType.CANDLES_1D
       break
-    case 2592000:
+    case Resolution.MONTH_1:
       dataType = DataStoreType.CANDLES_1MON
       break
     default:
@@ -234,7 +240,7 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
       let timeframe = 720
 
       if (selectedPriceLineTimeframe === 'ZOOM') {
-        timeframe = 15
+        timeframe = 60
       }
 
       const recentCandles = candles.slice(-timeframe)

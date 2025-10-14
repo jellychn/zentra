@@ -2,6 +2,7 @@ import { EventEmitter } from 'events'
 import { ProcessedCandlestick, ProcessedOrderBook, ProcessedTrade } from './types'
 import { mainStateStore } from '../state/stateStore'
 import { calculateATR } from '../indicators/calculations'
+import { TIMEFRAME } from '../../shared/types'
 
 interface LiquidityPool {
   [price: number]: { volume: number; last_updated: number }
@@ -72,7 +73,9 @@ interface SymbolData {
   [DataStoreType.ORDERBOOK]?: ProcessedOrderBook
   [DataStoreType.TRADES]?: ProcessedTrade[]
   [DataStoreType.CANDLES_1M]?: ProcessedCandlestick[]
+  [DataStoreType.CANDLES_5M]?: ProcessedCandlestick[]
   [DataStoreType.CANDLES_15M]?: ProcessedCandlestick[]
+  [DataStoreType.CANDLES_4H]?: ProcessedCandlestick[]
   [DataStoreType.CANDLES_1D]?: ProcessedCandlestick[]
   [DataStoreType.CANDLES_1MON]?: ProcessedCandlestick[]
   [DataStoreType.LIQUIDITY_POOL]?: LiquidityPool
@@ -88,7 +91,9 @@ export enum DataStoreType {
   ORDERBOOK = 'orderbook',
   TRADES = 'trades',
   CANDLES_1M = 'candles_1m',
+  CANDLES_5M = 'candles_5m',
   CANDLES_15M = 'candles_15m',
+  CANDLES_4H = 'candles_4h',
   CANDLES_1D = 'candles_1d',
   CANDLES_1MON = 'candles_1mon',
   LIQUIDITY_POOL = 'liquidity_pool',
@@ -141,16 +146,21 @@ class MainDataStore extends EventEmitter {
       mainStateStore.updateExchangeData({ lastPrice: data as number })
     } else if (
       dataType === DataStoreType.CANDLES_1D ||
+      dataType === DataStoreType.CANDLES_5M ||
       dataType === DataStoreType.CANDLES_15M ||
+      dataType === DataStoreType.CANDLES_4H ||
       dataType === DataStoreType.CANDLES_1M
     ) {
       const state = mainStateStore.getState()
       const selectedCandleTimeframe = state.settings.selectedCandleTimeframe
 
       if (
-        (dataType === DataStoreType.CANDLES_1M && selectedCandleTimeframe === '1M') ||
-        (dataType === DataStoreType.CANDLES_15M && selectedCandleTimeframe === '15M') ||
-        (dataType === DataStoreType.CANDLES_1D && selectedCandleTimeframe === '1D')
+        (dataType === DataStoreType.CANDLES_1M && selectedCandleTimeframe === TIMEFRAME.MINUTE_1) ||
+        (dataType === DataStoreType.CANDLES_5M && selectedCandleTimeframe === TIMEFRAME.MINUTE_5) ||
+        (dataType === DataStoreType.CANDLES_15M &&
+          selectedCandleTimeframe === TIMEFRAME.MINUTE_15) ||
+        (dataType === DataStoreType.CANDLES_4H && selectedCandleTimeframe === TIMEFRAME.HOUR_4) ||
+        (dataType === DataStoreType.CANDLES_1D && selectedCandleTimeframe === TIMEFRAME.DAY_1)
       ) {
         mainStateStore.updateExchangeData({ candles: data as ProcessedCandlestick[] })
       }
@@ -168,10 +178,10 @@ class MainDataStore extends EventEmitter {
     let candleData: ProcessedCandlestick[] | undefined
 
     switch (selectedAtrTimeframe) {
-      case '1M':
+      case TIMEFRAME.MINUTE_1:
         candleData = this.getByDataType(symbol, DataStoreType.CANDLES_1M) as ProcessedCandlestick[]
         break
-      case '15M':
+      case TIMEFRAME.MINUTE_15:
         candleData = this.getByDataType(symbol, DataStoreType.CANDLES_15M) as ProcessedCandlestick[]
         break
     }

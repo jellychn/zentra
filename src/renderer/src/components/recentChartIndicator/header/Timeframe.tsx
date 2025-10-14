@@ -1,6 +1,6 @@
 import { sendIpcMessage } from '@renderer/ipcMain/message'
 import { COLORS } from '../colors'
-import { MessageSenderType } from '../../../../../shared/types'
+import { MessageSenderType, TIMEFRAME } from '../../../../../shared/types'
 
 const Timeframe = ({
   selectedTimeframe,
@@ -13,7 +13,13 @@ const Timeframe = ({
   setIsDropdownOpen: (isOpen: boolean) => void
   setSelectedTimeframe: (timeframe: string) => void
 }): React.JSX.Element => {
-  const TIMEFRAME_OPTIONS = ['1M', '15M', '1D']
+  const TIMEFRAME_OPTIONS = [
+    TIMEFRAME.MINUTE_1,
+    TIMEFRAME.MINUTE_5,
+    TIMEFRAME.MINUTE_15,
+    TIMEFRAME.HOUR_4,
+    TIMEFRAME.DAY_1
+  ]
 
   const handleTimeframeChange = (timeframe: string): void => {
     setSelectedTimeframe(timeframe)
