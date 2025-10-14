@@ -6,7 +6,8 @@ export const getRange = ({
   max1Mon,
   min1Mon,
   atr,
-  selectedTimeline
+  selectedTimeline,
+  isHovered
 }: {
   lastPrice: number
   hoverPrice: number | null
@@ -16,21 +17,22 @@ export const getRange = ({
   min1Mon: number
   atr: number
   selectedTimeline: string
+  isHovered: boolean
 }): { max: number; min: number } => {
   let max = lastPrice
   let min = lastPrice
 
-  if (selectedTimeline === '1D') {
+  if (selectedTimeline === '1 DAY') {
     max = Math.max(max, max1D)
     min = Math.min(min, min1D)
   }
 
-  if (selectedTimeline === '1MON') {
+  if (selectedTimeline === '1 MONTH') {
     max = Math.max(max, max1Mon)
     min = Math.min(min, min1Mon)
   }
 
-  if (hoverPrice) {
+  if (hoverPrice && !isHovered) {
     max = Math.max(max, hoverPrice)
     min = Math.min(min, hoverPrice)
   }

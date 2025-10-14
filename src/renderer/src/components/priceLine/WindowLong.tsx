@@ -126,7 +126,7 @@ const WindowLong = memo(
       [position, isMax]
     )
 
-    if (selectedTimeline !== '1MON') {
+    if (selectedTimeline !== '1 MONTH') {
       return null
     }
 

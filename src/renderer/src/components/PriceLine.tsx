@@ -22,7 +22,36 @@ export default function PriceLine(): React.JSX.Element {
 
   const containerRef = useRef<HTMLDivElement>(null)
 
+  const [showHoverPrice, setShowHoverPrice] = useState(true)
+  const [isHovered, setIsHovered] = useState(false)
   const [selectedTimeline, setSelectedTimeline] = useState('1D')
+
+  // Keyboard handlers
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      const activeElement = document.activeElement
+      if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
+        return
+      }
+
+      if (e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault()
+        setShowHoverPrice(false)
+      }
+    }
+
+    const handleKeyUp = (e: KeyboardEvent): void => {
+      e.preventDefault()
+      setShowHoverPrice(true)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [])
 
   const { min, max } = useMemo(
     () =>
@@ -34,9 +63,10 @@ export default function PriceLine(): React.JSX.Element {
         max1Mon,
         min1Mon,
         atr,
-        selectedTimeline
+        selectedTimeline,
+        isHovered
       }),
-    [hoverPrice, lastPrice, max1D, max1Mon, min1D, min1Mon, selectedTimeline, atr]
+    [hoverPrice, lastPrice, max1D, max1Mon, min1D, min1Mon, atr, selectedTimeline, isHovered]
   )
 
   const priceRange = max - min
@@ -53,6 +83,7 @@ export default function PriceLine(): React.JSX.Element {
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (!containerRef.current) return
 
+      setIsHovered(true)
       const rect = containerRef.current.getBoundingClientRect()
       const y = event.clientY - rect.top
       const percentage = (y / rect.height) * 100
@@ -64,6 +95,7 @@ export default function PriceLine(): React.JSX.Element {
   )
 
   const handleMouseLeave = useCallback(() => {
+    setIsHovered(false)
     setHoverPrice(null)
   }, [setHoverPrice])
 
@@ -96,6 +128,7 @@ export default function PriceLine(): React.JSX.Element {
         max1D={max1D}
         min1D={min1D}
         priceRange={priceRange}
+        showHoverPrice={showHoverPrice}
         getTopPercentage={getTopPercentage}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -111,6 +144,7 @@ const Main = ({
   max1D,
   min1D,
   priceRange,
+  showHoverPrice,
   getTopPercentage,
   onMouseMove,
   onMouseLeave
@@ -121,6 +155,7 @@ const Main = ({
   max1D: number
   min1D: number
   priceRange: number
+  showHoverPrice: boolean
   getTopPercentage: (price: number) => number
   onMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void
   onMouseLeave: () => void
@@ -172,8 +207,8 @@ const Main = ({
       <PriceFrequencyHeatmap getTopPercentage={getTopPercentage} />
       <VolumeProfileBars getTopPercentage={getTopPercentage} />
 
-      <CurrentPrice getTopPercentage={getTopPercentage} />
-      <HoveredPriceLine max={max} priceRange={priceRange} />
+      <CurrentPrice showHoverPrice={showHoverPrice} getTopPercentage={getTopPercentage} />
+      <HoveredPriceLine showHoverPrice={showHoverPrice} max={max} priceRange={priceRange} />
       <WindowShort value={max1D} label="MAX 1D" isMax={true} getTopPercentage={getTopPercentage} />
       <WindowShort value={min1D} label="MIN 1D" isMax={false} getTopPercentage={getTopPercentage} />
       <AtrBand getTopPercentage={getTopPercentage} />

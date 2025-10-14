@@ -18,7 +18,7 @@ const Header = (): React.JSX.Element => {
           marginBottom: '4px'
         }}
       >
-        RECENT CANDLES CHART
+        CANDLES CHART
       </div>
     </div>
   )

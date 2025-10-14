@@ -12,7 +12,7 @@ const Timeline = memo(
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
-    const TIMELINE_OPTIONS = ['ZOOM', '1D', '1MON']
+    const TIMELINE_OPTIONS = ['ZOOM', '1 DAY', '1 MONTH']
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent): void => {
