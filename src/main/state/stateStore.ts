@@ -25,6 +25,7 @@ export interface AppState {
     selectedCandleTimeframe: string
     selectedLiquidityPoolTimeframe: string
     selectedAtrTimeframe: string
+    selectedPriceLineTimeframe: string
   }
   exchangeData: ExchangeData
   metrics: SymbolMetrics
@@ -54,7 +55,8 @@ class MainStateStore extends EventEmitter {
         tradingMode: TradingMode.PAPER,
         selectedCandleTimeframe: '1M',
         selectedLiquidityPoolTimeframe: '15M',
-        selectedAtrTimeframe: '15M'
+        selectedAtrTimeframe: '15M',
+        selectedPriceLineTimeframe: '1 DAY'
       },
       exchangeData: {
         lastPrice: 0,

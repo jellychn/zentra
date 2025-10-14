@@ -6,13 +6,13 @@ const WindowLong = memo(
     value,
     label,
     isMax,
-    selectedTimeline,
+    selectedTimeframe,
     getTopPercentage
   }: {
     value: number
     label: string
     isMax: boolean
-    selectedTimeline: string
+    selectedTimeframe: string
     getTopPercentage: (price: number) => number
   }) => {
     const [hovered, setHovered] = useState(false)
@@ -126,7 +126,7 @@ const WindowLong = memo(
       [position, isMax]
     )
 
-    if (selectedTimeline !== '1 MONTH') {
+    if (selectedTimeframe !== '1 MONTH') {
       return null
     }
 

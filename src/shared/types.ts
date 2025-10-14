@@ -24,7 +24,8 @@ export enum TradingMode {
 export enum MessageSenderType {
   CREATE_ORDER = 'create_order',
   CHANGE_LIQUIDITY_POOL_TIMEFRAME = 'change_liquidity_pool_timeframe',
-  CHANGE_CANDLE_TIMEFRAME = 'change_candle_timeframe'
+  CHANGE_CANDLE_TIMEFRAME = 'change_candle_timeframe',
+  CHANGE_PRICE_LINE_TIMEFRAME = 'change_price_line_timeframe'
 }
 
 export const enum MessageReceiverType {

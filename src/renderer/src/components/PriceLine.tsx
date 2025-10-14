@@ -4,7 +4,7 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import PriceLevels from './priceLine/PriceLevels'
 import { getRange } from './priceLine/helper'
 import CurrentPrice from './priceLine/CurrentPrice'
-import Timeline from './priceLine/Timeframe'
+import Timeframe from './priceLine/Timeframe'
 import HoveredPriceLine from './priceLine/HoveredPriceLine'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
 import WindowShort from './priceLine/WindowShort'
@@ -24,7 +24,7 @@ export default function PriceLine(): React.JSX.Element {
 
   const [showHoverPrice, setShowHoverPrice] = useState(true)
   const [isHovered, setIsHovered] = useState(false)
-  const [selectedTimeline, setSelectedTimeline] = useState('1 DAY')
+  const [selectedTimeframe, setSelectedTimeframe] = useState('1 DAY')
 
   // Keyboard handlers
   useEffect(() => {
@@ -63,10 +63,10 @@ export default function PriceLine(): React.JSX.Element {
         max1Mon,
         min1Mon,
         atr,
-        selectedTimeline,
+        selectedTimeframe,
         isHovered
       }),
-    [hoverPrice, lastPrice, max1D, max1Mon, min1D, min1Mon, atr, selectedTimeline, isHovered]
+    [hoverPrice, lastPrice, max1D, max1Mon, min1D, min1Mon, atr, selectedTimeframe, isHovered]
   )
 
   const priceRange = max - min
@@ -106,19 +106,22 @@ export default function PriceLine(): React.JSX.Element {
         flexDirection: 'column'
       }}
     >
-      <Timeline selectedTimeline={selectedTimeline} setSelectedTimeline={setSelectedTimeline} />
+      <Timeframe
+        selectedTimeframe={selectedTimeframe}
+        setSelectedTimeframe={setSelectedTimeframe}
+      />
       <WindowLong
         value={max1Mon}
         label="MAX 1MON"
         isMax={true}
-        selectedTimeline={selectedTimeline}
+        selectedTimeframe={selectedTimeframe}
         getTopPercentage={getTopPercentage}
       />
       <WindowLong
         value={min1Mon}
         label="MIN 1MON"
         isMax={false}
-        selectedTimeline={selectedTimeline}
+        selectedTimeframe={selectedTimeframe}
         getTopPercentage={getTopPercentage}
       />
       <Main

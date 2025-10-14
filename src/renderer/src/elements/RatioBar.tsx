@@ -1,5 +1,4 @@
 import React from 'react'
-import { formatNumber } from '../../../shared/helper'
 
 const RatioBar = React.memo(
   ({
@@ -16,7 +15,6 @@ const RatioBar = React.memo(
     const total = leftValue + rightValue
     const leftPercentage = total > 0 ? (leftValue / total) * 100 : 50
     const rightPercentage = total > 0 ? (rightValue / total) * 100 : 50
-    const ratio = rightValue > 0 ? leftValue / rightValue : 1
 
     return (
       <div
@@ -41,9 +39,6 @@ const RatioBar = React.memo(
           <span style={{ color: '#10b981', fontWeight: 'bold' }}>
             {leftLabel}: {leftPercentage.toFixed(1)}%
           </span>
-          <span style={{ color: '#94a3b8', fontWeight: 'bold' }}>
-            Ratio: {formatNumber(ratio)}x
-          </span>
           <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
             {rightLabel}: {rightPercentage.toFixed(1)}%
           </span>
@@ -51,7 +46,7 @@ const RatioBar = React.memo(
         <div
           style={{
             height: '4px',
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: '#ef4444',
             borderRadius: '2px'
           }}
         >

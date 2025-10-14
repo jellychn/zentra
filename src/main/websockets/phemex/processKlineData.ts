@@ -135,14 +135,22 @@ function mergeCandlesticks(
 const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]): void => {
   const state = mainStateStore.getState()
   const selectedSymbol = state.settings.selectedSymbol
+  const selectedPriceLineTimeframe = state.settings.selectedPriceLineTimeframe
 
-  if (interval === 60) {
+  if (interval === 60 && selectedPriceLineTimeframe !== '1 MONTH') {
     const priceFrequency: { [price: number]: number } = {}
     const volumeProfile: { [price: number]: number } = {}
 
     if (candles.length > 0) {
-      // Take only the last 60 candles (1h)
-      const recentCandles = candles.slice(-60)
+      // 60 = 1h
+      // 720 = 12h
+      let timeframe = 720
+
+      if (selectedPriceLineTimeframe === 'ZOOM') {
+        timeframe = 30
+      }
+
+      const recentCandles = candles.slice(-timeframe)
 
       recentCandles.forEach((candle) => {
         const priceLevels = generateKeyPriceLevels(candle.low, candle.high)
@@ -168,6 +176,38 @@ const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]):
   }
 
   if (interval === 86400) {
+    if (selectedPriceLineTimeframe === '1 MONTH') {
+      const priceFrequency: { [price: number]: number } = {}
+      const volumeProfile: { [price: number]: number } = {}
+
+      if (candles.length > 0) {
+        const timeframe = 30
+
+        const recentCandles = candles.slice(-timeframe)
+
+        recentCandles.forEach((candle) => {
+          const priceLevels = generateKeyPriceLevels(candle.low, candle.high)
+
+          priceLevels.forEach((price) => {
+            priceFrequency[price] = (priceFrequency[price] || 0) + 1
+          })
+
+          const volumePerLevel = candle.volume / priceLevels.length
+          priceLevels.forEach((price) => {
+            volumeProfile[price] = (volumeProfile[price] || 0) + volumePerLevel
+          })
+        })
+      }
+
+      mainDataStore.updateMetrics({
+        symbol: selectedSymbol,
+        data: {
+          priceFrequency,
+          volumeProfile
+        }
+      })
+    }
+
     const lastCandle = candles[candles.length - 1]
     const high = lastCandle.high
     const low = lastCandle.low

@@ -1,18 +1,20 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { COLORS } from './colors'
+import { sendIpcMessage } from '@renderer/ipcMain/message'
+import { MessageSenderType } from '../../../../shared/types'
 
-const Timeline = memo(
+const Timeframe = memo(
   ({
-    selectedTimeline,
-    setSelectedTimeline
+    selectedTimeframe,
+    setSelectedTimeframe
   }: {
-    selectedTimeline: string
-    setSelectedTimeline: (timeline: string) => void
+    selectedTimeframe: string
+    setSelectedTimeframe: (timeframe: string) => void
   }) => {
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
-    const TIMELINE_OPTIONS = ['ZOOM', '1 DAY', '1 MONTH']
+    const TIMEFRAME_OPTIONS = ['ZOOM', '1 DAY', '1 MONTH']
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent): void => {
@@ -24,6 +26,15 @@ const Timeline = memo(
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
+
+    const handleTimeframeChange = (timeframe: string): void => {
+      setSelectedTimeframe(timeframe)
+      sendIpcMessage({
+        message: MessageSenderType.CHANGE_PRICE_LINE_TIMEFRAME,
+        data: { timeframe }
+      })
+      setIsOpen(false)
+    }
 
     return (
       <div
@@ -71,7 +82,7 @@ const Timeline = memo(
               e.currentTarget.style.borderColor = COLORS.border
             }}
           >
-            <span>{selectedTimeline}</span>
+            <span>{selectedTimeframe}</span>
             <span
               style={{
                 transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -100,40 +111,37 @@ const Timeline = memo(
                 overflow: 'hidden'
               }}
             >
-              {TIMELINE_OPTIONS.map((timeline) => (
+              {TIMEFRAME_OPTIONS.map((timeframe) => (
                 <button
-                  key={timeline}
-                  onClick={() => {
-                    setSelectedTimeline(timeline)
-                    setIsOpen(false)
-                  }}
+                  key={timeframe}
+                  onClick={() => handleTimeframeChange(timeframe)}
                   style={{
                     width: '100%',
                     padding: '8px 12px',
                     background:
-                      selectedTimeline === timeline ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
+                      selectedTimeframe === timeframe ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
                     border: 'none',
-                    color: selectedTimeline === timeline ? COLORS.primary : COLORS.text.secondary,
+                    color: selectedTimeframe === timeframe ? COLORS.primary : COLORS.text.secondary,
                     fontSize: '10px',
-                    fontWeight: selectedTimeline === timeline ? '600' : '500',
+                    fontWeight: selectedTimeframe === timeframe ? '600' : '500',
                     cursor: 'pointer',
                     textAlign: 'left',
                     transition: 'all 0.2s ease'
                   }}
                   onMouseEnter={(e) => {
-                    if (selectedTimeline !== timeline) {
+                    if (selectedTimeframe !== timeframe) {
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
                       e.currentTarget.style.color = COLORS.text.primary
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (selectedTimeline !== timeline) {
+                    if (selectedTimeframe !== timeframe) {
                       e.currentTarget.style.background = 'transparent'
                       e.currentTarget.style.color = COLORS.text.secondary
                     }
                   }}
                 >
-                  {timeline}
+                  {timeframe}
                 </button>
               ))}
             </div>
@@ -144,5 +152,5 @@ const Timeline = memo(
   }
 )
 
-Timeline.displayName = 'Timeline'
-export default Timeline
+Timeframe.displayName = 'Timeframe'
+export default Timeframe

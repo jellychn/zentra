@@ -71,3 +71,10 @@ export const processChangeCandleTimeframe = async (data: { timeframe: string }):
   ) as ProcessedCandlestick[]
   mainStateStore.updateExchangeData({ candles: existingCandles })
 }
+
+export const processChangePriceListTimeframe = async (data: {
+  timeframe: string
+}): Promise<void> => {
+  const { timeframe } = data
+  mainStateStore.updateSettings({ selectedPriceLineTimeframe: timeframe })
+}

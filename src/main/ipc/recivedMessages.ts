@@ -3,7 +3,8 @@ import { MessageSenderType } from '../../shared/types'
 import { processCreateOrder } from './processMessages/orderMessages'
 import {
   processChangeCandleTimeframe,
-  processChangeLiquidityPoolTimeframe
+  processChangeLiquidityPoolTimeframe,
+  processChangePriceListTimeframe
 } from './processMessages/settingsMessages'
 
 export const receivedMessages = (): void => {
@@ -25,5 +26,10 @@ export const receivedMessages = (): void => {
   ipcMain.on(MessageSenderType.CHANGE_CANDLE_TIMEFRAME, (_event, data) => {
     console.log(`Received from frontend: ${MessageSenderType.CHANGE_CANDLE_TIMEFRAME}`, data)
     processChangeCandleTimeframe(data)
+  })
+
+  ipcMain.on(MessageSenderType.CHANGE_PRICE_LINE_TIMEFRAME, (_event, data) => {
+    console.log(`Received from frontend: ${MessageSenderType.CHANGE_PRICE_LINE_TIMEFRAME}`, data)
+    processChangePriceListTimeframe(data)
   })
 }

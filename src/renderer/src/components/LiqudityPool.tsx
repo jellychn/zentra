@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Header from './liquidityPool/Header'
 import NoLiquidityData from './liquidityPool/NoLiquidityData'
 import Timeframe from './liquidityPool/Timeframe'
-import AverageFilterIndicator from './liquidityPool/AverageFilterIndicator'
 import { COLORS } from './liquidityPool/colors'
 import { ProcessedOrderBook } from 'src/main/data/types'
 import CurrentPriceLine from './liquidityPool/CurrentPriceLine'
@@ -222,12 +221,6 @@ export default function LiquidityPool(): React.JSX.Element {
         hoveredSide={hoveredSide}
         getPositionPercentage={getPositionPercentage}
         setHoveredSide={setHoveredSide}
-      />
-      <AverageFilterIndicator
-        hasLiquidityPool={hasLiquidityPool}
-        hasOrderBook={hasOrderBook}
-        leftAvgLiquidity={leftAvgLiquidity}
-        rightAvgLiquidity={rightAvgLiquidity}
       />
     </div>
   )
