@@ -48,8 +48,8 @@ export default function OrderBook(): React.JSX.Element {
       .sort((a, b) => a.price - b.price)
 
     if (!showFullOrderBook) {
-      bidEntries = bidEntries.slice(0, 2)
-      askEntries = askEntries.slice(0, 2)
+      bidEntries = bidEntries.slice(0, 3)
+      askEntries = askEntries.slice(0, 3)
     }
 
     let bidRunningTotal = 0
@@ -92,14 +92,12 @@ export default function OrderBook(): React.JSX.Element {
         marginBottom: '12px'
       }}
     >
-      <Header selectedSymbol={selectedSymbol} />
+      <Header selectedSymbol={selectedSymbol} askVolume={askVolume} bidVolume={bidVolume} />
       <RatioBar leftLabel="BIDS" leftValue={bidVolume} rightLabel="ASKS" rightValue={askVolume} />
       <Spread
         lastPrice={lastPrice}
         bids={bids}
         asks={asks}
-        askVolume={askVolume}
-        bidVolume={bidVolume}
         showFullOrderBook={showFullOrderBook}
         setShowFullOrderBook={setShowFullOrderBook}
       />

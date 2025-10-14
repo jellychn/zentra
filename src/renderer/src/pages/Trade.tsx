@@ -43,6 +43,15 @@ export default function Trade(): React.JSX.Element {
             >
               <div
                 style={{
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: 'hidden'
+                }}
+              >
+                <TradingDashboard />
+              </div>
+              <div
+                style={{
                   display: 'flex',
                   flexDirection: 'column',
                   padding: '20px',
@@ -55,15 +64,6 @@ export default function Trade(): React.JSX.Element {
               >
                 <OrderBook />
                 <RecentTrades />
-              </div>
-              <div
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  overflow: 'hidden'
-                }}
-              >
-                <TradingDashboard />
               </div>
             </div>
             <TradePanel />

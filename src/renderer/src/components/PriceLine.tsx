@@ -24,7 +24,7 @@ export default function PriceLine(): React.JSX.Element {
 
   const [showHoverPrice, setShowHoverPrice] = useState(true)
   const [isHovered, setIsHovered] = useState(false)
-  const [selectedTimeline, setSelectedTimeline] = useState('1D')
+  const [selectedTimeline, setSelectedTimeline] = useState('1 DAY')
 
   // Keyboard handlers
   useEffect(() => {
@@ -193,7 +193,6 @@ const Main = ({
         borderRight: `1px solid ${COLORS.border}`,
         cursor: 'crosshair',
         backdropFilter: 'blur(20px)',
-        zIndex: 2,
         overflow: 'hidden'
       }}
     >

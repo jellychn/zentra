@@ -84,13 +84,11 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
   let buyVolume = 0
   let sellVolume = 0
 
-  trades.forEach((trade) => {
-    if (trade.side === Side.BUY) {
-      buyVolume += trade.size
-    } else if (trade.side === Side.SELL) {
-      sellVolume += trade.size
-    }
+  const currentTimeNs = BigInt(Date.now()) * 1_000_000n
+  const threeMinutesNs = BigInt(1 * 60 * 1_000_000_000) // 1 minutes in nanoseconds
+  const recentTrades: ProcessedTrade[] = []
 
+  trades.forEach((trade) => {
     const price = trade.price
     const size = trade.size
 
@@ -102,6 +100,16 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
     } else {
       tradeLiquidity[price].volume += trade.side === Side.BUY ? size : -size
       tradeLiquidity[price].last_updated = trade.timestamp
+    }
+
+    const tradeTimestampNs = BigInt(trade.timestamp)
+    if (currentTimeNs - tradeTimestampNs <= threeMinutesNs) {
+      if (trade.side === Side.BUY) {
+        buyVolume += trade.size
+      } else if (trade.side === Side.SELL) {
+        sellVolume += trade.size
+      }
+      recentTrades.push(trade)
     }
   })
 
@@ -128,7 +136,6 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
   }
 
   const minSizeThreshold = 0.001
-  const currentTimeNs = BigInt(Date.now()) * 1_000_000n
   const windowNanoseconds = BigInt(timeWindowMinutes * 60 * 1_000_000_000)
 
   const filteredTradeLiquidity: { [price: number]: { volume: number; last_updated: number } } = {}
@@ -149,7 +156,8 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
       buyVolume,
       sellVolume,
       avgTradeVolume,
-      tradeLiquidity: filteredTradeLiquidity
+      tradeLiquidity: filteredTradeLiquidity,
+      recentTrades
     }
   })
 }

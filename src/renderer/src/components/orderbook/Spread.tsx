@@ -6,22 +6,17 @@ const Spread = memo(
     lastPrice,
     bids,
     asks,
-    bidVolume,
-    askVolume,
     showFullOrderBook,
     setShowFullOrderBook
   }: {
     lastPrice: number
     bids: { [price: number]: number }
     asks: { [price: number]: number }
-    bidVolume: number
-    askVolume: number
     showFullOrderBook: boolean
     setShowFullOrderBook: (show: boolean) => void
   }): React.JSX.Element => {
     const hasUserOrdersInAsks = false
     const hasUserOrdersInBids = false
-    const orderBookRatio = bidVolume / askVolume
 
     const { spread } = useMemo(() => {
       const bid = Math.max(...Object.keys(bids).map(Number))
@@ -81,20 +76,10 @@ const Spread = memo(
           </span>
           <span
             style={{
-              color: orderBookRatio === 1 ? '#94a3b8' : orderBookRatio > 1 ? '#10b981' : '#ef4444',
               fontWeight: '600'
             }}
           >
             Spread: {formatNumber(spread)}
-          </span>
-          <span
-            style={{
-              fontSize: '12px',
-              marginLeft: '8px',
-              color: orderBookRatio === 1 ? '#94a3b8' : orderBookRatio > 1 ? '#10b981' : '#ef4444'
-            }}
-          >
-            {orderBookRatio > 1 ? '↗' : orderBookRatio < 1 ? '↘' : '➖'}
           </span>
           <div style={{ display: 'flex', gap: '4px', marginLeft: '8px' }}>
             {hasUserOrdersInBids && (

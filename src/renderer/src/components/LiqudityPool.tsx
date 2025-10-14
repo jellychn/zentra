@@ -150,7 +150,11 @@ export default function LiquidityPool(): React.JSX.Element {
     const displayMin = minPrice - buffer
     const displayMax = maxPrice + buffer
 
-    const getPositionPercentage = (price: number): number => {
+    const getPositionPercentage = (price: number | null): number => {
+      if (!price) {
+        return 0
+      }
+
       if (displayMax === displayMin) return 50
 
       // Calculate percentage with 20px gaps at top and bottom
@@ -190,12 +194,12 @@ export default function LiquidityPool(): React.JSX.Element {
         flex: 1,
         background: COLORS.background,
         borderRight: `1px solid ${COLORS.border}`,
-        overflow: 'hidden',
+        // overflow: 'hidden',
         padding: '0 0 10px 20px',
         zIndex: 1,
         backdropFilter: 'blur(20px)',
-        minWidth: '500px',
-        maxWidth: '500px',
+        minWidth: '400px',
+        maxWidth: '400px',
         height: '100%',
         display: 'flex',
         flexDirection: 'column'

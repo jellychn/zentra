@@ -22,6 +22,7 @@ export interface SymbolMetrics {
   atr: number
   priceFrequency: { [price: number]: number }
   volumeProfile: { [price: number]: number }
+  recentTrades: ProcessedTrade[]
 }
 
 export const initSymbolMetrics: SymbolMetrics = {
@@ -38,7 +39,8 @@ export const initSymbolMetrics: SymbolMetrics = {
   agoPrice: 0,
   atr: 0,
   priceFrequency: {},
-  volumeProfile: {}
+  volumeProfile: {},
+  recentTrades: []
 }
 
 interface SymbolData {

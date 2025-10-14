@@ -4,24 +4,18 @@ import RatioBar from '@renderer/elements/RatioBar'
 import Header from './recentTrades/Header'
 import { SymbolMetrics } from 'src/main/data/dataStore'
 import { ProcessedTrade } from 'src/main/data/types'
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef, useState, useEffect } from 'react'
 import { formatNumber } from '../../../shared/helper'
 
 export default function RecentTrades(): React.JSX.Element {
   const { state } = useStateStore()
-  const { exchangeData, metrics } = state || {}
-  const { trades = [] } = (exchangeData as { trades?: ProcessedTrade[] }) || {}
-  const { buyVolume = 0, sellVolume = 0, avgTradeVolume = 0 } = (metrics as SymbolMetrics) || {}
-
-  const recentTrades = useMemo(() => {
-    const now = Date.now()
-    const minutesAgo = now - 30 * 60 * 1000 // 30min
-
-    return trades.filter((trade) => {
-      const tradeTime = trade.timestamp > 1e12 ? trade.timestamp / 1e6 : trade.timestamp
-      return tradeTime >= minutesAgo
-    })
-  }, [trades])
+  const { metrics } = state || {}
+  const {
+    buyVolume = 0,
+    sellVolume = 0,
+    avgTradeVolume = 0,
+    recentTrades = []
+  } = (metrics as SymbolMetrics) || {}
 
   return (
     <div
@@ -59,17 +53,7 @@ export default function RecentTrades(): React.JSX.Element {
             flexDirection: 'column'
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-              paddingRight: '4px',
-              minHeight: 0
-            }}
-          >
-            <Content trades={recentTrades} />
-          </div>
+          <VirtualizedTradeList trades={recentTrades} />
         </div>
         <div
           style={{
@@ -94,7 +78,62 @@ export default function RecentTrades(): React.JSX.Element {
   )
 }
 
-const Content = ({ trades }: { trades: ProcessedTrade[] }): React.JSX.Element => {
+const VirtualizedTradeList = ({ trades }: { trades: ProcessedTrade[] }): React.JSX.Element => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [visibleRange, setVisibleRange] = useState({ start: 0, end: 0 })
+  const [containerHeight, setContainerHeight] = useState(0)
+
+  // Estimate row height (adjust based on your TradeRow height)
+  const ROW_HEIGHT = 60 // px - approximate height of TradeRow + margin
+  const BUFFER_ROWS = 5 // Number of extra rows to render above/below viewport
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const updateContainerHeight = () => {
+      setContainerHeight(container.clientHeight)
+    }
+
+    updateContainerHeight()
+    window.addEventListener('resize', updateContainerHeight)
+
+    return () => {
+      window.removeEventListener('resize', updateContainerHeight)
+    }
+  }, [])
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      const scrollTop = container.scrollTop
+      const startIndex = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_ROWS)
+      const endIndex = Math.min(
+        trades.length - 1,
+        Math.floor((scrollTop + containerHeight) / ROW_HEIGHT) + BUFFER_ROWS
+      )
+
+      setVisibleRange({ start: startIndex, end: endIndex })
+    }
+
+    container.addEventListener('scroll', handleScroll)
+    // Initial calculation
+    handleScroll()
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll)
+    }
+  }, [trades.length, containerHeight])
+
+  const visibleTrades = useMemo(() => {
+    return trades.slice(visibleRange.start, visibleRange.end + 1)
+  }, [trades, visibleRange.start, visibleRange.end])
+
+  const totalHeight = trades.length * ROW_HEIGHT
+  const offsetTop = visibleRange.start * ROW_HEIGHT
+
   if (trades.length === 0) {
     return (
       <div
@@ -141,10 +180,43 @@ const Content = ({ trades }: { trades: ProcessedTrade[] }): React.JSX.Element =>
   }
 
   return (
-    <>
-      {trades.map((trade: ProcessedTrade, index: number) => (
-        <TradeRow key={`trade-${index}-${trade.timestamp}`} trade={trade} />
-      ))}
-    </>
+    <div
+      ref={containerRef}
+      style={{
+        flex: 1,
+        minHeight: 0,
+        overflowY: 'auto',
+        position: 'relative'
+      }}
+    >
+      {/* Container with total height to maintain scroll */}
+      <div
+        style={{
+          height: totalHeight,
+          position: 'relative'
+        }}
+      >
+        {/* Visible trades container positioned at correct offset */}
+        <div
+          style={{
+            position: 'absolute',
+            top: offsetTop,
+            left: 0,
+            right: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            paddingRight: '4px'
+          }}
+        >
+          {visibleTrades.map((trade, index) => (
+            <TradeRow
+              key={`trade-${visibleRange.start + index}-${trade.timestamp}`}
+              trade={trade}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
