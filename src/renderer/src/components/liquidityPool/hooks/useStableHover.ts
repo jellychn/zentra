@@ -1,6 +1,12 @@
 import { useState, useRef, useCallback } from 'react'
 
-export const useStableHover = (delay = 100): void => {
+export const useStableHover = (
+  delay = 100
+): {
+  isStableHover
+  handleHoverStart
+  handleHoverEnd
+} => {
   const [isStableHover, setIsStableHover] = useState(false)
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null)
   const lastPositionRef = useRef<number>(0)

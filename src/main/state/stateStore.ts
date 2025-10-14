@@ -51,7 +51,7 @@ class MainStateStore extends EventEmitter {
       settings: {
         environment: config.env,
         selectedExchange,
-        selectedSymbol: 'ETHUSDT',
+        selectedSymbol: 'BTCUSDT',
         tradingMode: TradingMode.PAPER,
         selectedCandleTimeframe: TIMEFRAME.MINUTE_1,
         selectedLiquidityPoolTimeframe: TIMEFRAME.MINUTE_15,

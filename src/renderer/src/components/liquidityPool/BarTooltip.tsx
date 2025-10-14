@@ -5,6 +5,7 @@ import StrengthMeter from './StrengthMeter'
 
 const BarTooltip = memo(
   ({
+    hovered,
     tooltipData,
     side,
     position,
@@ -14,6 +15,7 @@ const BarTooltip = memo(
     age,
     avgLiquidity
   }: {
+    hovered
     tooltipData
     side
     position
@@ -24,6 +26,10 @@ const BarTooltip = memo(
     avgLiquidity
   }) => {
     const { absLiquidity, relativeStrength, ageColor, formatAge, ageDescription } = tooltipData
+
+    if (!hovered) {
+      return <></>
+    }
 
     // Get type color
     const getTypeColor = (): string => {

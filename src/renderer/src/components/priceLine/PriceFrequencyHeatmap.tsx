@@ -36,9 +36,6 @@ const PriceFrequencyHeatmap = memo(
           const frequency = priceFrequency[price]
           const frequencyRatio = frequency / maxFrequency
 
-          // Enhanced opacity scaling with exponential curve for better differentiation
-          const frequencyOpacity = Math.max(0.2, Math.min(0.9, Math.pow(frequencyRatio, 0.7)))
-
           // Dynamic sizing based on frequency with exponential scaling
           const baseWidth = 8
           const maxAdditionalWidth = 25

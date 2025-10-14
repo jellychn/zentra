@@ -6,11 +6,13 @@ import { formatNumber } from '../../../../shared/helper'
 
 const PlaceOrder = memo(
   ({
+    clicked,
     price,
     side,
     setClicked,
     setHoverPrice
   }: {
+    clicked: boolean
     price: number
     side: string
     setClicked: (clicked: boolean) => void
@@ -115,6 +117,10 @@ const PlaceOrder = memo(
 
     const getDirectionIcon = (direction: string): string => {
       return direction === 'LONG' ? '↗' : '↘'
+    }
+
+    if (!clicked) {
+      return <></>
     }
 
     return (
