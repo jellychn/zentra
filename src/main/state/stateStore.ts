@@ -4,6 +4,8 @@ import config from '../config/config'
 import { initSymbolMetrics, SymbolMetrics } from '../data/dataStore'
 import { UserSettings, userSettingsState } from '../db/dbUserSettings'
 import { ExchangeData, UserTrades } from './types'
+import { Trade } from '../db/dbTrades'
+import { Order } from '../db/dbOrders'
 
 export enum StateType {
   USER = 'user',
@@ -58,7 +60,7 @@ class MainStateStore extends EventEmitter {
       settings: {
         environment: config.env,
         selectedExchange,
-        selectedSymbol: 'BTCUSDT',
+        selectedSymbol: 'ADAUSDT',
         tradingMode: TradingMode.PAPER,
         selectedCandleTimeframe: TIMEFRAME.MINUTE_1,
         selectedLiquidityPoolTimeframe: TIMEFRAME.MINUTE_15,
@@ -98,6 +100,24 @@ class MainStateStore extends EventEmitter {
     this.state[stateType] = { ...this.state[stateType], ...data } as AppState[T]
 
     this.emit(`${String(stateType)}-changed`, this.state[stateType])
+    this.emit('state-changed', this.state)
+  }
+
+  updateUserProducts(data: Trade[]): void {
+    this.state[StateType.USER_TRADES] = {
+      ...this.state[StateType.USER_TRADES],
+      positions: [...this.state[StateType.USER_TRADES].positions, ...data]
+    }
+
+    this.emit('state-changed', this.state)
+  }
+
+  updateUserOrders(data: Order[]): void {
+    this.state[StateType.USER_TRADES] = {
+      ...this.state[StateType.USER_TRADES],
+      orders: [...this.state[StateType.USER_TRADES].orders, ...data]
+    }
+
     this.emit('state-changed', this.state)
   }
 

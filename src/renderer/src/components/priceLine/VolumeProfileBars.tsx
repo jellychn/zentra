@@ -2,11 +2,12 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import React, { memo } from 'react'
 
 interface VolumeProfileBarsProps {
+  showHoverPrice: boolean
   getTopPercentage: (price: number) => number
 }
 
 const VolumeProfileBars = memo(
-  ({ getTopPercentage }: VolumeProfileBarsProps): React.JSX.Element => {
+  ({ showHoverPrice, getTopPercentage }: VolumeProfileBarsProps): React.JSX.Element => {
     const { state } = useStateStore()
     const { metrics } = state || {}
     const {
@@ -18,6 +19,10 @@ const VolumeProfileBars = memo(
     const maxVolume = Math.max(...Object.values(volumeProfile).map(Math.abs), 1)
 
     const avgTurnover = cumulativeVolumeSentiment?.avgTurnover || 0
+
+    if (!showHoverPrice) {
+      return <></>
+    }
 
     return (
       <div

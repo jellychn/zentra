@@ -2,11 +2,12 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import React, { memo } from 'react'
 
 interface PriceFrequencyHeatmapProps {
+  showHoverPrice: boolean
   getTopPercentage: (price: number) => number
 }
 
 const PriceFrequencyHeatmap = memo(
-  ({ getTopPercentage }: PriceFrequencyHeatmapProps): React.JSX.Element => {
+  ({ showHoverPrice, getTopPercentage }: PriceFrequencyHeatmapProps): React.JSX.Element => {
     const { state } = useStateStore()
     const { metrics } = state || {}
     const { priceFrequency = {} } = metrics || {}
@@ -19,6 +20,10 @@ const PriceFrequencyHeatmap = memo(
     // Calculate frequency thresholds for better visual hierarchy
     const highFrequencyThreshold = maxFrequency * 0.7
     const mediumFrequencyThreshold = maxFrequency * 0.4
+
+    if (!showHoverPrice) {
+      return <></>
+    }
 
     return (
       <div

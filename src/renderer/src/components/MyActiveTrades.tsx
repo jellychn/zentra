@@ -26,7 +26,7 @@ export default function MyActiveTrades(): React.JSX.Element {
     setIsCollapsed(!isCollapsed)
   }
 
-  const titleText = showOrders ? 'My Active Orders' : 'My Active Positions'
+  const titleText = showOrders ? 'My Active Orders' : 'My Open Positions'
 
   return (
     <div
@@ -147,10 +147,6 @@ const Content = ({
   orders: any[]
   showOrders: boolean
 }): React.JSX.Element => {
-  if (positions.length === 0 && orders.length === 0) {
-    return <NoPositions />
-  }
-
   if (showOrders && orders.length === 0) {
     return <NoOrders />
   }
@@ -241,7 +237,7 @@ const NoPositions = (): React.JSX.Element => {
               maxWidth: '280px'
             }}
           >
-            Your positions will appear here once you start trading
+            Your open positions will appear here once you start trading
           </div>
         </div>
 

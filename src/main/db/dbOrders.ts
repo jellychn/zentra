@@ -102,6 +102,7 @@ export class OrderStore {
       NotificationHelper.sendSuccess(`Order created successfully: ${id}`)
 
       console.log(`✅ Order created successfully: ${id}`)
+      mainStateStore.updateUserOrders([toCamel(order)])
       return orderWithDetails
     } catch (error) {
       console.error('❌ Failed to create order:', error)

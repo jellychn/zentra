@@ -182,6 +182,7 @@ export class TradeStore {
       NotificationHelper.sendSuccess(successMessage)
 
       console.log(`✅ Trade entered successfully: ${id}`)
+      mainStateStore.updateUserProducts([toCamel(item)])
     } catch (error) {
       console.error('❌ Failed to enter trade:', error)
 

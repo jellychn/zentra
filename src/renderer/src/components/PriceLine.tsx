@@ -12,6 +12,8 @@ import WindowLong from './priceLine/WindowLong'
 import AtrBand from './recentChartIndicator/AtrBand'
 import PriceFrequencyHeatmap from './priceLine/PriceFrequencyHeatmap'
 import VolumeProfileBars from './priceLine/VolumeProfileBars'
+import PositionLines from './priceLine/PositionLines'
+import OrderLines from './priceLine/OrderLines'
 
 export default function PriceLine(): React.JSX.Element {
   const { hoverPrice, setHoverPrice } = usePriceLine()
@@ -206,14 +208,17 @@ const Main = ({
         containerHeight={containerHeight}
         getTopPercentage={getTopPercentage}
       />
-      <PriceFrequencyHeatmap getTopPercentage={getTopPercentage} />
-      <VolumeProfileBars getTopPercentage={getTopPercentage} />
+      <PriceFrequencyHeatmap showHoverPrice={showHoverPrice} getTopPercentage={getTopPercentage} />
+      <VolumeProfileBars showHoverPrice={showHoverPrice} getTopPercentage={getTopPercentage} />
 
       <CurrentPrice showHoverPrice={showHoverPrice} getTopPercentage={getTopPercentage} />
       <HoveredPriceLine showHoverPrice={showHoverPrice} max={max} priceRange={priceRange} />
       <WindowShort value={max1D} label="MAX 1D" isMax={true} getTopPercentage={getTopPercentage} />
       <WindowShort value={min1D} label="MIN 1D" isMax={false} getTopPercentage={getTopPercentage} />
       <AtrBand getTopPercentage={getTopPercentage} />
+
+      <PositionLines getTopPercentage={getTopPercentage} />
+      <OrderLines getTopPercentage={getTopPercentage} />
     </div>
   )
 }
