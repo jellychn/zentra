@@ -3,13 +3,11 @@ import { formatNumber } from '../../../../shared/helper'
 
 const Spread = memo(
   ({
-    lastPrice,
     bids,
     asks,
     showFullOrderBook,
     setShowFullOrderBook
   }: {
-    lastPrice: number
     bids: { [price: number]: number }
     asks: { [price: number]: number }
     showFullOrderBook: boolean
@@ -67,19 +65,11 @@ const Spread = memo(
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span
             style={{
-              color: '#f1f5f9',
-              fontWeight: '700',
-              fontFamily: "'IBM Plex Mono', monospace"
+              fontWeight: '600',
+              fontSize: '10px'
             }}
           >
-            {formatNumber(lastPrice)}
-          </span>
-          <span
-            style={{
-              fontWeight: '600'
-            }}
-          >
-            Spread: {formatNumber(spread)}
+            SPREAD: {formatNumber(spread)}
           </span>
           <div style={{ display: 'flex', gap: '4px', marginLeft: '8px' }}>
             {hasUserOrdersInBids && (
@@ -96,9 +86,8 @@ const Spread = memo(
         </div>
         <span
           style={{
-            color: '#cbd5e1',
+            color: 'gray',
             fontSize: '10px',
-            textDecoration: 'underline',
             fontWeight: '600'
           }}
         >

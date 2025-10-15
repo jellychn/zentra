@@ -37,10 +37,10 @@ function AppContent(): React.JSX.Element {
   }
 
   return (
-    <>
+    <div style={{ overflow: 'hidden' }}>
       <Notification />
       <Trade />
-    </>
+    </div>
   )
 }
 

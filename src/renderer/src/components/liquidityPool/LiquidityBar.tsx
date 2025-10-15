@@ -12,9 +12,9 @@ import {
   PatternStyle
 } from './liquidityBar/helper'
 import ConnectionBands from './liquidityBar/ConnectionBands'
-import { useAutoClosePopup } from './hooks/useAutoClosePopup'
-import { useCleanUp } from './hooks/useCleanUp'
-import { useBarState } from './hooks/useBarState'
+import { useAutoClosePopup } from './liquidityBar/hooks/useAutoClosePopup'
+import { useCleanUp } from './liquidityBar/hooks/useCleanUp'
+import { useBarState } from './liquidityBar/hooks/useBarState'
 
 const LiquidityBar = memo(
   ({

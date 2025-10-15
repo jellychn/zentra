@@ -57,8 +57,8 @@ export default function Trade(): React.JSX.Element {
                   flex: 1,
                   minHeight: 0,
                   gap: '12px',
-                  minWidth: '350px',
-                  maxWidth: '350px',
+                  minWidth: '360px',
+                  maxWidth: '360px',
                   background: 'linear-gradient(315deg, #1e293b 0%, #0f172a 100%)'
                 }}
               >

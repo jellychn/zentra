@@ -95,7 +95,6 @@ export default function OrderBook(): React.JSX.Element {
       <Header selectedSymbol={selectedSymbol} askVolume={askVolume} bidVolume={bidVolume} />
       <RatioBar leftLabel="BIDS" leftValue={bidVolume} rightLabel="ASKS" rightValue={askVolume} />
       <Spread
-        lastPrice={lastPrice}
         bids={bids}
         asks={asks}
         showFullOrderBook={showFullOrderBook}
@@ -127,7 +126,6 @@ export default function OrderBook(): React.JSX.Element {
             ))}
         </div>
 
-        {/* Current Price with ref for scrolling */}
         <div
           ref={currentPriceRef}
           style={{
