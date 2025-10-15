@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, memo } from 'react'
+import React, { useRef, memo } from 'react'
 import { ProcessedLiquidityItem } from '../LiqudityPool'
 import { usePriceLine } from '@renderer/contexts/PriceLineContext'
 import PlaceOrder from './PlaceOrder'
@@ -14,6 +14,7 @@ import {
 import ConnectionBands from './liquidityBar/ConnectionBands'
 import { useAutoClosePopup } from './hooks/useAutoClosePopup'
 import { useCleanUp } from './hooks/useCleanUp'
+import { useBarState } from './hooks/useBarState'
 
 const LiquidityBar = memo(
   ({
@@ -47,43 +48,18 @@ const LiquidityBar = memo(
   }): React.JSX.Element => {
     const { setHoverPrice } = usePriceLine()
 
-    const [hovered, setHovered] = useState(false)
-    const [clicked, setClicked] = useState(false)
-    const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const {
+      hovered,
+      clicked,
+      hoverTimeoutRef,
+      clickTimeoutRef,
+      handleMouseEnter,
+      handleMouseLeave,
+      handleClick,
+      setHovered,
+      setClicked
+    } = useBarState(price, side, setHoveredSide)
     const barRef = useRef<HTMLDivElement>(null)
-
-    const handleMouseEnter = useCallback(() => {
-      hoverTimeoutRef.current = setTimeout(() => {
-        if (!clicked) {
-          setHovered(true)
-          setHoverPrice(price)
-          setHoveredSide(side)
-        }
-      }, 50)
-    }, [clicked, setHoverPrice, price, setHoveredSide, side])
-
-    const handleMouseLeave = useCallback(() => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current)
-      }
-      if (!clicked) {
-        setHovered(false)
-        setHoverPrice(null)
-        setHoveredSide('left')
-      }
-    }, [clicked, setHoverPrice, setHoveredSide])
-
-    const handleClick = useCallback(
-      (e: React.MouseEvent) => {
-        e.stopPropagation()
-        setHovered(false)
-        setHoverPrice(null)
-        setHoveredSide('left')
-        setClicked(true)
-      },
-      [setHoverPrice, setHoveredSide]
-    )
 
     useAutoClosePopup({ clicked, clickTimeoutRef, setClicked })
     useCleanUp({

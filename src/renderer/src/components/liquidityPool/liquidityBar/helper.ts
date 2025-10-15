@@ -182,15 +182,18 @@ export const ContainerStyle = ({
   clicked,
   isCurrentPrice,
   tooltipData
-}: {
-  position
-  side
-  hovered
-  clicked
-  isCurrentPrice
-  tooltipData
-}) =>
-  useMemo(
+}) => {
+  const zIndex = useMemo(
+    () =>
+      hovered || clicked
+        ? 50
+        : isCurrentPrice
+          ? 30
+          : 10 + Math.floor(tooltipData.relativeStrength * 10),
+    [hovered, clicked, isCurrentPrice, tooltipData.relativeStrength]
+  )
+
+  return useMemo(
     () => ({
       ...BASE_CONTAINER_STYLE,
       top: `${Math.max(0, Math.min(100, position))}%`,
@@ -198,15 +201,11 @@ export const ContainerStyle = ({
       right: side === 'right' ? '50px' : 'auto',
       flexDirection: side === 'left' ? 'row' : 'row-reverse',
       transform: 'translateY(-50%)',
-      zIndex:
-        hovered || clicked
-          ? 50
-          : isCurrentPrice
-            ? 30
-            : 10 + Math.floor(tooltipData.relativeStrength * 10)
+      zIndex
     }),
-    [position, side, hovered, clicked, isCurrentPrice, tooltipData.relativeStrength]
+    [position, side, zIndex]
   )
+}
 
 export const BarElementStyle = ({
   barWidth,
