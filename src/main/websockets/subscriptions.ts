@@ -1,10 +1,10 @@
 import { Exchanges } from '../../shared/types'
-import { mainStateStore } from '../state/stateStore'
+import { mainStateStore, StateType } from '../state/stateStore'
 import { sendWsMessage } from './ws'
 
 export async function subscribeToSymbol(symbol: string): Promise<void> {
   const state = mainStateStore.getState()
-  const selectedExchange = state.settings.selectedExchange
+  const selectedExchange = state[StateType.SETTINGS].selectedExchange
 
   if (selectedExchange === Exchanges.PHEMEX) {
     phemexSubscriptions(symbol)

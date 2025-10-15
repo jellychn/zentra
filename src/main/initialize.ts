@@ -1,10 +1,26 @@
 import { getCandles, Resolution } from './api/phemex/klines'
 import { DataStoreType, mainDataStore } from './data/dataStore'
-import { mainStateStore } from './state/stateStore'
+import { dbStore } from './db/dbStore'
+import { mainStateStore, StateType } from './state/stateStore'
 
 const initialize = async (): Promise<void> => {
+  initCandles()
+  initPositions()
+}
+
+export { initialize }
+
+const initPositions = async (): Promise<void> => {
   const state = mainStateStore.getState()
-  const symbol = state.settings.selectedSymbol
+  const userId = state[StateType.USER].id
+  const openPositions = await dbStore.tradeStore.getOpenTrades(userId)
+
+  mainStateStore.update(StateType.USER_TRADES, { positions: openPositions })
+}
+
+const initCandles = async (): Promise<void> => {
+  const state = mainStateStore.getState()
+  const symbol = state[StateType.SETTINGS].selectedSymbol
 
   const initialCandles1M = await getCandles(symbol, Resolution.MINUTE_1, 1000)
   const initialCandles5M = await getCandles(symbol, Resolution.MINUTE_5, 1000)
@@ -50,5 +66,3 @@ const initialize = async (): Promise<void> => {
     data: initialCandles1MON
   })
 }
-
-export { initialize }

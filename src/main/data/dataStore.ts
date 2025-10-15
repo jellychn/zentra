@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import { ProcessedCandlestick, ProcessedOrderBook, ProcessedTrade } from './types'
-import { mainStateStore } from '../state/stateStore'
+import { mainStateStore, StateType } from '../state/stateStore'
 import { calculateATR } from '../indicators/calculations'
 import { TIMEFRAME } from '../../shared/types'
 
@@ -143,7 +143,7 @@ class MainDataStore extends EventEmitter {
     this.dataStore.symbolData.set(symbol, updatedSymbolData)
 
     if (dataType === DataStoreType.LAST_PRICE) {
-      mainStateStore.updateExchangeData({ lastPrice: data as number })
+      mainStateStore.update(StateType.EXCHANGE_DATA, { lastPrice: data as number })
     } else if (
       dataType === DataStoreType.CANDLES_1D ||
       dataType === DataStoreType.CANDLES_5M ||
@@ -152,7 +152,7 @@ class MainDataStore extends EventEmitter {
       dataType === DataStoreType.CANDLES_1M
     ) {
       const state = mainStateStore.getState()
-      const selectedCandleTimeframe = state.settings.selectedCandleTimeframe
+      const selectedCandleTimeframe = state[StateType.SETTINGS].selectedCandleTimeframe
 
       if (
         (dataType === DataStoreType.CANDLES_1M && selectedCandleTimeframe === TIMEFRAME.MINUTE_1) ||
@@ -162,18 +162,18 @@ class MainDataStore extends EventEmitter {
         (dataType === DataStoreType.CANDLES_4H && selectedCandleTimeframe === TIMEFRAME.HOUR_4) ||
         (dataType === DataStoreType.CANDLES_1D && selectedCandleTimeframe === TIMEFRAME.DAY_1)
       ) {
-        mainStateStore.updateExchangeData({ candles: data as ProcessedCandlestick[] })
+        mainStateStore.update(StateType.EXCHANGE_DATA, { candles: data as ProcessedCandlestick[] })
       }
 
       this.recalculateATR(symbol)
     } else {
-      mainStateStore.updateExchangeData({ [dataType]: data })
+      mainStateStore.update(StateType.EXCHANGE_DATA, { [dataType]: data })
     }
   }
 
   private recalculateATR(symbol: string): void {
     const state = mainStateStore.getState()
-    const selectedAtrTimeframe = state.settings.selectedAtrTimeframe
+    const selectedAtrTimeframe = state[StateType.SETTINGS].selectedAtrTimeframe
 
     let candleData: ProcessedCandlestick[] | undefined
 
@@ -211,7 +211,7 @@ class MainDataStore extends EventEmitter {
     } as SymbolData
 
     this.dataStore.symbolData.set(symbol, updatedSymbolData)
-    mainStateStore.updateMetrics(updatedMetrics)
+    mainStateStore.update(StateType.METRICS, updatedMetrics)
   }
 }
 

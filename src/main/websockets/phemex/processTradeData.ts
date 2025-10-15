@@ -21,7 +21,7 @@
 import { Side, TIMEFRAME } from '../../../shared/types'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedTrade } from '../../data/types'
-import { mainStateStore } from '../../state/stateStore'
+import { mainStateStore, StateType } from '../../state/stateStore'
 import { MessageType } from './types'
 
 export interface TradeMessage {
@@ -122,7 +122,7 @@ const processTradeMetrics = (symbol: string, trades: ProcessedTrade[]): void => 
   })
 
   const state = mainStateStore.getState()
-  const selectedLiquidityPoolTimeframe = state.settings.selectedLiquidityPoolTimeframe
+  const selectedLiquidityPoolTimeframe = state[StateType.SETTINGS].selectedLiquidityPoolTimeframe
 
   let timeWindowMinutes = 15
   if (selectedLiquidityPoolTimeframe === TIMEFRAME.MINUTE_1) {

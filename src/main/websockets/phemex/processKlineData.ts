@@ -33,7 +33,7 @@
 import { processKlineEntry, Resolution } from '../../api/phemex/klines'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedCandlestick } from '../../data/types'
-import { mainStateStore } from '../../state/stateStore'
+import { mainStateStore, StateType } from '../../state/stateStore'
 import { MessageType } from './types'
 
 export interface KlineMessage {
@@ -220,8 +220,9 @@ function calculateCumulativeSentiment(candles: ProcessedCandlestick[]): {
 
 const processKlineMetrics = (interval: number, candles: ProcessedCandlestick[]): void => {
   const state = mainStateStore.getState()
-  const selectedSymbol = state.settings.selectedSymbol
-  const selectedPriceLineTimeframe = state.settings.selectedPriceLineTimeframe
+  const settings = state[StateType.SETTINGS]
+  const selectedSymbol = settings.selectedSymbol
+  const selectedPriceLineTimeframe = settings.selectedPriceLineTimeframe
 
   // Calculate overall volume sentiment
   const cumulativeSentiment = calculateCumulativeSentiment(candles)

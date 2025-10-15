@@ -2,6 +2,7 @@ import React from 'react'
 import Header from './tradingDashboard/Header'
 import RecentChartIndicator from './RecentChartIndicator'
 import TradePanel from './TradePanel'
+import Positions from './Positions'
 
 export default function TradingDashboard(): React.JSX.Element {
   return (
@@ -37,6 +38,7 @@ export default function TradingDashboard(): React.JSX.Element {
       >
         <Header />
         <RecentChartIndicator />
+        <Positions />
         <TradePanel />
       </div>
     </div>

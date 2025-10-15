@@ -1,11 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function toCamel(obj: any): any {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [
-      key.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
-      value
-    ])
-  )
+  if (Array.isArray(obj)) {
+    // Handle arrays - map each item recursively
+    return obj.map((item) => toCamel(item))
+  } else if (obj !== null && typeof obj === 'object') {
+    // Handle objects - convert keys to camelCase
+    return Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
+        toCamel(value) // Recursively process nested objects/arrays
+      ])
+    )
+  } else {
+    // Return primitives as-is
+    return obj
+  }
 }
 
 export function toSnake(obj: any): any {

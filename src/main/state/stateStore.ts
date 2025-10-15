@@ -3,21 +3,24 @@ import { Environment, Exchanges, TIMEFRAME, TradingMode } from '../../shared/typ
 import config from '../config/config'
 import { initSymbolMetrics, SymbolMetrics } from '../data/dataStore'
 import { UserSettings, userSettingsState } from '../db/dbUserSettings'
-import { ProcessedCandlestick } from '../data/types'
+import { ExchangeData, UserTrades } from './types'
 
-interface ExchangeData {
-  orderbook: object
-  trades: object[]
-  lastPrice: number
-  candles: ProcessedCandlestick[]
+export enum StateType {
+  USER = 'user',
+  USER_SETTINGS = 'userSettings',
+  USER_TRADES = 'userTrades',
+  SETTINGS = 'settings',
+  EXCHANGE_DATA = 'exchangeData',
+  METRICS = 'metrics'
 }
 
 export interface AppState {
-  user: {
+  [StateType.USER]: {
     id: string
   }
-  userSettings: UserSettings
-  settings: {
+  [StateType.USER_SETTINGS]: UserSettings
+  [StateType.USER_TRADES]: UserTrades
+  [StateType.SETTINGS]: {
     environment: Environment
     selectedExchange: string
     selectedSymbol: string
@@ -27,8 +30,8 @@ export interface AppState {
     selectedAtrTimeframe: string
     selectedPriceLineTimeframe: string
   }
-  exchangeData: ExchangeData
-  metrics: SymbolMetrics
+  [StateType.EXCHANGE_DATA]: ExchangeData
+  [StateType.METRICS]: SymbolMetrics
 }
 
 class MainStateStore extends EventEmitter {
@@ -48,6 +51,10 @@ class MainStateStore extends EventEmitter {
         id: '1'
       },
       userSettings: { ...userSettingsState },
+      userTrades: {
+        orders: [],
+        positions: []
+      },
       settings: {
         environment: config.env,
         selectedExchange,
@@ -82,48 +89,24 @@ class MainStateStore extends EventEmitter {
     this.emit('state-changed', this.state)
   }
 
-  updateSettings(settings: Partial<AppState['settings']>): void {
+  update<T extends keyof AppState>(stateType: T, data: Partial<AppState[T]>): void {
     if (this.isDestroyed) {
-      console.log('StateStore: Ignoring updateSettings - store is destroyed')
+      console.log('StateStore: Ignoring update - store is destroyed')
       return
     }
 
-    this.state.settings = { ...this.state.settings, ...settings }
+    this.state[stateType] = { ...this.state[stateType], ...data } as AppState[T]
 
-    this.emit('settings-changed', this.state.settings)
+    this.emit(`${String(stateType)}-changed`, this.state[stateType])
     this.emit('state-changed', this.state)
   }
 
-  updateExchangeData(data: Partial<AppState['exchangeData']>): void {
-    if (this.isDestroyed) {
-      console.log('StateStore: Ignoring updateExchangeData - store is destroyed')
-      return
-    }
-
-    this.state.exchangeData = { ...this.state.exchangeData, ...data }
-    this.emit('exchange-data-changed', this.state.exchangeData)
-    this.emit('state-changed', this.state)
-  }
-
-  updateMetrics(data: Partial<AppState['metrics']>): void {
-    if (this.isDestroyed) {
-      console.log('StateStore: Ignoring updateMetrics - store is destroyed')
-      return
-    }
-
-    this.state.metrics = { ...this.state.metrics, ...data }
-    this.emit('metrics-changed', this.state.metrics)
-    this.emit('state-changed', this.state)
-  }
-
-  // Add destroy method
   destroy(): void {
     this.isDestroyed = true
-    this.removeAllListeners() // Clean up all event listeners
+    this.removeAllListeners()
     console.log('StateStore: Store destroyed')
   }
 
-  // Optional: Public method to reinitialize if needed
   reinitialize(): void {
     if (this.isDestroyed) {
       console.log('StateStore: Cannot reinitialize - store is destroyed')

@@ -5,7 +5,7 @@ import { docClient, dynamoClient } from './helper'
 import { OrderType, PosSide, Side } from '../../shared/types'
 import { PutCommand, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb'
 import { toSnake, toCamel } from '../../shared/helper'
-import { mainStateStore } from '../state/stateStore'
+import { mainStateStore, StateType } from '../state/stateStore'
 import { NotificationHelper } from '../notification/notificationHelper'
 
 export interface Order {
@@ -72,14 +72,13 @@ export class OrderStore {
   async createOrder(order: Order): Promise<Order> {
     try {
       const state = mainStateStore.getState()
+      const userId = state[StateType.USER]?.id
 
-      if (!state.user?.id) {
+      if (!userId) {
         const errorMsg = 'User not authenticated'
         NotificationHelper.sendError(errorMsg)
         throw new Error(errorMsg)
       }
-
-      const userId = state.user.id
       const id = order.orderId || uuidv4()
 
       const orderWithDetails: Order = {

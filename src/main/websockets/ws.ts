@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { BrowserWindow } from 'electron'
 
-import { mainStateStore } from '../state/stateStore'
+import { mainStateStore, StateType } from '../state/stateStore'
 import { subscribeToSymbol } from './subscriptions'
 import processWsData from './processWsData'
 import config from '../config/config'
@@ -15,9 +15,10 @@ export function initWebSocket(window: BrowserWindow): void {
   mainWindow = window
 
   const state = mainStateStore.getState()
-  const environment = state.settings.environment
-  const selectedExchange = state.settings.selectedExchange
-  const selectedSymbol = state.settings.selectedSymbol
+  const settings = state[StateType.SETTINGS]
+  const environment = settings.environment
+  const selectedExchange = settings.selectedExchange
+  const selectedSymbol = settings.selectedSymbol
   const wsBase = config.exchanges[selectedExchange][environment].wsBase
 
   ws = new WebSocket(wsBase)

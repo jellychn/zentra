@@ -21,8 +21,6 @@ export enum TIMEFRAME {
   YEAR_1 = '1Y'
 }
 
-export enum PRICE_LINE_TIMEFRAME {}
-
 export enum Exchanges {
   BINANCE = 'Binance',
   BYBIT = 'Bybit',
@@ -41,7 +39,8 @@ export enum MessageSenderType {
   CREATE_ORDER = 'create_order',
   CHANGE_LIQUIDITY_POOL_TIMEFRAME = 'change_liquidity_pool_timeframe',
   CHANGE_CANDLE_TIMEFRAME = 'change_candle_timeframe',
-  CHANGE_PRICE_LINE_TIMEFRAME = 'change_price_line_timeframe'
+  CHANGE_PRICE_LINE_TIMEFRAME = 'change_price_line_timeframe',
+  GET_OPEN_TRADES = 'get_open_trades'
 }
 
 export const enum MessageReceiverType {

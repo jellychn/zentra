@@ -1,6 +1,6 @@
 import { dbStore } from '../dbStore'
 import { OrderType, PosSide, Side } from '../../../shared/types'
-import { mainStateStore } from '../../state/stateStore'
+import { mainStateStore, StateType } from '../../state/stateStore'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedOrderBook } from '../../data/types'
 import { createTrade } from '../trades/tradesOperations'
@@ -15,13 +15,15 @@ export const createOrder = async ({
   posSide: PosSide
 }): Promise<void> => {
   const state = mainStateStore.getState()
-  const userId = state.user.id
+  const userId = state[StateType.USER].id
   const availableCapital = await dbStore.tradeStore.getCapital(userId)
 
-  const leverage = state.userSettings.leverage
-  const capitalAllocation = state.userSettings.capitalAllocation
+  const userSettings = state[StateType.USER_SETTINGS]
 
-  const selectedSymbol = state.settings.selectedSymbol
+  const leverage = userSettings.leverage
+  const capitalAllocation = userSettings.capitalAllocation
+
+  const selectedSymbol = state[StateType.SETTINGS].selectedSymbol
   const lastPrice = mainDataStore.getByDataType(selectedSymbol, DataStoreType.LAST_PRICE)
 
   const capital = availableCapital * capitalAllocation
@@ -65,7 +67,7 @@ export const createOrder = async ({
 
 const getBestLimitPrice = (posSide: PosSide): number | null => {
   const state = mainStateStore.getState()
-  const selectedSymbol = state.settings.selectedSymbol
+  const selectedSymbol = state[StateType.SETTINGS].selectedSymbol
   const orderBook = mainDataStore.getByDataType(selectedSymbol, DataStoreType.ORDERBOOK)
 
   if (

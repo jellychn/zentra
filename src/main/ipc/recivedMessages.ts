@@ -6,6 +6,7 @@ import {
   processChangeLiquidityPoolTimeframe,
   processChangePriceListTimeframe
 } from './processMessages/settingsMessages'
+import { processGetOpenTrades } from './processMessages/tradesMessages'
 
 export const receivedMessages = (): void => {
   ipcMain.on(MessageSenderType.CREATE_ORDER, (_event, data) => {
@@ -31,5 +32,10 @@ export const receivedMessages = (): void => {
   ipcMain.on(MessageSenderType.CHANGE_PRICE_LINE_TIMEFRAME, (_event, data) => {
     console.log(`Received from frontend: ${MessageSenderType.CHANGE_PRICE_LINE_TIMEFRAME}`, data)
     processChangePriceListTimeframe(data)
+  })
+
+  ipcMain.on(MessageSenderType.GET_OPEN_TRADES, (_event, data) => {
+    console.log(`Received from frontend: ${MessageSenderType.GET_OPEN_TRADES}`, data)
+    processGetOpenTrades(data)
   })
 }

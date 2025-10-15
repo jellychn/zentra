@@ -1,5 +1,5 @@
 import { OrderType } from '../../../shared/types'
-import { mainStateStore } from '../../state/stateStore'
+import { mainStateStore, StateType } from '../../state/stateStore'
 import { dbStore } from '../dbStore'
 import { EnterTrade } from '../dbTrades'
 
@@ -11,8 +11,9 @@ export const createTrade = (trade: EnterTrade): void => {
 
 function calculateEntryFee(tradeData: EnterTrade, isMaker: boolean = false): number {
   const state = mainStateStore.getState()
-  const makerFee = state.userSettings.makerFee
-  const takerFee = state.userSettings.takerFee
+  const userSettings = state[StateType.USER_SETTINGS]
+  const makerFee = userSettings.makerFee
+  const takerFee = userSettings.takerFee
 
   const { entryPrice, size } = tradeData
 

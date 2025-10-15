@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios'
 import config from '../config/config'
-import { mainStateStore } from '../state/stateStore'
+import { mainStateStore, StateType } from '../state/stateStore'
 
 export async function apiCall(endpoint: string, params: Record<string, any> = {}): Promise<any> {
   const state = mainStateStore.getState()
-  const environment = state.settings.environment
+  const environment = state[StateType.SETTINGS].environment
   const selectedExchange = state.settings.selectedExchange
   const restBase = config.exchanges[selectedExchange][environment].restBase
 

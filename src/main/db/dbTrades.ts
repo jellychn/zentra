@@ -3,7 +3,7 @@ import { PutCommand, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
 import { docClient, dynamoClient } from './helper'
 import { OrderType, PosSide, Side, TradeStatus } from '../../shared/types'
-import { mainStateStore } from '../state/stateStore'
+import { mainStateStore, StateType } from '../state/stateStore'
 import { toCamel, toSnake } from '../../shared/helper'
 import { NotificationHelper } from '../notification/notificationHelper'
 
@@ -107,14 +107,14 @@ export class TradeStore {
   async enterTrade(trade: EnterTrade): Promise<void> {
     try {
       const state = mainStateStore.getState()
+      const userId = state[StateType.USER].id
 
-      if (!state.user?.id) {
+      if (!userId) {
         const errorMsg = 'User not authenticated'
         NotificationHelper.sendError(errorMsg)
         throw new Error(errorMsg)
       }
 
-      const userId = state.user.id
       const id = uuidv4()
 
       // Validate required fields
@@ -265,11 +265,30 @@ export class TradeStore {
     return result.Items ? (toCamel(result.Items) as Trade[]) : []
   }
 
+  async getOpenTrades(userId: string): Promise<Trade[]> {
+    const command = new QueryCommand({
+      TableName: this.tableName,
+      IndexName: 'UserIdIndex',
+      KeyConditionExpression: '#user_id = :user_id',
+      FilterExpression: '#status = :status',
+      ExpressionAttributeNames: {
+        '#user_id': 'user_id',
+        '#status': 'status'
+      },
+      ExpressionAttributeValues: {
+        ':user_id': userId,
+        ':status': TradeStatus.OPEN
+      }
+    })
+
+    const result = await docClient.send(command)
+    return result.Items ? (toCamel(result.Items) as Trade[]) : []
+  }
+
   // Paper functions
   async getCapital(userId: string): Promise<number> {
     const state = mainStateStore.getState()
-    const { userSettings } = state
-    const { initialCapital } = userSettings
+    const initialCapital = state[StateType.USER_SETTINGS].initialCapital
 
     const command = new QueryCommand({
       TableName: this.tableName,

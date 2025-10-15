@@ -1,14 +1,14 @@
 import { TIMEFRAME } from '../../../shared/types'
 import { DataStoreType, mainDataStore } from '../../data/dataStore'
 import { ProcessedCandlestick } from '../../data/types'
-import { mainStateStore } from '../../state/stateStore'
+import { mainStateStore, StateType } from '../../state/stateStore'
 
 export const processChangeLiquidityPoolTimeframe = (data: { timeframe: string }): void => {
   const { timeframe } = data
-  mainStateStore.updateSettings({ selectedLiquidityPoolTimeframe: timeframe })
+  mainStateStore.update(StateType.SETTINGS, { selectedLiquidityPoolTimeframe: timeframe })
 
   const state = mainStateStore.getState()
-  const selectedSymbol = state.settings.selectedSymbol
+  const selectedSymbol = state[StateType.SETTINGS].selectedSymbol
 
   const existingLiquidityPool = mainDataStore.getByDataType(
     selectedSymbol,
@@ -56,10 +56,10 @@ export const processChangeLiquidityPoolTimeframe = (data: { timeframe: string })
 
 export const processChangeCandleTimeframe = async (data: { timeframe: string }): Promise<void> => {
   const { timeframe } = data
-  mainStateStore.updateSettings({ selectedCandleTimeframe: timeframe })
+  mainStateStore.update(StateType.SETTINGS, { selectedCandleTimeframe: timeframe })
 
   const state = mainStateStore.getState()
-  const selectedSymbol = state.settings.selectedSymbol
+  const selectedSymbol = state[StateType.SETTINGS].selectedSymbol
 
   let dataType = DataStoreType.CANDLES_1M
   if (timeframe === TIMEFRAME.MINUTE_15) {
@@ -72,12 +72,12 @@ export const processChangeCandleTimeframe = async (data: { timeframe: string }):
     selectedSymbol,
     dataType
   ) as ProcessedCandlestick[]
-  mainStateStore.updateExchangeData({ candles: existingCandles })
+  mainStateStore.update(StateType.EXCHANGE_DATA, { candles: existingCandles })
 }
 
 export const processChangePriceListTimeframe = async (data: {
   timeframe: string
 }): Promise<void> => {
   const { timeframe } = data
-  mainStateStore.updateSettings({ selectedPriceLineTimeframe: timeframe })
+  mainStateStore.update(StateType.SETTINGS, { selectedPriceLineTimeframe: timeframe })
 }

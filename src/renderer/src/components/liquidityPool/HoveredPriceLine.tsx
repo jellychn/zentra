@@ -27,7 +27,7 @@ const HoveredPriceLine = memo(
           transform: 'translateY(-50%)',
           zIndex: 100,
           pointerEvents: 'none',
-          width: '50%'
+          width: '60%'
         }}
       >
         <div
