@@ -5,7 +5,8 @@ const Header = (): React.JSX.Element => {
     <div
       style={{
         paddingBottom: '16px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        marginBottom: '16px'
       }}
     >
       <div

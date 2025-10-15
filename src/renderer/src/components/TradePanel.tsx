@@ -4,7 +4,7 @@ export default function TradePanel(): React.JSX.Element {
   return (
     <div
       style={{
-        padding: '12px 20px',
+        padding: '12px 20px 0 20px',
         color: 'white',
         borderTop: '1px solid #333',
         display: 'flex',

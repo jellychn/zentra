@@ -27,7 +27,6 @@ export default function TradingDashboard(): React.JSX.Element {
           minWidth: 0,
           display: 'flex',
           flexDirection: 'column',
-          gap: '16px',
           backdropFilter: 'blur(20px)',
           borderTop: '1px solid rgba(255, 255, 255, 0.1)',
           borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
@@ -37,8 +36,30 @@ export default function TradingDashboard(): React.JSX.Element {
         }}
       >
         <Header />
-        <RecentChartIndicator />
-        <Positions />
+
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            gap: '20px'
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <RecentChartIndicator />
+          </div>
+
+          <Positions />
+        </div>
+
         <TradePanel />
       </div>
     </div>
