@@ -1,48 +1,71 @@
 import React, { useState } from 'react'
 import { formatNumber } from '../../../shared/helper'
 
-export default function Position({
-  position
-}: {
-  position: Record<string, any>
-}): React.JSX.Element {
+export default function Order({ order }: { order: Record<string, any> }): React.JSX.Element {
   const [hovered, setHovered] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
   const {
-    positionStatus = '–',
+    orderId = '–',
+    orderStatus = '–',
+    orderType = '–',
     posSide = '–',
     symbol = '–',
+    side = '–',
+    priceRp = 0,
+    orderQtyRq = 0,
+    orderValueRv = 0,
     leverageRr = '–',
-    avgEntryPriceRp = 0,
-    liquidationPriceRp = 0,
-    cumFundingFeeRv = 0,
-    assignedPosBalanceRv = 0,
-    sizeRq = '–',
-    rlPnl = 0,
-    unPnl = 0,
-    netMakerProfit = 0,
-    netTakerProfit = 0,
+    stopLossRp = 0,
+    takeProfitRp = 0,
+    createdAt = '–',
+    updatedAt = '–',
+    execFeeRv = 0,
+    feeRateRr = 0,
+    totalExecValueRv = 0,
+    avgPriceRp = 0,
+    cumFeeRv = 0,
+    cumValueRv = 0,
     status,
-    entryPrice,
-    exitPrice,
+    orderPrice,
     size,
-    leverage,
-    side
-  } = position || {}
+    leverage
+  } = order || {}
 
   // Use available data with fallbacks
   const displaySymbol = symbol !== '–' ? symbol : 'Unknown'
+  const displayOrderType = orderType !== '–' ? orderType : '–'
   const displayPosSide = posSide !== '–' ? posSide : side || '–'
   const displayLeverage = leverageRr !== '–' ? leverageRr : leverage || '–'
-  const displayEntryPrice = avgEntryPriceRp || entryPrice || 0
-  const displaySize = sizeRq !== '–' ? sizeRq : size || '–'
-  const displayStatus = positionStatus !== '–' ? positionStatus : status || '–'
+  const displayPrice = priceRp || orderPrice || 0
+  const displaySize = orderQtyRq !== 0 ? orderQtyRq : size || 0
+  const displayStatus = orderStatus !== '–' ? orderStatus : status || '–'
+  const displayOrderValue = orderValueRv || displayPrice * displaySize
 
-  const totalPnl = Number(rlPnl) + Number(unPnl) + Number(cumFundingFeeRv)
   const isLong = displayPosSide?.toLowerCase() === 'long'
-  const positionValue = Number(displayEntryPrice) * Number(displaySize)
-  const margin = positionValue / Number(displayLeverage)
+  const isBuy = side?.toLowerCase() === 'buy'
+  const isActive =
+    displayStatus?.toLowerCase() === 'active' || displayStatus?.toLowerCase() === 'open'
+  const isMarketOrder = displayOrderType?.toLowerCase() === 'market'
+
+  const getStatusColor = (status: string) => {
+    const statusLower = status.toLowerCase()
+    if (statusLower === 'filled') return '#10b981'
+    if (statusLower === 'cancelled') return '#ef4444'
+    if (statusLower === 'rejected') return '#dc2626'
+    if (statusLower === 'active' || statusLower === 'open') return '#3b82f6'
+    if (statusLower === 'partiallyfilled') return '#f59e0b'
+    return '#94a3b8'
+  }
+
+  const formatDate = (dateString: string) => {
+    if (dateString === '–') return '–'
+    try {
+      return new Date(dateString).toLocaleString()
+    } catch {
+      return dateString
+    }
+  }
 
   return (
     <div
@@ -51,11 +74,11 @@ export default function Position({
         borderRadius: '8px',
         background: 'linear-gradient(135deg, rgba(22, 25, 41, 0.95), rgba(30, 33, 48, 0.98))',
         backdropFilter: 'blur(10px)',
-        border: `1px solid ${isLong ? 'rgba(38, 166, 154, 0.3)' : 'rgba(239, 83, 80, 0.3)'}`,
+        border: `1px solid ${isBuy ? 'rgba(38, 166, 154, 0.3)' : 'rgba(239, 83, 80, 0.3)'}`,
         transition: 'all 0.3s ease',
         transform: hovered ? 'translateY(-1px)' : 'none',
         boxShadow: hovered
-          ? `0 4px 12px ${isLong ? 'rgba(38, 166, 154, 0.2)' : 'rgba(239, 83, 80, 0.2)'}`
+          ? `0 4px 12px ${isBuy ? 'rgba(38, 166, 154, 0.2)' : 'rgba(239, 83, 80, 0.2)'}`
           : '0 1px 4px rgba(0, 0, 0, 0.1)',
         cursor: 'pointer'
       }}
@@ -81,7 +104,7 @@ export default function Position({
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 'bold',
-              background: isLong
+              background: isBuy
                 ? 'linear-gradient(135deg, #26a69a, #10b981)'
                 : 'linear-gradient(135deg, #ef5350, #f87171)',
               color: '#fff',
@@ -90,7 +113,7 @@ export default function Position({
               transform: hovered ? 'scale(1.1) rotate(5deg)' : 'none'
             }}
           >
-            {isLong ? '▲' : '▼'}
+            {isBuy ? 'BUY' : 'SELL'}
           </div>
 
           <div style={{ minWidth: 0, flex: 1 }}>
@@ -109,11 +132,11 @@ export default function Position({
             <div
               style={{
                 fontSize: '11px',
-                color: isLong ? '#26a69a' : '#ef5350',
+                color: isBuy ? '#26a69a' : '#ef5350',
                 fontWeight: '600'
               }}
             >
-              {displayPosSide} • {displayLeverage}x
+              {displayPosSide} • {displayOrderType} • {displayLeverage}x
             </div>
           </div>
         </div>
@@ -138,7 +161,7 @@ export default function Position({
               fontWeight: 'bold'
             }}
           >
-            ${formatNumber(displayEntryPrice)}
+            {isMarketOrder ? 'Market' : `$${formatNumber(displayPrice)}`}
           </div>
         </div>
 
@@ -147,12 +170,11 @@ export default function Position({
             style={{
               fontSize: '14px',
               fontWeight: 'bold',
-              color: unPnl >= 0 ? '#10b981' : '#ef4444',
+              color: getStatusColor(displayStatus),
               marginBottom: '2px'
             }}
           >
-            {unPnl >= 0 ? '+' : ''}
-            {formatNumber(unPnl)}
+            {displayStatus}
           </div>
           <div
             style={{
@@ -164,7 +186,7 @@ export default function Position({
               gap: '4px'
             }}
           >
-            <span>PnL</span>
+            <span>Order</span>
             <div
               style={{
                 fontSize: '8px',
@@ -198,20 +220,20 @@ export default function Position({
             }}
           >
             <StatCard
-              label="Position Value"
-              value={`$${formatNumber(positionValue)}`}
+              label="Order Value"
+              value={`$${formatNumber(displayOrderValue)}`}
               color="#f1f5f9"
             />
-            <StatCard label="Margin" value={`$${formatNumber(margin)}`} color="#f1f5f9" />
+            <StatCard label="Execution Fee" value={`$${formatNumber(execFeeRv)}`} color="#f1f5f9" />
             <StatCard
-              label="Liquidation Price"
-              value={`$${formatNumber(Number(liquidationPriceRp))}`}
+              label="Stop Loss"
+              value={stopLossRp ? `$${formatNumber(stopLossRp)}` : '–'}
               color="#ef4444"
             />
             <StatCard
-              label="Funding Fee"
-              value={`$${formatNumber(cumFundingFeeRv)}`}
-              color={cumFundingFeeRv >= 0 ? '#10b981' : '#ef4444'}
+              label="Take Profit"
+              value={takeProfitRp ? `$${formatNumber(takeProfitRp)}` : '–'}
+              color="#10b981"
             />
           </div>
 
@@ -226,16 +248,16 @@ export default function Position({
               borderRadius: '6px'
             }}
           >
-            <PnlItem label="Realized" value={rlPnl} color={rlPnl >= 0 ? '#10b981' : '#ef4444'} />
+            <PnlItem label="Fee Rate" value={`${formatNumber(feeRateRr * 100)}%`} color="#3b82f6" />
             <PnlItem
-              label="Maker"
-              value={netMakerProfit}
-              color={netMakerProfit >= 0 ? '#10b981' : '#ef4444'}
+              label="Total Exec Value"
+              value={`$${formatNumber(totalExecValueRv)}`}
+              color="#f1f5f9"
             />
             <PnlItem
-              label="Taker"
-              value={netTakerProfit}
-              color={netTakerProfit >= 0 ? '#10b981' : '#ef4444'}
+              label="Avg Price"
+              value={avgPriceRp ? `$${formatNumber(avgPriceRp)}` : '–'}
+              color="#f1f5f9"
             />
           </div>
 
@@ -247,19 +269,18 @@ export default function Position({
               fontSize: '11px'
             }}
           >
+            <DetailItem label="Order ID" value={orderId} color="#cbd5e1" />
             <DetailItem
-              label="Assigned Balance"
-              value={`$${formatNumber(Number(assignedPosBalanceRv))}`}
+              label="Cumulative Fee"
+              value={`$${formatNumber(cumFeeRv)}`}
+              color="#ef4444"
             />
+            <DetailItem label="Created" value={formatDate(createdAt)} color="#94a3b8" />
+            <DetailItem label="Updated" value={formatDate(updatedAt)} color="#94a3b8" />
             <DetailItem
-              label="Total PnL"
-              value={`$${formatNumber(totalPnl)}`}
-              color={totalPnl >= 0 ? '#10b981' : '#ef4444'}
-            />
-            <DetailItem
-              label="Status"
-              value={displayStatus}
-              color={displayStatus === 'active' ? '#10b981' : '#ef4444'}
+              label="Cumulative Value"
+              value={`$${formatNumber(cumValueRv)}`}
+              color="#10b981"
             />
             <DetailItem
               label="Position Side"
@@ -331,7 +352,7 @@ const PnlItem = ({ label, value, color }: any) => (
         color: color
       }}
     >
-      ${typeof value === 'number' ? formatNumber(value) : value}
+      {value}
     </div>
   </div>
 )

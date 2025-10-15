@@ -2,7 +2,7 @@ import React from 'react'
 import Header from './tradingDashboard/Header'
 import RecentChartIndicator from './RecentChartIndicator'
 import TradePanel from './TradePanel'
-import Positions from './Positions'
+import MyActiveTrades from './MyActiveTrades'
 
 export default function TradingDashboard(): React.JSX.Element {
   return (
@@ -10,6 +10,7 @@ export default function TradingDashboard(): React.JSX.Element {
       style={{
         flex: 1,
         background: 'rgba(255, 255, 255, 0.1)',
+        borderBottom: '1px solid #333',
         height: '100%',
         minWidth: 0,
         overflow: 'hidden'
@@ -57,7 +58,7 @@ export default function TradingDashboard(): React.JSX.Element {
             <RecentChartIndicator />
           </div>
 
-          <Positions />
+          <MyActiveTrades />
         </div>
 
         <TradePanel />

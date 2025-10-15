@@ -6,6 +6,7 @@ import { mainStateStore, StateType } from './state/stateStore'
 const initialize = async (): Promise<void> => {
   initCandles()
   initPositions()
+  initOrders()
 }
 
 export { initialize }
@@ -16,6 +17,13 @@ const initPositions = async (): Promise<void> => {
   const openPositions = await dbStore.tradeStore.getOpenTrades(userId)
 
   mainStateStore.update(StateType.USER_TRADES, { positions: openPositions })
+}
+
+const initOrders = async (): Promise<void> => {
+  const state = mainStateStore.getState()
+  const userId = state[StateType.USER].id
+  const orders = await dbStore.orderStore.getOrdersByUserId(userId)
+  mainStateStore.update(StateType.USER_TRADES, { orders: orders })
 }
 
 const initCandles = async (): Promise<void> => {
