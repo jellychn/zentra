@@ -1,45 +1,44 @@
 import { PosSide } from '../../../../../shared/types'
 import { useState } from 'react'
 
-export default function PositionDetails({
-  position,
+export default function OrderDetails({
+  order,
   getTopPercentage
 }: {
-  position
+  order
   getTopPercentage
 }): React.JSX.Element {
-  const isLong = position.posSide === PosSide.LONG
+  const isLong = order.posSide === PosSide.LONG
   const color = isLong ? '#10b981' : '#ef4444'
   const [hover, setHover] = useState(false)
 
-  const { entryPrice, unrealizedPnl } = position
+  const { price } = order
 
   const handleClick = (): void => {
-    console.log('Position clicked:', position)
-    // Add your position details click handler here
+    console.log('Order clicked:', order)
+    // Add your order details click handler here
   }
 
   return (
     <div
       style={{
         position: 'absolute',
-        top: `${getTopPercentage(entryPrice)}%`,
-        // transform: 'translateY(-50%)',
-        zIndex: 100,
-        right: '-10px',
+        top: `${getTopPercentage(price)}%`,
+        transform: hover ? 'translateY(-50%) scale(1.1)' : 'translateY(-50%) scale(1)',
+        zIndex: 99,
+        right: '-25px',
         backgroundColor: color,
-        borderRadius: '50%', // Changed to circle for positions
-        width: '20px',
-        height: '20px',
+        borderRadius: '3px',
+        width: '18px',
+        height: '18px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: `0 0 12px ${color}80, 0 8px 32px rgba(0, 0, 0, 0.2)`,
-        border: `2px solid ${isLong ? '#22c55e' : '#ef4444'}`,
-        opacity: hover ? 1 : 0.8,
+        boxShadow: `0 0 8px ${color}80, 0 8px 32px rgba(0, 0, 0, 0.2)`,
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        transform: hover ? 'translateY(-50%) scale(1.1)' : 'translateY(-50%) scale(1)'
+        opacity: hover ? 0.8 : 0.5,
+        transition: 'all 0.2s ease',
+        border: `1px solid ${color}`
       }}
       onClick={handleClick}
       onMouseEnter={() => setHover(true)}
@@ -49,58 +48,42 @@ export default function PositionDetails({
         style={{
           color: 'white',
           fontSize: '10px',
-          fontWeight: 'bold',
-          transform: isLong ? 'none' : 'rotate(180deg)'
+          fontWeight: 'bold'
         }}
       >
-        ▲
+        {isLong ? 'B' : 'S'}
       </div>
 
-      {/* Enhanced price tooltip */}
+      {/* Price tooltip (shows on hover) */}
       <div
         style={{
           position: 'absolute',
-          right: '30px',
+          right: '25px',
           top: '50%',
           transform: 'translateY(-50%)',
           background: 'rgba(0, 0, 0, 0.9)',
           color: 'white',
-          padding: '6px 10px',
-          borderRadius: '5px',
-          fontSize: '11px',
-          fontWeight: '600',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          fontSize: '10px',
           whiteSpace: 'nowrap',
           opacity: 0,
-          transition: 'all 0.3s ease',
+          transition: 'all 0.2s ease',
           pointerEvents: 'none',
           borderLeft: `3px solid ${color}`,
-          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.4)',
-          backdropFilter: 'blur(10px)'
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
         }}
         className="position-tooltip"
       >
-        <div style={{ fontSize: '10px', opacity: 0.8, marginBottom: '2px' }}>Entry Price</div>
-        <div style={{ fontWeight: 'bold' }}>${entryPrice}</div>
-        {unrealizedPnl !== undefined && (
-          <div
-            style={{
-              fontSize: '9px',
-              color: unrealizedPnl >= 0 ? '#10b981' : '#ef4444',
-              marginTop: '2px'
-            }}
-          >
-            PnL: ${unrealizedPnl}
-          </div>
-        )}
+        <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>Order Price</div>
+        <div>${price}</div>
       </div>
 
-      {/* Click instruction tooltip */}
       {hover && (
         <div
           style={{
             position: 'absolute',
-            left: '-90px',
-            top: '-40px',
+            left: '25px',
             background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98))',
             color: '#f1f5f9',
             padding: '8px 12px',
@@ -108,13 +91,13 @@ export default function PositionDetails({
             fontSize: '11px',
             fontWeight: '600',
             whiteSpace: 'nowrap',
-            border: `1px solid ${color}40`,
+            border: `1px solid ${color}30`,
             boxShadow: `
               0 4px 20px rgba(0, 0, 0, 0.4),
               0 0 0 1px rgba(255, 255, 255, 0.05)
             `,
             backdropFilter: 'blur(12px)',
-            zIndex: 101,
+            zIndex: 1000,
             pointerEvents: 'none',
             animation: 'fadeInUp 0.2s ease-out'
           }}
@@ -128,7 +111,7 @@ export default function PositionDetails({
                 background: color
               }}
             />
-            Click to view position details
+            Click to view order details
           </div>
         </div>
       )}
@@ -137,11 +120,11 @@ export default function PositionDetails({
         {`
           .position-tooltip {
             opacity: 0;
-            transform: translateY(-50%) translateX(-10px);
+            transition: all 0.2s ease;
           }
           div:hover .position-tooltip {
             opacity: 1;
-            transform: translateY(-50%) translateX(0);
+            transform: translateY(-50%) translateX(-5px);
           }
           
           @keyframes fadeInUp {

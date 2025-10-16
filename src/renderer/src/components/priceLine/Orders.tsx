@@ -1,23 +1,20 @@
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
-import PositionDetails from './positions/PositionDetails'
 
-export default function Positions({
+import OrderDetails from './orders/OrderDetails'
+
+export default function Orders({
   getTopPercentage
 }: {
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
   const { state } = useStateStore()
   const { userTrades } = state || {}
-  const { positions = [] } = userTrades || {}
+  const { orders = [] } = userTrades || {}
 
   return (
     <div>
-      {positions.map((position) => (
-        <PositionDetails
-          key={position.createdAt}
-          position={position}
-          getTopPercentage={getTopPercentage}
-        />
+      {orders.map((order) => (
+        <OrderDetails key={order.createdAt} order={order} getTopPercentage={getTopPercentage} />
       ))}
       <style>
         {`

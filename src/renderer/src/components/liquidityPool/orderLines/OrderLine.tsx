@@ -59,9 +59,8 @@ const OrderLine = ({
           background: color,
           borderRadius: '2px',
           padding: '6px',
-          boxShadow: `0 0 10px ${glowColor}`,
-          zIndex: 2,
-          border: `2px dashed rgba(30, 41, 59, 0.95)`
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          zIndex: 2
         }}
       >
         {/* Arrow indicator inside the box */}
@@ -73,16 +72,19 @@ const OrderLine = ({
             transform: 'translate(-50%, -50%)',
             background: color,
             borderRadius: '2px',
-            boxShadow: `0 0 10px ${glowColor}`,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
             zIndex: 2,
             color: 'white',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '8px'
+            fontSize: '10px',
+            fontWeight: 'bold',
+            height: '16px',
+            width: '16px'
           }}
         >
-          {isBuyOrder ? '▲' : '▼'}
+          {isBuyOrder ? 'B' : 'S'}
         </div>
       </div>
 

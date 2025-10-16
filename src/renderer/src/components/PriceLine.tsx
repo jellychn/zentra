@@ -15,6 +15,7 @@ import VolumeProfileBars from './priceLine/VolumeProfileBars'
 import PositionLines from './priceLine/PositionLines'
 import OrderLines from './priceLine/OrderLines'
 import Positions from './priceLine/Positions'
+import Orders from './priceLine/Orders'
 
 export default function PriceLine(): React.JSX.Element {
   const { hoverPrice, setHoverPrice } = usePriceLine()
@@ -207,6 +208,8 @@ const Main = ({
       }}
     >
       <Positions getTopPercentage={getTopPercentage} />
+      <Orders getTopPercentage={getTopPercentage} />
+
       <PriceLevels
         max={max}
         min={min}

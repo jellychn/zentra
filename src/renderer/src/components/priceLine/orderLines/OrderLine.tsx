@@ -31,43 +31,6 @@ export default function OrderLine({
           boxShadow: `0 0 8px ${glowColor}`
         }}
       />
-
-      {/* Animated pulse effect */}
-      <div
-        style={{
-          position: 'absolute',
-          top: `calc(${orderPercentage}% - 3px)`,
-          right: '10px',
-          width: '6px',
-          height: '6px',
-          background: color,
-          borderRadius: '50%',
-          zIndex: 1000,
-          transform: 'translateX(50%)',
-          opacity: 0.9,
-          boxShadow: `0 0 0 0 ${glowColor}`,
-          animation: 'pulse 2s infinite'
-        }}
-      />
-
-      <style>
-        {`
-          @keyframes pulse {
-            0% {
-              transform: translateX(50%) scale(0.8);
-              box-shadow: 0 0 0 0 ${glowColor};
-            }
-            70% {
-              transform: translateX(50%) scale(1);
-              box-shadow: 0 0 0 4px rgba(148, 163, 184, 0);
-            }
-            100% {
-              transform: translateX(50%) scale(0.8);
-              box-shadow: 0 0 0 0 rgba(148, 163, 184, 0);
-            }
-          }
-        `}
-      </style>
     </>
   )
 }
