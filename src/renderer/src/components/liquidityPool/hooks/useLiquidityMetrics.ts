@@ -11,7 +11,6 @@ export const useLiquidityMetrics = (
   rightAvgLiquidity
 } => {
   return useMemo(() => {
-    // Calculate metrics in single passes
     let leftSum = 0,
       rightSum = 0
     let leftMax = 0,
@@ -19,7 +18,6 @@ export const useLiquidityMetrics = (
     let leftCount = 0,
       rightCount = 0
 
-    // Process left data
     for (let i = 0; i < leftLiquidityData.length; i++) {
       const absVal = Math.abs(leftLiquidityData[i].liquidity)
       leftSum += absVal
@@ -27,7 +25,6 @@ export const useLiquidityMetrics = (
       if (absVal > leftMax) leftMax = absVal
     }
 
-    // Process right data
     for (let i = 0; i < rightLiquidityData.length; i++) {
       const absVal = Math.abs(rightLiquidityData[i].liquidity)
       rightSum += absVal

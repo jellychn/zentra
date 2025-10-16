@@ -4,13 +4,14 @@ import { memo } from 'react'
 import BreakEven from './BreakEven'
 import TakerProfit from './TakerProfit'
 import MakerProfit from './MakerProfit'
+import { Trade } from 'src/main/db/dbTrades'
 
 const ProfitLine = memo(
   ({
     position,
     getPositionPercentage
   }: {
-    position: any
+    position: Trade
     getPositionPercentage: (price: number) => number
   }) => {
     const { breakEvenColor, makerColor, takerColor } = usePositionColors(position)

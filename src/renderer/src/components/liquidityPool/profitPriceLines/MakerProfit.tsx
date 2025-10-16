@@ -6,9 +6,9 @@ export default function MakerProfit({
   makerColor,
   profitableMakerPriceLine
 }: {
-  isLong
-  makerColor
-  profitableMakerPriceLine
+  isLong: boolean
+  makerColor: string
+  profitableMakerPriceLine: number
 }): React.JSX.Element {
   const [hover, setHover] = useState(false)
 

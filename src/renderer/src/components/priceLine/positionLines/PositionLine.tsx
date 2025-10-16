@@ -1,10 +1,11 @@
+import { Trade } from 'src/main/db/dbTrades'
 import { PosSide } from '../../../../../shared/types'
 
 export default function PositionLine({
   position,
   getTopPercentage
 }: {
-  position: Record<string, any>
+  position: Trade
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
   let color = ''
@@ -12,11 +13,6 @@ export default function PositionLine({
 
   if (position.posSide) {
     isLong = position.posSide === PosSide.LONG
-    color = isLong ? '#10b981' : '#ef4444'
-  }
-
-  if (position.direction) {
-    isLong = position.direction === PosSide.LONG
     color = isLong ? '#10b981' : '#ef4444'
   }
 

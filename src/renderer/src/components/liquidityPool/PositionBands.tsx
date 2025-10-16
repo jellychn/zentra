@@ -2,6 +2,7 @@ import { memo } from 'react'
 
 import { useStateStore } from '../../contexts/StateStoreContext'
 import PositionBand from './positionBands/PositionBand'
+import { Trade } from 'src/main/db/dbTrades'
 
 const PositionBands = memo(
   ({ getPositionPercentage }: { getPositionPercentage: (price: number) => number }) => {
@@ -14,7 +15,7 @@ const PositionBands = memo(
 
     return (
       <div>
-        {filteredPositions.map((position: any, index: number) => {
+        {filteredPositions.map((position: Trade, index: number) => {
           return (
             <PositionBand
               key={`band-${position.entryPrice}-${index}`}

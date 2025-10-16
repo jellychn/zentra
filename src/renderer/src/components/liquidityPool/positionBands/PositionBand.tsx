@@ -3,12 +3,13 @@ import { formatNumber } from '../../../../../shared/helper'
 import { COLORS } from './colors'
 import { PosSide } from '../../../../../shared/types'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
+import { Trade } from 'src/main/db/dbTrades'
 
 const PositionBand = ({
   position,
   getPositionPercentage
 }: {
-  position: any
+  position: Trade
   getPositionPercentage: (price: number) => number
 }): React.JSX.Element => {
   const { state } = useStateStore()
@@ -16,36 +17,42 @@ const PositionBand = ({
   const { makerFee = 0, takerFee = 0 } = userSettings || {}
   const { lastPrice = 0 } = exchangeData || {}
 
-  const calculatePnL = (position: any): number => {
-    const entryPrice = position.entryPrice
-    const positionSize = position.size
-    const isLong = position.posSide === PosSide.LONG
+  const calculatePnL = (position: Trade): number => {
+    const { entryPrice, size, posSide } = position
+    const isLong = posSide === PosSide.LONG
 
     let pnl = 0
     if (isLong) {
-      pnl = (lastPrice - entryPrice) * positionSize
+      pnl = (lastPrice - entryPrice) * size
     } else {
-      pnl = (entryPrice - lastPrice) * positionSize
+      pnl = (entryPrice - lastPrice) * size
     }
     return pnl
   }
 
-  const getPositionStatus = (position: any) => {
-    const pnl = calculatePnL(position)
-    const positionEntryFee = position.entryFee
+  const getPositionStatus = (
+    position: Trade
+  ): {
+    pnl: number
+    isLong: boolean
+    isProfit: boolean
+    isPriceFavorable: boolean
+    isMakerProfitable: boolean
+    isTakerProfitable: boolean
+  } => {
+    const { entryFee, size, posSide } = position
 
-    const size = position.size
+    const pnl = calculatePnL(position)
 
     const exitFeeMaker = lastPrice * size * makerFee
     const exitFeeTaker = lastPrice * size * takerFee
 
-    const isLong = position.posSide === PosSide.LONG
+    const isLong = posSide === PosSide.LONG
 
-    const isPriceFavorable = pnl > 0 && pnl < positionEntryFee
-    const isMakerProfitable = pnl > positionEntryFee && pnl < positionEntryFee + exitFeeMaker
-    const isTakerProfitable =
-      pnl > positionEntryFee + exitFeeMaker && pnl < positionEntryFee + exitFeeTaker
-    const isProfit = pnl > positionEntryFee + exitFeeTaker
+    const isPriceFavorable = pnl > 0 && pnl < entryFee
+    const isMakerProfitable = pnl > entryFee && pnl < entryFee + exitFeeMaker
+    const isTakerProfitable = pnl > entryFee + exitFeeMaker && pnl < entryFee + exitFeeTaker
+    const isProfit = pnl > entryFee + exitFeeTaker
 
     return {
       pnl,
@@ -60,17 +67,13 @@ const PositionBand = ({
   const { pnl, isLong, isProfit, isPriceFavorable, isMakerProfitable, isTakerProfitable } =
     getPositionStatus(position)
 
-  const positionPrice = position.entryPrice
-
-  const positionPercentage = getPositionPercentage(positionPrice)
+  const positionPercentage = getPositionPercentage(position.entryPrice)
   const currentPricePercentage = getPositionPercentage(lastPrice)
 
-  // Determine band position and dimensions
   const bandTop = Math.min(positionPercentage, currentPricePercentage)
   const bandBottom = Math.max(positionPercentage, currentPricePercentage)
   const bandHeight = bandBottom - bandTop
 
-  // Determine color based on profit/loss and price favorability
   let borderColor = COLORS.border.danger
   let gradient = `linear-gradient(to ${isLong ? 'bottom' : 'top'},
     ${COLORS.danger} 0%,
@@ -78,28 +81,24 @@ const PositionBand = ({
     transparent 100%)`
 
   if (isProfit) {
-    // Fully profitable (past all fees)
     borderColor = COLORS.border.success
     gradient = `linear-gradient(to ${isLong ? 'bottom' : 'top'},
     ${COLORS.success} 0%,
     rgba(16, 185, 129, 0.05) 70%,
     transparent 100%)`
   } else if (isTakerProfitable) {
-    // Profitable after taker fees (but not quite break-even due to other costs)
     borderColor = COLORS.border.takerProfitable
     gradient = `linear-gradient(to ${isLong ? 'bottom' : 'top'},
     ${COLORS.takerProfitable} 0%,
     rgba(133, 77, 14, 0.05) 70%,
     transparent 100%)`
   } else if (isMakerProfitable) {
-    // Profitable after maker fees
     borderColor = COLORS.border.makerProfitable
     gradient = `linear-gradient(to ${isLong ? 'bottom' : 'top'},
     ${COLORS.makerProfitable} 0%,
     rgba(161, 98, 7, 0.05) 70%,
     transparent 100%)`
   } else if (isPriceFavorable) {
-    // Price is favorable but hasn't recovered entry fees
     borderColor = COLORS.border.warning
     gradient = `linear-gradient(to ${isLong ? 'bottom' : 'top'},
     ${COLORS.warning} 0%,
@@ -122,7 +121,6 @@ const PositionBand = ({
         pointerEvents: 'none'
       }}
     >
-      {/* Optional: Add subtle pattern for better visibility */}
       <div
         style={{
           position: 'absolute',
@@ -138,7 +136,6 @@ const PositionBand = ({
         }}
       />
 
-      {/* Band edges for better definition */}
       <div
         style={{
           position: 'absolute',
@@ -160,7 +157,6 @@ const PositionBand = ({
         }}
       />
 
-      {/* Direction arrow */}
       {bandHeight > 8 && (
         <div
           style={{

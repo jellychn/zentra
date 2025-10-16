@@ -5,6 +5,8 @@ import Orders from './Order'
 import ActionIcon from '@renderer/elements/ActionIcon'
 import ordersIcon from '../assets/icons/orders.svg'
 import positionsIcon from '../assets/icons/positions.svg'
+import { Trade } from 'src/main/db/dbTrades'
+import { Order } from 'src/main/db/dbOrders'
 
 export default function MyActiveTrades(): React.JSX.Element {
   const { state } = useStateStore()
@@ -143,8 +145,8 @@ const Content = ({
   orders,
   showOrders
 }: {
-  positions: any[]
-  orders: any[]
+  positions: Trade[]
+  orders: Order[]
   showOrders: boolean
 }): React.JSX.Element => {
   if (showOrders && orders.length === 0) {

@@ -28,7 +28,7 @@ export interface ProcessedLiquidityItem {
 export default function LiquidityPool(): React.JSX.Element {
   const { state } = useStateStore()
   const { metrics, exchangeData } = state || {}
-  const { orderbook = {} } = exchangeData || {}
+  const { orderbook = { bids: {}, asks: {} } } = exchangeData || {}
   const { tradeLiquidity = {} } = metrics || {}
 
   const currentTime = useCurrentTime()

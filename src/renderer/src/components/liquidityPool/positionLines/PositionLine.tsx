@@ -2,35 +2,36 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import { PosSide } from '../../../../../shared/types'
 import { COLORS } from './colors'
 import { formatNumber } from '../../../../../shared/helper'
+import { Trade } from 'src/main/db/dbTrades'
+
+const calculatePnL = (position: Trade, currentPrice: number): number => {
+  const { entryPrice, size, posSide, entryFee } = position
+  const isLong = posSide === PosSide.LONG
+
+  let pnl = 0
+  if (isLong) {
+    pnl = (currentPrice - entryPrice) * size - entryFee
+  } else {
+    pnl = (entryPrice - currentPrice) * size - entryFee
+  }
+  return pnl
+}
+
+const getIsProfit = (position: Trade, currentPrice: number): boolean => {
+  const pnl = calculatePnL(position, currentPrice)
+  return pnl >= 0
+}
 
 const PositionLine = ({
   position,
   getPositionPercentage
 }: {
-  position: any
+  position: Trade
   getPositionPercentage: (price: number) => number
 }): React.JSX.Element => {
   const { state } = useStateStore()
   const { exchangeData } = state || {}
   const { lastPrice = 0 } = exchangeData || {}
-
-  const calculatePnL = (position: any, currentPrice: number): number => {
-    const { entryPrice, size, posSide, entryFee } = position
-    const isLong = posSide === PosSide.LONG
-
-    let pnl = 0
-    if (isLong) {
-      pnl = (currentPrice - entryPrice) * size - entryFee
-    } else {
-      pnl = (entryPrice - currentPrice) * size - entryFee
-    }
-    return pnl
-  }
-
-  const getIsProfit = (position: any, currentPrice: number) => {
-    const pnl = calculatePnL(position, currentPrice)
-    return pnl >= 0
-  }
 
   const pnl = calculatePnL(position, lastPrice)
   const isProfit = getIsProfit(position, lastPrice)

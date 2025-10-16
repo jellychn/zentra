@@ -1,21 +1,21 @@
 import React from 'react'
 import { Side } from '../../../../../shared/types'
+import { Order } from 'src/main/db/dbOrders'
 
 export default function OrderLine({
   order,
   getTopPercentage
 }: {
-  order: any
+  order: Order
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
-  const color = order.side === Side.BUY ? '#10b981' : '#ef4444'
-  const glowColor = order.side === Side.BUY ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'
+  const { side, price } = order
+  const glowColor = side === Side.BUY ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'
 
-  const orderPercentage = getTopPercentage(order.price)
+  const orderPercentage = getTopPercentage(price)
 
   return (
     <>
-      {/* Gradient dashed line */}
       <div
         style={{
           position: 'absolute',

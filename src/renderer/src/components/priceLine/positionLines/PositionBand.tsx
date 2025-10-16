@@ -2,19 +2,22 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import { formatNumber } from '../../../../../shared/helper'
 import { PosSide } from '../../../../../shared/types'
 import { usePositionColors } from '@renderer/hooks/usePositionColors'
+import { Trade } from 'src/main/db/dbTrades'
 
 export default function PositionBand({
   position,
   getTopPercentage
 }: {
-  position: Record<string, any>
+  position: Trade
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
   const { state } = useStateStore()
   const { exchangeData } = state || {}
   const { lastPrice = 0 } = exchangeData || {}
 
-  const positionPercentage = getTopPercentage(position.entryPrice)
+  const { entryPrice, posSide, size, entryFee } = position
+
+  const positionPercentage = getTopPercentage(entryPrice)
   const lastPricePercentage = getTopPercentage(lastPrice)
 
   const topPosition = Math.min(lastPricePercentage, positionPercentage)
@@ -23,14 +26,14 @@ export default function PositionBand({
 
   let pnl = 0
 
-  if (position.posSide === PosSide.LONG) {
-    pnl = (lastPrice - position.entryPrice) * position.size - position.entryFee
+  if (posSide === PosSide.LONG) {
+    pnl = (lastPrice - entryPrice) * size - entryFee
   } else {
-    pnl = (position.entryPrice - lastPrice) * position.size - position.entryFee
+    pnl = (entryPrice - lastPrice) * size - entryFee
   }
 
   const { gradient, borderColor, color } = usePositionColors(position)
-  const isLong = position.posSide === PosSide.LONG
+  const isLong = posSide === PosSide.LONG
 
   const directionalGradient = `linear-gradient(to ${isLong ? 'bottom' : 'top'},
     ${gradient} 0%,

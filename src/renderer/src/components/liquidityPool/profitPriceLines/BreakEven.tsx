@@ -5,8 +5,8 @@ export default function BreakEven({
   breakEvenColor,
   breakEvenPriceLine
 }: {
-  breakEvenColor
-  breakEvenPriceLine
+  breakEvenColor: string
+  breakEvenPriceLine: number
 }): React.JSX.Element {
   const [hover, setHover] = useState(false)
 

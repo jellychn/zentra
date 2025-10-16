@@ -16,9 +16,7 @@ export default function OrderLines({
   return (
     <>
       {filteredOrders?.map((order) => (
-        <>
-          <OrderLine key={order.createdAt} order={order} getTopPercentage={getTopPercentage} />
-        </>
+        <OrderLine key={order.createdAt} order={order} getTopPercentage={getTopPercentage} />
       ))}
     </>
   )

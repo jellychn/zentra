@@ -4,7 +4,7 @@ import { ProcessedOrderBook } from 'src/main/data/types'
 
 export const useLiquidityData = (
   orderbook: ProcessedOrderBook | undefined,
-  tradeLiquidity: any,
+  tradeLiquidity: ProcessedOrderBook,
   currentTimeNs: number
 ): {
   leftLiquidityData

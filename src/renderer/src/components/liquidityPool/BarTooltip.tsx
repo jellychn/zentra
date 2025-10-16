@@ -31,7 +31,6 @@ const BarTooltip = memo(
       return <></>
     }
 
-    // Get type color
     const getTypeColor = (): string => {
       if (type === 'bid' || (type === 'pool' && !isNegative)) {
         return COLORS.success

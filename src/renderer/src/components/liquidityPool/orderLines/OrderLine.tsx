@@ -2,13 +2,14 @@ import { Side } from '../../../../../shared/types'
 import { formatNumber } from '../../../../../shared/helper'
 import { COLORS } from './colors'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { Order } from 'src/main/db/dbOrders'
 
 const OrderLine = ({
   order,
   getPositionPercentage
 }: {
-  order: any
+  order: Order
   getPositionPercentage: (price: number) => number
 }): React.JSX.Element => {
   const { state } = useStateStore()
@@ -17,11 +18,13 @@ const OrderLine = ({
 
   const [hover, setHover] = useState(false)
 
-  const orderPosition = getPositionPercentage(order.price)
+  const { price, side } = order
+
+  const orderPosition = getPositionPercentage(price)
   const constrainedPosition = Math.max(0, Math.min(100, orderPosition))
 
-  const isBuyOrder = order.side === Side.BUY
-  const color = isBuyOrder ? COLORS.success : COLORS.danger
+  const isBuyOrder = side === Side.BUY
+  const orderColor = isBuyOrder ? COLORS.success : COLORS.danger
   const glowColor = isBuyOrder ? COLORS.glow.primary : COLORS.glow.warning
 
   return (
@@ -56,7 +59,7 @@ const OrderLine = ({
           left: '10px',
           top: '50%',
           transform: 'translateY(-50%)',
-          background: color,
+          background: orderColor,
           borderRadius: '2px',
           padding: '6px',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
@@ -70,7 +73,7 @@ const OrderLine = ({
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            background: color,
+            background: orderColor,
             borderRadius: '2px',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
             zIndex: 2,
@@ -88,36 +91,8 @@ const OrderLine = ({
         </div>
       </div>
 
-      {/* Order info badge */}
-      {hover && (
-        <div
-          style={{
-            position: 'absolute',
-            left: '35px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: `rgba(30, 41, 59, 0.95)`,
-            padding: '5px 8px',
-            borderRadius: '5px',
-            fontSize: '9px',
-            fontWeight: '700',
-            color: 'white',
-            fontFamily: 'Inter, monospace',
-            boxShadow: `0 3px 10px rgba(0, 0, 0, 0.3)`,
-            border: `1px dashed ${color}60`,
-            backdropFilter: 'blur(10px)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            zIndex: 100
-          }}
-        >
-          {/* Price */}
-          <span style={{ color: color, fontWeight: '800' }}>${formatNumber(order.price)}</span>
-        </div>
-      )}
+      <HoveredContent order={order} hover={hover} orderColor={orderColor} />
 
-      {/* Connection line to current price with dashed style */}
       <div
         style={{
           position: 'absolute',
@@ -128,8 +103,8 @@ const OrderLine = ({
           background: `repeating-linear-gradient(${
             constrainedPosition > getPositionPercentage(lastPrice) ? 'to bottom' : 'to top'
           },
-              ${color}40,
-              ${color}40 2px,
+              ${orderColor}40,
+              ${orderColor}40 2px,
               transparent 2px,
               transparent 4px)`,
           transform: 'translateX(-50%)',
@@ -143,3 +118,46 @@ const OrderLine = ({
 }
 
 export default OrderLine
+
+const HoveredContent = ({
+  order,
+  hover,
+  orderColor
+}: {
+  order: Order
+  hover: boolean
+  orderColor: string
+}): React.JSX.Element => {
+  const { price } = order
+
+  if (!hover) {
+    return <></>
+  }
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: '35px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        background: `rgba(30, 41, 59, 0.95)`,
+        padding: '5px 8px',
+        borderRadius: '5px',
+        fontSize: '9px',
+        fontWeight: '700',
+        color: 'white',
+        fontFamily: 'Inter, monospace',
+        boxShadow: `0 3px 10px rgba(0, 0, 0, 0.3)`,
+        border: `1px dashed ${orderColor}60`,
+        backdropFilter: 'blur(10px)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        zIndex: 100
+      }}
+    >
+      <span style={{ color: orderColor, fontWeight: '800' }}>${formatNumber(price)}</span>
+    </div>
+  )
+}

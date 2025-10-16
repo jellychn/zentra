@@ -2,6 +2,7 @@ import { memo } from 'react'
 
 import { useStateStore } from '../../contexts/StateStoreContext'
 import OrderLine from './orderLines/OrderLine'
+import { Order } from 'src/main/db/dbOrders'
 
 const OrderLines = memo(
   ({ getPositionPercentage }: { getPositionPercentage: (price: number) => number }) => {
@@ -14,7 +15,7 @@ const OrderLines = memo(
 
     return (
       <div>
-        {filteredOrders.map((order: any, index: number) => (
+        {filteredOrders.map((order: Order, index: number) => (
           <OrderLine
             key={`order-${order.price}-${index}`}
             order={order}

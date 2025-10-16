@@ -5,8 +5,8 @@ export default function TakerProfit({
   takerColor,
   profitableTakerPriceLine
 }: {
-  takerColor
-  profitableTakerPriceLine
+  takerColor: string
+  profitableTakerPriceLine: number
 }): React.JSX.Element {
   const [hover, setHover] = useState(false)
 
