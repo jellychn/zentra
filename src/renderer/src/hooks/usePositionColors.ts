@@ -22,12 +22,12 @@ const COLORS = {
 export const usePositionColors = (
   position: any
 ): {
-  gradient
-  borderColor
-  color
-  breakEvenColor
-  makerColor
-  takerColor
+  gradient: string
+  borderColor: string
+  color: string
+  breakEvenColor: string
+  makerColor: string
+  takerColor: string
 } => {
   const { state } = useStateStore()
   const { exchangeData, userSettings } = state || {}
@@ -37,74 +37,60 @@ export const usePositionColors = (
   const { posSide, entryPrice, size, entryFee } = position
 
   return useMemo(() => {
-    // Calculate PnL
-    let pnl = 0
-    let isPriceFavorable = false
+    const breakEvenPrice =
+      posSide === PosSide.LONG ? entryPrice + entryFee / size : entryPrice - entryFee / size
 
-    if (posSide === PosSide.LONG) {
-      pnl = (lastPrice - entryPrice) * size - entryFee
-      isPriceFavorable = lastPrice > entryPrice
-    } else {
-      pnl = (entryPrice - lastPrice) * size - entryFee
-      isPriceFavorable = lastPrice < entryPrice
-    }
+    const makerBreakEvenPrice =
+      posSide === PosSide.LONG
+        ? entryPrice + (entryFee + lastPrice * size * makerFee) / size
+        : entryPrice - (entryFee + lastPrice * size * makerFee) / size
 
-    // Calculate position status with fee thresholds
-    const exitFeeMaker = lastPrice * size * makerFee
-    const exitFeeTaker = lastPrice * size * takerFee
+    const takerBreakEvenPrice =
+      posSide === PosSide.LONG
+        ? entryPrice + (entryFee + lastPrice * size * takerFee) / size
+        : entryPrice - (entryFee + lastPrice * size * takerFee) / size
 
-    const isMakerProfitable = pnl > entryFee && pnl < entryFee + exitFeeMaker
-    const isTakerProfitable = pnl > entryFee + exitFeeMaker && pnl < entryFee + exitFeeTaker
-    const isProfit = pnl > entryFee + exitFeeTaker
+    const hasPassedBreakEven =
+      posSide === PosSide.LONG ? lastPrice >= breakEvenPrice : lastPrice <= breakEvenPrice
 
-    // Determine colors based on status
+    const hasPassedMakerBreakEven =
+      posSide === PosSide.LONG ? lastPrice >= makerBreakEvenPrice : lastPrice <= makerBreakEvenPrice
+
+    const hasPassedTakerBreakEven =
+      posSide === PosSide.LONG ? lastPrice >= takerBreakEvenPrice : lastPrice <= takerBreakEvenPrice
+
     let gradient = COLORS.danger
     let borderColor = COLORS.border.danger
     let color = '#ef4444'
     let breakEvenColor = 'rgba(255, 255, 255, 0.6)'
-    let makerColor = 'rgba(251, 146, 60, 0.8)' // Bright Orange
-    let takerColor = 'rgba(234, 179, 8, 0.8)' // Amber Yellow
+    let makerColor = 'rgba(251, 146, 60, 0.8)'
+    let takerColor = 'rgba(234, 179, 8, 0.8)'
 
-    if (isProfit) {
-      // Fully profitable
-      gradient = COLORS.success
-      borderColor = COLORS.border.success
-      color = '#10b981'
+    if (hasPassedBreakEven) {
       breakEvenColor = 'rgba(16, 185, 129, 0.8)'
-      makerColor = 'rgba(16, 185, 129, 0.8)'
-      takerColor = 'rgba(16, 185, 129, 0.8)'
-    } else if (isTakerProfitable) {
-      // Taker profitable - closest to green
-      gradient = COLORS.takerProfitable
-      borderColor = COLORS.border.takerProfitable
-      color = '#65a30d' // Olive Green
-      breakEvenColor = 'rgba(251, 146, 60, 0.8)' // Orange
-      makerColor = 'rgba(234, 179, 8, 0.8)' // Yellow
-      takerColor = 'rgba(101, 163, 13, 0.8)' // Olive Green
-    } else if (isMakerProfitable) {
-      // Maker profitable - yellow
-      gradient = COLORS.makerProfitable
-      borderColor = COLORS.border.makerProfitable
-      color = '#eab308' // Amber Yellow
-      breakEvenColor = 'rgba(251, 146, 60, 0.8)' // Orange
-      makerColor = 'rgba(234, 179, 8, 0.8)' // Yellow
-      takerColor = 'rgba(101, 163, 13, 0.8)' // Olive Green
-    } else if (isPriceFavorable) {
-      // Price favorable - orange
       gradient = COLORS.warning
       borderColor = COLORS.border.warning
       color = '#f59e0b'
-      breakEvenColor = 'rgba(251, 146, 60, 0.8)' // Orange
-      makerColor = 'rgba(251, 146, 60, 0.8)' // Orange
-      takerColor = 'rgba(251, 146, 60, 0.8)' // Orange
-    } else {
-      // Losing position - red
-      gradient = COLORS.danger
-      borderColor = COLORS.border.danger
-      color = '#ef4444'
-      breakEvenColor = 'rgba(239, 68, 68, 0.8)'
-      makerColor = 'rgba(239, 68, 68, 0.8)'
-      takerColor = 'rgba(239, 68, 68, 0.8)'
+    }
+
+    if (hasPassedMakerBreakEven) {
+      makerColor = 'rgba(16, 185, 129, 0.8)'
+      gradient = COLORS.makerProfitable
+      borderColor = COLORS.border.makerProfitable
+      color = '#eab308'
+    }
+
+    if (hasPassedTakerBreakEven) {
+      takerColor = 'rgba(16, 185, 129, 0.8)'
+      gradient = COLORS.takerProfitable
+      borderColor = COLORS.border.takerProfitable
+      color = '#65a30d'
+    }
+
+    if (hasPassedBreakEven && hasPassedMakerBreakEven && hasPassedTakerBreakEven) {
+      gradient = COLORS.success
+      borderColor = COLORS.border.success
+      color = '#10b981'
     }
 
     return {

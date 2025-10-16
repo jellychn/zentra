@@ -2,8 +2,8 @@ import { usePositionColors } from '@renderer/hooks/usePositionColors'
 import { usePriceLines } from '@renderer/hooks/usePriceLines'
 import { memo } from 'react'
 import BreakEven from './BreakEven'
-import MakerProfit from './MakerPorfit'
 import TakerProfit from './TakerProfit'
+import MakerProfit from './MakerProfit'
 
 const ProfitLine = memo(
   ({
