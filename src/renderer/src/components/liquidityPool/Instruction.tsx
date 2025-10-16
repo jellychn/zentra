@@ -13,7 +13,7 @@ const Instruction = (): React.JSX.Element => {
         lineHeight: '1.4'
       }}
     >
-      <div>SHIFT: HIDE HOVER • HOVER BARS FOR DETAILS</div>
+      <div>SHIFT: HIDE VALUES • HOVER BARS FOR DETAILS</div>
       <div
         style={{
           marginTop: '2px',

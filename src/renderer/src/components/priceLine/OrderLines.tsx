@@ -7,12 +7,15 @@ export default function OrderLines({
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
   const { state } = useStateStore()
-  const { userTrades } = state || {}
-  const { orders } = userTrades || {}
+  const { userTrades, settings } = state || {}
+  const { selectedSymbol } = settings || {}
+  const { orders = [] } = userTrades || {}
+
+  const filteredOrders = orders.filter((position) => position.symbol === selectedSymbol)
 
   return (
     <>
-      {orders?.map((order) => (
+      {filteredOrders?.map((order) => (
         <>
           <OrderLine key={order.createdAt} order={order} getTopPercentage={getTopPercentage} />
         </>

@@ -8,12 +8,15 @@ export default function PositionLines({
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
   const { state } = useStateStore()
-  const { userTrades } = state || {}
-  const { positions } = userTrades || {}
+  const { userTrades, settings } = state || {}
+  const { selectedSymbol } = settings || {}
+  const { positions = [] } = userTrades || {}
+
+  const filteredPositions = positions.filter((position) => position.symbol === selectedSymbol)
 
   return (
     <>
-      {positions?.map((position) => (
+      {filteredPositions?.map((position) => (
         <>
           <PositionLine position={position} getTopPercentage={getTopPercentage} />
           <PositionBand position={position} getTopPercentage={getTopPercentage} />
