@@ -1,21 +1,29 @@
 import React, { useState } from 'react'
 import OrderDetails from './OrderDetails'
+import { Order } from 'src/main/db/dbOrders'
+import { Side } from '../../../../../shared/types'
 
 export default function OrderTooltip({
   order,
+  clicked,
   getTopPercentage
 }: {
-  order: any
+  order: Order
+  clicked: boolean
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
   const [hovered, setHovered] = useState(false)
-  const { price, side, symbol, size, leverage } = order
+  const { price, side } = order
 
-  const onClose = () => {}
+  const onClose = (): void => {}
 
-  const isBuy = side === 'Buy'
+  const isBuy = side === Side.BUY
   const orderColor = isBuy ? '#10b981' : '#ef4444'
   const orderColorLight = isBuy ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)'
+
+  if (!clicked) {
+    return <></>
+  }
 
   return (
     <div
@@ -30,8 +38,8 @@ export default function OrderTooltip({
         left: '30px',
         padding: hovered ? '10px 12px' : '6px 8px',
         background: hovered
-          ? `linear-gradient(135deg, ${orderColorLight}, rgba(30, 41, 59, 1))` // Solid on hover
-          : 'rgba(15, 23, 42, 0.6)', // Transparent when not hovered
+          ? `linear-gradient(135deg, ${orderColorLight}, rgba(30, 41, 59, 1))`
+          : 'rgba(15, 23, 42, 0.6)',
         color: hovered ? '#f8fafc' : 'rgba(248, 250, 252, 0.6)',
         fontWeight: 600,
         textAlign: 'right',
@@ -53,16 +61,7 @@ export default function OrderTooltip({
         scale: hovered ? '1' : '0.95'
       }}
     >
-      <OrderDetails
-        hovered={hovered}
-        price={price}
-        side={side}
-        value={price * size}
-        currentLeverage={leverage}
-        orderQty={size}
-        symbol={symbol}
-        orderColor={orderColor}
-      />
+      <OrderDetails order={order} hovered={hovered} orderColor={orderColor} />
     </div>
   )
 }

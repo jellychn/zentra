@@ -1,30 +1,43 @@
+import { Order } from 'src/main/db/dbOrders'
 import { formatNumber } from '../../../../../shared/helper'
 import { Side } from '../../../../../shared/types'
+import React from 'react'
 
 const OrderDetails = ({
+  order,
   hovered,
-  price,
-  side,
-  value,
-  currentLeverage,
-  orderQty,
-  symbol,
   orderColor
 }: {
+  order: Order
   hovered: boolean
-  price: number
-  side: string
-  value: number
-  currentLeverage: number
-  orderQty: number
-  symbol: string
   orderColor: string
 }): React.JSX.Element => {
-  const isBuy = side === Side.BUY
-
   return (
     <>
-      {/* Compact Price Section */}
+      <Content order={order} hovered={hovered} orderColor={orderColor} />
+      <HoveredContent hovered={hovered} />
+    </>
+  )
+}
+
+export default OrderDetails
+
+const Content = ({
+  order,
+  hovered,
+  orderColor
+}: {
+  order: Order
+  hovered: boolean
+  orderColor: string
+}): React.JSX.Element => {
+  const { price, side, leverage, size, symbol } = order
+
+  const isBuy = side === Side.BUY
+  const value = price * size
+
+  return (
+    <div>
       <div
         style={{
           color: hovered ? orderColor : orderColor + 'CC',
@@ -51,8 +64,6 @@ const OrderDetails = ({
         </span>
         {formatNumber(Number(price))}
       </div>
-
-      {/* Compact Value and Size Section */}
       <div
         style={{
           marginTop: hovered ? '6px' : '4px',
@@ -91,7 +102,7 @@ const OrderDetails = ({
               color: hovered ? '#f8fafc' : 'rgba(248, 250, 252, 0.7)'
             }}
           >
-            {formatNumber(Number(orderQty))}
+            {formatNumber(Number(size))}
           </div>
           <div
             style={{
@@ -104,8 +115,6 @@ const OrderDetails = ({
           </div>
         </div>
       </div>
-
-      {/* Compact Leverage and Symbol */}
       <div
         style={{
           marginTop: hovered ? '6px' : '4px',
@@ -124,7 +133,7 @@ const OrderDetails = ({
             color: hovered ? '#3b82f6' : 'rgba(59, 130, 246, 0.7)'
           }}
         >
-          {currentLeverage}x
+          {leverage}x
         </div>
 
         <div
@@ -137,38 +146,41 @@ const OrderDetails = ({
           {symbol}
         </div>
       </div>
-
-      {/* Close Button - Only on Hover */}
-      {hovered && (
-        <div
-          style={{
-            marginTop: '8px',
-            padding: '4px 8px',
-            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-            color: 'white',
-            fontSize: '8px',
-            fontWeight: 700,
-            borderRadius: '4px',
-            textAlign: 'center',
-            cursor: 'pointer',
-            boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
-            transition: 'all 0.2s ease',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)'
-            e.currentTarget.style.boxShadow = '0 3px 8px rgba(239, 68, 68, 0.4)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)'
-            e.currentTarget.style.boxShadow = '0 2px 6px rgba(239, 68, 68, 0.3)'
-          }}
-        >
-          ✕ CANCEL
-        </div>
-      )}
-    </>
+    </div>
   )
 }
 
-export default OrderDetails
+const HoveredContent = ({ hovered }: { hovered: boolean }): React.JSX.Element => {
+  if (!hovered) {
+    return <></>
+  }
+
+  return (
+    <div
+      style={{
+        marginTop: '8px',
+        padding: '4px 8px',
+        background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+        color: 'white',
+        fontSize: '8px',
+        fontWeight: 700,
+        borderRadius: '4px',
+        textAlign: 'center',
+        cursor: 'pointer',
+        boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
+        transition: 'all 0.2s ease',
+        border: '1px solid rgba(255, 255, 255, 0.2)'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'scale(1.05)'
+        e.currentTarget.style.boxShadow = '0 3px 8px rgba(239, 68, 68, 0.4)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)'
+        e.currentTarget.style.boxShadow = '0 2px 6px rgba(239, 68, 68, 0.3)'
+      }}
+    >
+      ✕ CANCEL
+    </div>
+  )
+}

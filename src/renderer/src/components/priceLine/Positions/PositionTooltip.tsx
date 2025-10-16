@@ -1,28 +1,30 @@
-import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import { useState } from 'react'
 import { PosSide } from '../../../../../shared/types'
 import PositionDetails from './PositionDetails'
+import { Trade } from 'src/main/db/dbTrades'
 
 export default function PositionTooltip({
   position,
+  clicked,
   getTopPercentage
 }: {
-  position: any
+  position: Trade
+  clicked: boolean
   getTopPercentage: (price: number) => number
 }): React.JSX.Element {
-  const { state } = useStateStore()
-  const { exchangeData } = state || {}
-  const { lastPrice = 0 } = exchangeData || {}
-
   const [hovered, setHovered] = useState(false)
 
   const { posSide, entryPrice } = position
 
-  const closePosition = () => {}
+  const closePosition = (): void => {}
 
   const isLong = posSide === PosSide.LONG
   const positionColor = isLong ? '#10b981' : '#ef4444'
   const positionColorLight = isLong ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)'
+
+  if (!clicked) {
+    return <></>
+  }
 
   return (
     <div
@@ -41,8 +43,8 @@ export default function PositionTooltip({
         fontSize: hovered ? '10px' : '9px',
         color: hovered ? '#f8fafc' : 'rgba(248, 250, 252, 0.6)',
         background: hovered
-          ? `linear-gradient(135deg, ${positionColorLight}, rgba(30, 41, 59, 1))` // Solid on hover
-          : 'rgba(15, 23, 42, 0.6)', // Transparent when not hovered
+          ? `linear-gradient(135deg, ${positionColorLight}, rgba(30, 41, 59, 1))`
+          : 'rgba(15, 23, 42, 0.6)',
         borderRadius: '6px',
         boxShadow: hovered
           ? `0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px ${positionColor}40`
@@ -58,12 +60,7 @@ export default function PositionTooltip({
         scale: hovered ? '1' : '0.95'
       }}
     >
-      <PositionDetails
-        position={position}
-        exitPrice={lastPrice}
-        positionColor={positionColor}
-        hovered={hovered}
-      />
+      <PositionDetails position={position} positionColor={positionColor} hovered={hovered} />
     </div>
   )
 }
