@@ -1,161 +1,340 @@
+import { formatNumber } from '../../../../../shared/helper'
 import { PosSide } from '../../../../../shared/types'
-import { useState } from 'react'
 
-export default function PositionDetails({
+const PositionDetails = ({
   position,
-  getTopPercentage
+  exitPrice,
+  positionColor,
+  hovered
 }: {
-  position
-  getTopPercentage
-}): React.JSX.Element {
-  const isLong = position.posSide === PosSide.LONG
-  const color = isLong ? '#10b981' : '#ef4444'
-  const [hover, setHover] = useState(false)
+  position: any
+  exitPrice: number
+  positionColor: string
+  hovered: boolean
+}): React.JSX.Element => {
+  const { entryPrice, leverage, posSide, size, entryFee, symbol } = position
 
-  const { entryPrice, unrealizedPnl } = position
+  const isLong = posSide === PosSide.LONG
+  const assignedPosBalance = (size * entryPrice) / leverage
+  const positionValue = Math.abs(Number(assignedPosBalance) * Number(leverage))
 
-  const handleClick = (): void => {
-    console.log('Position clicked:', position)
-    // Add your position details click handler here
+  // Calculate PnL
+  let pnl = 0
+  if (isLong) {
+    pnl = (exitPrice - entryPrice) * size - entryFee
+  } else {
+    pnl = (entryPrice - exitPrice) * size - entryFee
   }
 
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: `${getTopPercentage(entryPrice)}%`,
-        // transform: 'translateY(-50%)',
-        zIndex: 100,
-        right: '-10px',
-        backgroundColor: color,
-        borderRadius: '50%', // Changed to circle for positions
-        width: '20px',
-        height: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: `0 0 12px ${color}80, 0 8px 32px rgba(0, 0, 0, 0.2)`,
-        border: `2px solid ${isLong ? '#22c55e' : '#ef4444'}`,
-        opacity: hover ? 1 : 0.8,
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        transform: hover ? 'translateY(-50%) scale(1.1)' : 'translateY(-50%) scale(1)'
-      }}
-      onClick={handleClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div
-        style={{
-          color: 'white',
-          fontSize: '10px',
-          fontWeight: 'bold',
-          transform: isLong ? 'none' : 'rotate(180deg)'
-        }}
-      >
-        ▲
-      </div>
+  const pnlColor = pnl > 0 ? '#10b981' : '#ef4444'
 
-      {/* Enhanced price tooltip */}
-      <div
-        style={{
-          position: 'absolute',
-          right: '30px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          background: 'rgba(0, 0, 0, 0.9)',
-          color: 'white',
-          padding: '6px 10px',
-          borderRadius: '5px',
-          fontSize: '11px',
-          fontWeight: '600',
-          whiteSpace: 'nowrap',
-          opacity: 0,
-          transition: 'all 0.3s ease',
-          pointerEvents: 'none',
-          borderLeft: `3px solid ${color}`,
-          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.4)',
-          backdropFilter: 'blur(10px)'
-        }}
-        className="position-tooltip"
-      >
-        <div style={{ fontSize: '10px', opacity: 0.8, marginBottom: '2px' }}>Entry Price</div>
-        <div style={{ fontWeight: 'bold' }}>${entryPrice}</div>
-        {unrealizedPnl !== undefined && (
+  if (hovered) {
+    return (
+      <>
+        {/* Entry Price and Direction */}
+        <div
+          style={{
+            color: positionColor,
+            paddingBottom: '6px',
+            fontWeight: 700,
+            fontSize: '11px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <span
+            style={{
+              fontSize: '8px',
+              fontWeight: 600,
+              color: '#94a3b8',
+              background: 'rgba(30, 41, 59, 0.8)',
+              padding: '1px 4px',
+              borderRadius: '3px'
+            }}
+          >
+            {isLong ? 'LONG' : 'SHORT'}
+          </span>
+          {formatNumber(entryPrice)}
+        </div>
+
+        {/* Current Price and PnL */}
+        <div
+          style={{
+            marginTop: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <div style={{ textAlign: 'left' }}>
+            <div
+              style={{
+                fontSize: '9px',
+                fontWeight: 700,
+                color: '#f8fafc'
+              }}
+            >
+              {formatNumber(exitPrice)}
+            </div>
+            <div
+              style={{
+                fontSize: '7px',
+                color: '#94a3b8',
+                marginTop: '1px'
+              }}
+            >
+              Current
+            </div>
+          </div>
           <div
             style={{
               fontSize: '9px',
-              color: unrealizedPnl >= 0 ? '#10b981' : '#ef4444',
-              marginTop: '2px'
+              fontWeight: 700,
+              color: pnlColor,
+              background: `rgba(${pnl > 0 ? '16, 185, 129' : '239, 68, 68'}, 0.1)`,
+              padding: '2px 6px',
+              borderRadius: '3px'
             }}
           >
-            PnL: ${unrealizedPnl}
-          </div>
-        )}
-      </div>
-
-      {/* Click instruction tooltip */}
-      {hover && (
-        <div
-          style={{
-            position: 'absolute',
-            left: '-90px',
-            top: '-40px',
-            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98))',
-            color: '#f1f5f9',
-            padding: '8px 12px',
-            borderRadius: '6px',
-            fontSize: '11px',
-            fontWeight: '600',
-            whiteSpace: 'nowrap',
-            border: `1px solid ${color}40`,
-            boxShadow: `
-              0 4px 20px rgba(0, 0, 0, 0.4),
-              0 0 0 1px rgba(255, 255, 255, 0.05)
-            `,
-            backdropFilter: 'blur(12px)',
-            zIndex: 101,
-            pointerEvents: 'none',
-            animation: 'fadeInUp 0.2s ease-out'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div
-              style={{
-                width: '4px',
-                height: '4px',
-                borderRadius: '50%',
-                background: color
-              }}
-            />
-            Click to view position details
+            {formatNumber(pnl)}
           </div>
         </div>
-      )}
 
-      <style>
-        {`
-          .position-tooltip {
-            opacity: 0;
-            transform: translateY(-50%) translateX(-10px);
-          }
-          div:hover .position-tooltip {
-            opacity: 1;
-            transform: translateY(-50%) translateX(0);
-          }
-          
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(5px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}
-      </style>
-    </div>
+        {/* Size and Value */}
+        <div
+          style={{
+            marginTop: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            paddingTop: '6px',
+            gap: '5px'
+          }}
+        >
+          <div style={{ textAlign: 'left' }}>
+            <div
+              style={{
+                fontSize: '9px',
+                fontWeight: 700,
+                color: '#f8fafc'
+              }}
+            >
+              {formatNumber(size)}
+            </div>
+            <div
+              style={{
+                fontSize: '7px',
+                color: '#94a3b8',
+                marginTop: '1px'
+              }}
+            >
+              Size
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div
+              style={{
+                fontSize: '9px',
+                fontWeight: 700,
+                color: '#f8fafc'
+              }}
+            >
+              ${formatNumber(positionValue)}
+            </div>
+            <div
+              style={{
+                fontSize: '7px',
+                color: '#94a3b8',
+                marginTop: '1px'
+              }}
+            >
+              Value
+            </div>
+          </div>
+        </div>
+
+        {/* Leverage and Symbol */}
+        <div
+          style={{
+            marginTop: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <div
+            style={{
+              background: 'rgba(59, 130, 246, 0.2)',
+              padding: '1px 4px',
+              borderRadius: '3px',
+              fontSize: '7px',
+              fontWeight: 700,
+              color: '#3b82f6'
+            }}
+          >
+            {leverage}x
+          </div>
+          <div
+            style={{
+              fontSize: '7px',
+              color: '#64748b',
+              fontWeight: 600
+            }}
+          >
+            {symbol}
+          </div>
+        </div>
+
+        {/* Close Button */}
+        <div
+          style={{
+            marginTop: '8px',
+            padding: '4px 8px',
+            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            color: 'white',
+            fontSize: '8px',
+            fontWeight: 700,
+            borderRadius: '4px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
+            transition: 'all 0.2s ease',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)'
+            e.currentTarget.style.boxShadow = '0 3px 8px rgba(239, 68, 68, 0.4)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)'
+            e.currentTarget.style.boxShadow = '0 2px 6px rgba(239, 68, 68, 0.3)'
+          }}
+        >
+          ✕ CLOSE
+        </div>
+      </>
+    )
+  }
+
+  // Default (dimmed) state
+  return (
+    <>
+      {/* Compact Entry Price and Direction */}
+      <div
+        style={{
+          color: positionColor + 'CC',
+          paddingBottom: '4px',
+          fontWeight: 700,
+          fontSize: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}
+      >
+        <span
+          style={{
+            fontSize: '8px',
+            fontWeight: 600,
+            color: 'rgba(148, 163, 184, 0.6)',
+            background: 'rgba(30, 41, 59, 0.5)',
+            padding: '1px 4px',
+            borderRadius: '3px'
+          }}
+        >
+          {isLong ? 'LONG' : 'SHORT'}
+        </span>
+        {formatNumber(entryPrice)}
+      </div>
+
+      {/* Compact PnL and Size */}
+      <div
+        style={{
+          marginTop: '4px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '6px'
+        }}
+      >
+        <div style={{ textAlign: 'left', flex: 1 }}>
+          <div
+            style={{
+              fontSize: '8px',
+              fontWeight: 700,
+              color: pnlColor + 'CC'
+            }}
+          >
+            {formatNumber(pnl)}
+          </div>
+          <div
+            style={{
+              fontSize: '7px',
+              color: 'rgba(148, 163, 184, 0.5)',
+              marginTop: '1px'
+            }}
+          >
+            PnL
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'right', flex: 1 }}>
+          <div
+            style={{
+              fontSize: '8px',
+              fontWeight: 700,
+              color: 'rgba(248, 250, 252, 0.7)'
+            }}
+          >
+            {formatNumber(size)}
+          </div>
+          <div
+            style={{
+              fontSize: '7px',
+              color: 'rgba(148, 163, 184, 0.5)',
+              marginTop: '1px'
+            }}
+          >
+            Size
+          </div>
+        </div>
+      </div>
+
+      {/* Compact Leverage and Symbol */}
+      <div
+        style={{
+          marginTop: '4px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <div
+          style={{
+            background: 'rgba(59, 130, 246, 0.1)',
+            padding: '1px 4px',
+            borderRadius: '3px',
+            fontSize: '7px',
+            fontWeight: 700,
+            color: 'rgba(59, 130, 246, 0.7)'
+          }}
+        >
+          {leverage}x
+        </div>
+        <div
+          style={{
+            fontSize: '7px',
+            color: 'rgba(100, 116, 139, 0.5)',
+            fontWeight: 600
+          }}
+        >
+          {symbol}
+        </div>
+      </div>
+    </>
   )
 }
+
+export default PositionDetails

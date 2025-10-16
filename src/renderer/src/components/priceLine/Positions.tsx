@@ -1,5 +1,5 @@
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
-import PositionDetails from './positions/PositionDetails'
+import PositionIndicator from './positions/PositionIndicator'
 
 export default function Positions({
   getTopPercentage
@@ -13,7 +13,7 @@ export default function Positions({
   return (
     <div>
       {positions.map((position) => (
-        <PositionDetails
+        <PositionIndicator
           key={position.createdAt}
           position={position}
           getTopPercentage={getTopPercentage}

@@ -1,144 +1,174 @@
-import { PosSide } from '../../../../../shared/types'
-import { useState } from 'react'
+import { formatNumber } from '../../../../../shared/helper'
+import { Side } from '../../../../../shared/types'
 
-export default function OrderDetails({
-  order,
-  getTopPercentage
+const OrderDetails = ({
+  hovered,
+  price,
+  side,
+  value,
+  currentLeverage,
+  orderQty,
+  symbol,
+  orderColor
 }: {
-  order
-  getTopPercentage
-}): React.JSX.Element {
-  const isLong = order.posSide === PosSide.LONG
-  const color = isLong ? '#10b981' : '#ef4444'
-  const [hover, setHover] = useState(false)
-
-  const { price } = order
-
-  const handleClick = (): void => {
-    console.log('Order clicked:', order)
-    // Add your order details click handler here
-  }
+  hovered: boolean
+  price: number
+  side: string
+  value: number
+  currentLeverage: number
+  orderQty: number
+  symbol: string
+  orderColor: string
+}): React.JSX.Element => {
+  const isBuy = side === Side.BUY
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: `${getTopPercentage(price)}%`,
-        transform: hover ? 'translateY(-50%) scale(1.1)' : 'translateY(-50%) scale(1)',
-        zIndex: 99,
-        right: '-25px',
-        backgroundColor: color,
-        borderRadius: '3px',
-        width: '18px',
-        height: '18px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: `0 0 8px ${color}80, 0 8px 32px rgba(0, 0, 0, 0.2)`,
-        cursor: 'pointer',
-        opacity: hover ? 0.8 : 0.5,
-        transition: 'all 0.2s ease',
-        border: `1px solid ${color}`
-      }}
-      onClick={handleClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
+    <>
+      {/* Compact Price Section */}
       <div
         style={{
-          color: 'white',
-          fontSize: '10px',
-          fontWeight: 'bold'
+          color: hovered ? orderColor : orderColor + 'CC',
+          paddingBottom: hovered ? '6px' : '4px',
+          fontWeight: 700,
+          fontSize: hovered ? '11px' : '10px',
+          borderBottom: hovered ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
         }}
       >
-        {isLong ? 'B' : 'S'}
-      </div>
-
-      {/* Price tooltip (shows on hover) */}
-      <div
-        style={{
-          position: 'absolute',
-          right: '25px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          background: 'rgba(0, 0, 0, 0.9)',
-          color: 'white',
-          padding: '4px 8px',
-          borderRadius: '4px',
-          fontSize: '10px',
-          whiteSpace: 'nowrap',
-          opacity: 0,
-          transition: 'all 0.2s ease',
-          pointerEvents: 'none',
-          borderLeft: `3px solid ${color}`,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-        }}
-        className="position-tooltip"
-      >
-        <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>Order Price</div>
-        <div>${price}</div>
-      </div>
-
-      {hover && (
-        <div
+        <span
           style={{
-            position: 'absolute',
-            left: '25px',
-            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98))',
-            color: '#f1f5f9',
-            padding: '8px 12px',
-            borderRadius: '6px',
-            fontSize: '11px',
-            fontWeight: '600',
-            whiteSpace: 'nowrap',
-            border: `1px solid ${color}30`,
-            boxShadow: `
-              0 4px 20px rgba(0, 0, 0, 0.4),
-              0 0 0 1px rgba(255, 255, 255, 0.05)
-            `,
-            backdropFilter: 'blur(12px)',
-            zIndex: 1000,
-            pointerEvents: 'none',
-            animation: 'fadeInUp 0.2s ease-out'
+            fontSize: '8px',
+            fontWeight: 600,
+            color: hovered ? '#94a3b8' : 'rgba(148, 163, 184, 0.6)',
+            background: hovered ? 'rgba(30, 41, 59, 0.8)' : 'rgba(30, 41, 59, 0.5)',
+            padding: '1px 4px',
+            borderRadius: '3px'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div
-              style={{
-                width: '4px',
-                height: '4px',
-                borderRadius: '50%',
-                background: color
-              }}
-            />
-            Click to view order details
+          {isBuy ? 'BUY' : 'SELL'}
+        </span>
+        {formatNumber(Number(price))}
+      </div>
+
+      {/* Compact Value and Size Section */}
+      <div
+        style={{
+          marginTop: hovered ? '6px' : '4px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '8px'
+        }}
+      >
+        <div style={{ textAlign: 'left', flex: 1 }}>
+          <div
+            style={{
+              fontSize: hovered ? '9px' : '8px',
+              fontWeight: 700,
+              color: hovered ? '#f8fafc' : 'rgba(248, 250, 252, 0.7)'
+            }}
+          >
+            ${formatNumber(Number(value))}
+          </div>
+          <div
+            style={{
+              fontSize: '7px',
+              color: hovered ? '#94a3b8' : 'rgba(148, 163, 184, 0.5)',
+              marginTop: '1px'
+            }}
+          >
+            Val
           </div>
         </div>
-      )}
 
-      <style>
-        {`
-          .position-tooltip {
-            opacity: 0;
-            transition: all 0.2s ease;
-          }
-          div:hover .position-tooltip {
-            opacity: 1;
-            transform: translateY(-50%) translateX(-5px);
-          }
-          
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(5px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}
-      </style>
-    </div>
+        <div style={{ textAlign: 'right', flex: 1 }}>
+          <div
+            style={{
+              fontSize: hovered ? '9px' : '8px',
+              fontWeight: 700,
+              color: hovered ? '#f8fafc' : 'rgba(248, 250, 252, 0.7)'
+            }}
+          >
+            {formatNumber(Number(orderQty))}
+          </div>
+          <div
+            style={{
+              fontSize: '7px',
+              color: hovered ? '#94a3b8' : 'rgba(148, 163, 184, 0.5)',
+              marginTop: '1px'
+            }}
+          >
+            Size
+          </div>
+        </div>
+      </div>
+
+      {/* Compact Leverage and Symbol */}
+      <div
+        style={{
+          marginTop: hovered ? '6px' : '4px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <div
+          style={{
+            background: hovered ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)',
+            padding: '1px 4px',
+            borderRadius: '3px',
+            fontSize: '7px',
+            fontWeight: 700,
+            color: hovered ? '#3b82f6' : 'rgba(59, 130, 246, 0.7)'
+          }}
+        >
+          {currentLeverage}x
+        </div>
+
+        <div
+          style={{
+            fontSize: '7px',
+            color: hovered ? '#64748b' : 'rgba(100, 116, 139, 0.5)',
+            fontWeight: 600
+          }}
+        >
+          {symbol}
+        </div>
+      </div>
+
+      {/* Close Button - Only on Hover */}
+      {hovered && (
+        <div
+          style={{
+            marginTop: '8px',
+            padding: '4px 8px',
+            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            color: 'white',
+            fontSize: '8px',
+            fontWeight: 700,
+            borderRadius: '4px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
+            transition: 'all 0.2s ease',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)'
+            e.currentTarget.style.boxShadow = '0 3px 8px rgba(239, 68, 68, 0.4)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)'
+            e.currentTarget.style.boxShadow = '0 2px 6px rgba(239, 68, 68, 0.3)'
+          }}
+        >
+          ✕ CANCEL
+        </div>
+      )}
+    </>
   )
 }
+
+export default OrderDetails

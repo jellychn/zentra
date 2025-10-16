@@ -1,6 +1,6 @@
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
 
-import OrderDetails from './orders/OrderDetails'
+import OrderIndicator from './orders/OrderIndicator'
 
 export default function Orders({
   getTopPercentage
@@ -14,7 +14,7 @@ export default function Orders({
   return (
     <div>
       {orders.map((order) => (
-        <OrderDetails key={order.createdAt} order={order} getTopPercentage={getTopPercentage} />
+        <OrderIndicator key={order.createdAt} order={order} getTopPercentage={getTopPercentage} />
       ))}
       <style>
         {`
