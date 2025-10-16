@@ -32,7 +32,7 @@ const PriceLabel = memo(
           color: COLORS.text.primary,
           fontFamily: 'Inter, monospace',
           border: `1px solid ${COLORS.border}`,
-          zIndex: 5,
+          zIndex: 2,
           backdropFilter: 'blur(10px)',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
         }}

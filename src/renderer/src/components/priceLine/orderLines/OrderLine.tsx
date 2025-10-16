@@ -42,7 +42,7 @@ export default function OrderLine({
           height: '6px',
           background: color,
           borderRadius: '50%',
-          zIndex: 11,
+          zIndex: 1000,
           transform: 'translateX(50%)',
           opacity: 0.9,
           boxShadow: `0 0 0 0 ${glowColor}`,

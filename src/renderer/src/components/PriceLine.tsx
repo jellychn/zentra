@@ -14,6 +14,7 @@ import PriceFrequencyHeatmap from './priceLine/PriceFrequencyHeatmap'
 import VolumeProfileBars from './priceLine/VolumeProfileBars'
 import PositionLines from './priceLine/PositionLines'
 import OrderLines from './priceLine/OrderLines'
+import Positions from './priceLine/Positions'
 
 export default function PriceLine(): React.JSX.Element {
   const { hoverPrice, setHoverPrice } = usePriceLine()
@@ -105,7 +106,10 @@ export default function PriceLine(): React.JSX.Element {
     <div
       style={{
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        position: 'relative',
+        height: '100%',
+        zIndex: 5
       }}
     >
       <Timeframe
@@ -126,6 +130,7 @@ export default function PriceLine(): React.JSX.Element {
         selectedTimeframe={selectedTimeframe}
         getTopPercentage={getTopPercentage}
       />
+
       <Main
         containerRef={containerRef}
         max={max}
@@ -198,9 +203,10 @@ const Main = ({
         borderRight: `1px solid ${COLORS.border}`,
         cursor: 'crosshair',
         backdropFilter: 'blur(20px)',
-        overflow: 'hidden'
+        overflow: 'visible'
       }}
     >
+      <Positions getTopPercentage={getTopPercentage} />
       <PriceLevels
         max={max}
         min={min}
