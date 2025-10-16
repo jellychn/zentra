@@ -10,6 +10,7 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import PositionLines from './PositionLines'
 import PositionBands from './PositionBands'
 import OrderLines from './OrderLines'
+import ProfitPriceLines from './ProfitPriceLines'
 
 const Main = ({
   filteredLeftData,
@@ -133,10 +134,7 @@ const Main = ({
       <PositionLines getPositionPercentage={getPositionPercentage} />
       <PositionBands getPositionPercentage={getPositionPercentage} />
       <OrderLines getPositionPercentage={getPositionPercentage} />
-
-      {/* TODO:
       <ProfitPriceLines getPositionPercentage={getPositionPercentage} />
-       */}
 
       <PriceLabel price={displayMin} position={100} label="MIN" side="left" />
       <PriceLabel price={displayMax} position={0} label="MAX" side="left" />

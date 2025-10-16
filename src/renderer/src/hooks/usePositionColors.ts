@@ -2,6 +2,23 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import { useMemo } from 'react'
 import { PosSide } from '../../../shared/types'
 
+const COLORS = {
+  success: 'rgba(16, 185, 129, 0.15)',
+  danger: 'rgba(239, 68, 68, 0.15)',
+  warning: 'rgba(245, 158, 11, 0.15)',
+  entryRecovered: 'rgba(251, 146, 60, 0.15)', // Bright Orange
+  makerProfitable: 'rgba(234, 179, 8, 0.15)', // Amber Yellow
+  takerProfitable: 'rgba(101, 163, 13, 0.15)', // Olive Green
+  border: {
+    success: 'rgba(16, 185, 129, 0.3)',
+    danger: 'rgba(239, 68, 68, 0.3)',
+    warning: 'rgba(245, 158, 11, 0.3)',
+    entryRecovered: 'rgba(251, 146, 60, 0.3)', // Bright Orange
+    makerProfitable: 'rgba(234, 179, 8, 0.3)', // Amber Yellow
+    takerProfitable: 'rgba(101, 163, 13, 0.3)' // Olive Green
+  }
+}
+
 export const usePositionColors = (
   position: any
 ): {
@@ -17,49 +34,28 @@ export const usePositionColors = (
   const { lastPrice = 0 } = exchangeData || {}
   const { makerFee = 0, takerFee = 0 } = userSettings || {}
 
+  const { posSide, entryPrice, size, entryFee } = position
+
   return useMemo(() => {
     // Calculate PnL
     let pnl = 0
     let isPriceFavorable = false
 
-    if (position.posSide === PosSide.LONG) {
-      pnl = (lastPrice - position.entryPrice) * position.size - position.entryFee
-      isPriceFavorable = lastPrice > position.entryPrice
+    if (posSide === PosSide.LONG) {
+      pnl = (lastPrice - entryPrice) * size - entryFee
+      isPriceFavorable = lastPrice > entryPrice
     } else {
-      pnl = (position.entryPrice - lastPrice) * position.size - position.entryFee
-      isPriceFavorable = lastPrice < position.entryPrice
-    }
-
-    // Updated color definitions with better differentiation
-    const COLORS = {
-      success: 'rgba(16, 185, 129, 0.15)',
-      danger: 'rgba(239, 68, 68, 0.15)',
-      warning: 'rgba(245, 158, 11, 0.15)',
-      entryRecovered: 'rgba(251, 146, 60, 0.15)', // Bright Orange
-      makerProfitable: 'rgba(234, 179, 8, 0.15)', // Amber Yellow
-      takerProfitable: 'rgba(101, 163, 13, 0.15)', // Olive Green
-      border: {
-        success: 'rgba(16, 185, 129, 0.3)',
-        danger: 'rgba(239, 68, 68, 0.3)',
-        warning: 'rgba(245, 158, 11, 0.3)',
-        entryRecovered: 'rgba(251, 146, 60, 0.3)', // Bright Orange
-        makerProfitable: 'rgba(234, 179, 8, 0.3)', // Amber Yellow
-        takerProfitable: 'rgba(101, 163, 13, 0.3)' // Olive Green
-      }
+      pnl = (entryPrice - lastPrice) * size - entryFee
+      isPriceFavorable = lastPrice < entryPrice
     }
 
     // Calculate position status with fee thresholds
-    const positionEntryFee = position.entryFee
-
-    const size = position.size
-
     const exitFeeMaker = lastPrice * size * makerFee
     const exitFeeTaker = lastPrice * size * takerFee
 
-    const isMakerProfitable = pnl > positionEntryFee && pnl < positionEntryFee + exitFeeMaker
-    const isTakerProfitable =
-      pnl > positionEntryFee + exitFeeMaker && pnl < positionEntryFee + exitFeeTaker
-    const isProfit = pnl > positionEntryFee + exitFeeTaker
+    const isMakerProfitable = pnl > entryFee && pnl < entryFee + exitFeeMaker
+    const isTakerProfitable = pnl > entryFee + exitFeeMaker && pnl < entryFee + exitFeeTaker
+    const isProfit = pnl > entryFee + exitFeeTaker
 
     // Determine colors based on status
     let gradient = COLORS.danger
@@ -119,5 +115,5 @@ export const usePositionColors = (
       makerColor,
       takerColor
     }
-  }, [position.posSide, position.entryFee, position.size, position.entryPrice, lastPrice])
+  }, [posSide, entryFee, size, entryPrice, lastPrice, makerFee, takerFee])
 }

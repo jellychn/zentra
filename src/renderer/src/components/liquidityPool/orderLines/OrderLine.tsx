@@ -2,6 +2,7 @@ import { Side } from '../../../../../shared/types'
 import { formatNumber } from '../../../../../shared/helper'
 import { COLORS } from './colors'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
+import { useState } from 'react'
 
 const OrderLine = ({
   order,
@@ -13,6 +14,8 @@ const OrderLine = ({
   const { state } = useStateStore()
   const { exchangeData } = state || {}
   const { lastPrice = 0 } = exchangeData || {}
+
+  const [hover, setHover] = useState(false)
 
   const orderPosition = getPositionPercentage(order.price)
   const constrainedPosition = Math.max(0, Math.min(100, orderPosition))
@@ -46,6 +49,8 @@ const OrderLine = ({
 
       {/* Order direction indicator */}
       <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         style={{
           position: 'absolute',
           left: '10px',
@@ -82,56 +87,33 @@ const OrderLine = ({
       </div>
 
       {/* Order info badge */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '35px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          background: `rgba(30, 41, 59, 0.95)`,
-          padding: '5px 8px',
-          borderRadius: '5px',
-          fontSize: '9px',
-          fontWeight: '700',
-          color: 'white',
-          fontFamily: 'Inter, monospace',
-          boxShadow: `0 3px 10px rgba(0, 0, 0, 0.3)`,
-          border: `1px dashed ${color}60`,
-          backdropFilter: 'blur(10px)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          minWidth: '70px'
-        }}
-      >
-        {/* Order type indicator */}
+      {hover && (
         <div
           style={{
-            width: '6px',
-            height: '6px',
-            borderRadius: '1px',
-            background: color,
-            flexShrink: 0,
-            rotate: isBuyOrder ? '0deg' : '180deg'
+            position: 'absolute',
+            left: '35px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: `rgba(30, 41, 59, 0.95)`,
+            padding: '5px 8px',
+            borderRadius: '5px',
+            fontSize: '9px',
+            fontWeight: '700',
+            color: 'white',
+            fontFamily: 'Inter, monospace',
+            boxShadow: `0 3px 10px rgba(0, 0, 0, 0.3)`,
+            border: `1px dashed ${color}60`,
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            zIndex: 100
           }}
-        />
-
-        {/* Price */}
-        <span style={{ color: color, fontWeight: '800' }}>${formatNumber(order.price)}</span>
-
-        {/* Order status dot */}
-        <div
-          style={{
-            width: '3px',
-            height: '3px',
-            borderRadius: '50%',
-            background: COLORS.success,
-            marginLeft: 'auto',
-            flexShrink: 0,
-            opacity: 0.8
-          }}
-        />
-      </div>
+        >
+          {/* Price */}
+          <span style={{ color: color, fontWeight: '800' }}>${formatNumber(order.price)}</span>
+        </div>
+      )}
 
       {/* Connection line to current price with dashed style */}
       <div
