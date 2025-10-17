@@ -4,9 +4,10 @@ import { Order } from 'src/main/db/dbOrders'
 import ItemInfo from '@renderer/elements/myActiveTrades/ItemInfo'
 import DetailItem from '@renderer/elements/myActiveTrades/DetailItem'
 import StatCard from '@renderer/elements/myActiveTrades/StatCard'
-import { OrderType, PosSide, Side } from '../../../shared/types'
+import { MessageSenderType, OrderType, PosSide, Side } from '../../../shared/types'
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import ActionButton from '@renderer/elements/ActionButton'
+import { sendIpcMessage } from '@renderer/ipcMain/message'
 
 export default function UserOrder({ order }: { order: Order }): React.JSX.Element {
   const [hovered, setHovered] = useState(false)
@@ -57,10 +58,20 @@ const Content = ({
   expanded: boolean
   hovered: boolean
 }): React.JSX.Element => {
-  const { orderType, side, posSide, size, price, symbol, leverage } = order
+  const { orderId, orderType, side, posSide, size, price, symbol, leverage } = order
 
   const isBuy = side === Side.BUY
   const isMarketOrder = orderType === OrderType.MARKET
+
+  const handleCancelOrder = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation()
+    sendIpcMessage({
+      message: MessageSenderType.CANCEL_ORDER,
+      data: {
+        orderId
+      }
+    })
+  }
 
   return (
     <div
@@ -175,13 +186,14 @@ const Content = ({
         <ActionButton
           color="#ef4444"
           hoverColor="#f87171"
+          fill
           style={{
             fontSize: '9px',
             padding: '8px',
             minHeight: '28px'
           }}
           tooltip={`Close Order`}
-          onClick={() => {}}
+          onClick={handleCancelOrder}
         >
           CANCEL
         </ActionButton>
@@ -295,12 +307,7 @@ const ExpandedContent = ({
           color="#f1f5f9"
           prefix="$"
         />
-        <ItemInfo
-          label="Size"
-          value={price ? `${formatNumber(size)}` : '–'}
-          color="#f1f5f9"
-          postfix={` ${symbol}`}
-        />
+        <ItemInfo label="Size" value={price ? `${formatNumber(size)}` : '–'} color="#f1f5f9" />
       </div>
 
       <div

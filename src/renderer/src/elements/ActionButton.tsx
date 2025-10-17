@@ -21,7 +21,7 @@ export default function ActionButton({
   children: React.ReactNode
   disabled?: boolean
   loading?: boolean
-  onClick?: () => void
+  onClick?: (e) => void
   tooltip?: string
   tooltipDelay?: number
   glass?: boolean

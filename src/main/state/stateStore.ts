@@ -113,9 +113,11 @@ class MainStateStore extends EventEmitter {
   }
 
   updateUserOrders(data: Order[]): void {
+    const currentUserTrades = this.state[StateType.USER_TRADES] || {}
+
     this.state[StateType.USER_TRADES] = {
-      ...this.state[StateType.USER_TRADES],
-      orders: [...this.state[StateType.USER_TRADES].orders, ...data]
+      ...currentUserTrades,
+      orders: data // REPLACE with new data
     }
 
     this.emit('state-changed', this.state)

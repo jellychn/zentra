@@ -1,7 +1,9 @@
 import { Order } from 'src/main/db/dbOrders'
 import { formatNumber } from '../../../../../shared/helper'
-import { Side } from '../../../../../shared/types'
+import { MessageSenderType, Side } from '../../../../../shared/types'
 import React from 'react'
+import { sendIpcMessage } from '@renderer/ipcMain/message'
+import ActionButton from '@renderer/elements/ActionButton'
 
 const OrderDetails = ({
   order,
@@ -15,7 +17,7 @@ const OrderDetails = ({
   return (
     <>
       <Content order={order} hovered={hovered} orderColor={orderColor} />
-      <HoveredContent hovered={hovered} />
+      <HoveredContent hovered={hovered} order={order} />
     </>
   )
 }
@@ -150,37 +152,40 @@ const Content = ({
   )
 }
 
-const HoveredContent = ({ hovered }: { hovered: boolean }): React.JSX.Element => {
+const HoveredContent = ({
+  hovered,
+  order
+}: {
+  hovered: boolean
+  order: Order
+}): React.JSX.Element => {
+  const handleCancelOrder = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation()
+    sendIpcMessage({
+      message: MessageSenderType.CANCEL_ORDER,
+      data: {
+        orderId: order.orderId
+      }
+    })
+  }
+
   if (!hovered) {
     return <></>
   }
 
   return (
-    <div
+    <ActionButton
+      color="#ef4444"
+      hoverColor="#f87171"
       style={{
-        marginTop: '8px',
-        padding: '4px 8px',
-        background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-        color: 'white',
-        fontSize: '8px',
-        fontWeight: 700,
-        borderRadius: '4px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
-        transition: 'all 0.2s ease',
-        border: '1px solid rgba(255, 255, 255, 0.2)'
+        fontSize: '9px',
+        padding: '8px',
+        marginTop: '15px'
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'scale(1.05)'
-        e.currentTarget.style.boxShadow = '0 3px 8px rgba(239, 68, 68, 0.4)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'scale(1)'
-        e.currentTarget.style.boxShadow = '0 2px 6px rgba(239, 68, 68, 0.3)'
-      }}
+      tooltip={`Close Order`}
+      onClick={handleCancelOrder}
     >
-      ✕ CANCEL
-    </div>
+      CANCEL
+    </ActionButton>
   )
 }

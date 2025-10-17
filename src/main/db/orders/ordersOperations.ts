@@ -65,6 +65,16 @@ export const createOrder = async ({
   }
 }
 
+export const cancelOrder = async ({
+  userId,
+  orderId
+}: {
+  userId: string
+  orderId: string
+}): Promise<void> => {
+  dbStore.orderStore.deleteOrder(userId, orderId)
+}
+
 const getBestLimitPrice = (posSide: PosSide): number | null => {
   const state = mainStateStore.getState()
   const selectedSymbol = state[StateType.SETTINGS].selectedSymbol

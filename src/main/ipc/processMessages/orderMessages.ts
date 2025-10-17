@@ -1,5 +1,6 @@
 import { PosSide, Side, OrderType } from '../../../shared/types'
-import { createOrder } from '../../db/orders/ordersOperations'
+import { cancelOrder, createOrder } from '../../db/orders/ordersOperations'
+import { mainStateStore, StateType } from '../../state/stateStore'
 
 export const processCreateOrder = (data: {
   orderType: OrderType
@@ -8,4 +9,12 @@ export const processCreateOrder = (data: {
 }): void => {
   const { orderType, side, posSide } = data
   createOrder({ orderType: orderType, side: side, posSide: posSide })
+}
+
+export const processCancelOrder = (data: { orderId: string }): void => {
+  const state = mainStateStore.getState()
+  const userId = state[StateType.USER].id
+
+  const { orderId } = data
+  cancelOrder({ userId, orderId })
 }

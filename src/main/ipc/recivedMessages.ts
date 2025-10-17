@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import { MessageSenderType } from '../../shared/types'
-import { processCreateOrder } from './processMessages/orderMessages'
+import { processCancelOrder, processCreateOrder } from './processMessages/orderMessages'
 import {
   processChangeCandleTimeframe,
   processChangeLiquidityPoolTimeframe,
@@ -37,5 +37,10 @@ export const receivedMessages = (): void => {
   ipcMain.on(MessageSenderType.GET_OPEN_TRADES, (_event, data) => {
     console.log(`Received from frontend: ${MessageSenderType.GET_OPEN_TRADES}`, data)
     processGetOpenTrades(data)
+  })
+
+  ipcMain.on(MessageSenderType.CANCEL_ORDER, (_event, data) => {
+    console.log(`Received from frontend: ${MessageSenderType.CANCEL_ORDER}`, data)
+    processCancelOrder(data)
   })
 }

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { docClient, dynamoClient } from './helper'
 
 import { OrderType, PosSide, Side } from '../../shared/types'
-import { PutCommand, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb'
+import { PutCommand, GetCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
 import { toSnake, toCamel } from '../../shared/helper'
 import { mainStateStore, StateType } from '../state/stateStore'
 import { NotificationHelper } from '../notification/notificationHelper'
@@ -101,8 +101,8 @@ export class OrderStore {
       // Send success notification
       NotificationHelper.sendSuccess(`Order created successfully: ${id}`)
 
-      console.log(`✅ Order created successfully: ${id}`)
-      mainStateStore.updateUserOrders([toCamel(order)])
+      const userOrders = await this.getOrdersByUserId(userId)
+      mainStateStore.updateUserOrders(userOrders)
       return orderWithDetails
     } catch (error) {
       console.error('❌ Failed to create order:', error)
@@ -129,6 +129,39 @@ export class OrderStore {
     }
   }
 
+  async deleteOrder(userId: string, orderId: string): Promise<void> {
+    try {
+      const command = new DeleteCommand({
+        TableName: this.tableName,
+        Key: { order_id: orderId }
+      })
+
+      await docClient.send(command)
+
+      NotificationHelper.sendSuccess(`Order deleted successfully: ${orderId}`)
+
+      const userOrders = await this.getOrdersByUserId(userId)
+      mainStateStore.updateUserOrders(userOrders)
+    } catch (error) {
+      console.error('❌ Failed to delete order:', error)
+
+      // Send error notification
+      let errorMessage = 'Failed to delete order'
+
+      if (error instanceof Error) {
+        if (error.name === 'ResourceNotFoundException') {
+          errorMessage = 'Order table does not exist'
+        } else if (error.name === 'ProvisionedThroughputExceededException') {
+          errorMessage = 'Database capacity exceeded, please try again'
+        } else {
+          errorMessage = error.message
+        }
+      }
+
+      NotificationHelper.sendError(errorMessage)
+      throw new Error(errorMessage)
+    }
+  }
   async getOrder(orderId: string): Promise<Order | null> {
     const command = new GetCommand({
       TableName: this.tableName,

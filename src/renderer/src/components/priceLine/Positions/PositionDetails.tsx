@@ -2,6 +2,7 @@ import { useStateStore } from '@renderer/contexts/StateStoreContext'
 import { formatNumber } from '../../../../../shared/helper'
 import { PosSide } from '../../../../../shared/types'
 import { Trade } from 'src/main/db/dbTrades'
+import ActionButton from '@renderer/elements/ActionButton'
 
 const PositionDetails = ({
   position,
@@ -352,32 +353,20 @@ const HoveredContent = ({
         </div>
       </div>
 
-      <div
+      <ActionButton
+        color="#ef4444"
+        hoverColor="#f87171"
+        fill
         style={{
-          marginTop: '8px',
-          padding: '4px 8px',
-          background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-          color: 'white',
-          fontSize: '8px',
-          fontWeight: 700,
-          borderRadius: '4px',
-          textAlign: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
-          transition: 'all 0.2s ease',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          fontSize: '9px',
+          padding: '8px',
+          marginTop: '15px'
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.05)'
-          e.currentTarget.style.boxShadow = '0 3px 8px rgba(239, 68, 68, 0.4)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)'
-          e.currentTarget.style.boxShadow = '0 2px 6px rgba(239, 68, 68, 0.3)'
-        }}
+        tooltip={`Close Order`}
+        onClick={() => {}}
       >
-        ✕ CLOSE
-      </div>
+        CANCEL
+      </ActionButton>
     </>
   )
 }
