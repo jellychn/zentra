@@ -99,3 +99,13 @@ export const formatDuration = (seconds: number): string => {
       .join(' ') || '0S'
   )
 }
+
+export const formatDate = (dateString: string): string => {
+  if (!dateString) return '–'
+
+  try {
+    return new Date(dateString).toLocaleString()
+  } catch {
+    return dateString
+  }
+}

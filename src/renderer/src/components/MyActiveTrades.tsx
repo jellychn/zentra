@@ -1,12 +1,12 @@
 import { useStateStore } from '@renderer/contexts/StateStoreContext'
-import Position from './Position'
 import { useState } from 'react'
-import Orders from './Order'
+import UserOrder from './UserOrder'
 import ActionIcon from '@renderer/elements/ActionIcon'
 import ordersIcon from '../assets/icons/orders.svg'
 import positionsIcon from '../assets/icons/positions.svg'
 import { Trade } from 'src/main/db/dbTrades'
 import { Order } from 'src/main/db/dbOrders'
+import UserPosition from './UserPosition'
 
 export default function MyActiveTrades(): React.JSX.Element {
   const { state } = useStateStore()
@@ -171,8 +171,8 @@ const Content = ({
       }}
     >
       {showOrders
-        ? orders.map((order) => <Orders key={order.orderId} order={order} />)
-        : positions.map((position) => <Position key={position.tradeId} position={position} />)}
+        ? orders.map((order) => <UserOrder key={order.orderId} order={order} />)
+        : positions.map((position) => <UserPosition key={position.tradeId} position={position} />)}
 
       {/* Custom scrollbar styling */}
       <style>

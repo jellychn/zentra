@@ -15,7 +15,7 @@ export default function MainHeader(): React.JSX.Element {
         alignItems: 'center',
         justifyContent: 'space-between',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-        zIndex: 5,
+        zIndex: 10,
         position: 'relative',
         minWidth: '100%',
         flexShrink: 0,
