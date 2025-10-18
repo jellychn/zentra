@@ -9,13 +9,6 @@ import {
 import { processGetOpenTrades } from './processMessages/tradesMessages'
 
 export const receivedMessages = (): void => {
-  ipcMain.on(MessageSenderType.CREATE_ORDER, (_event, data) => {
-    console.log(`Received from frontend: ${MessageSenderType.CREATE_ORDER}`, data)
-    processCreateOrder(data)
-
-    // _event.reply('log-reply', 'Message received ✅')
-  })
-
   ipcMain.on(MessageSenderType.CHANGE_LIQUIDITY_POOL_TIMEFRAME, (_event, data) => {
     console.log(
       `Received from frontend: ${MessageSenderType.CHANGE_LIQUIDITY_POOL_TIMEFRAME}`,
@@ -34,13 +27,25 @@ export const receivedMessages = (): void => {
     processChangePriceListTimeframe(data)
   })
 
+  tradesMessages()
+  orderMessages()
+}
+
+const tradesMessages = (): void => {
   ipcMain.on(MessageSenderType.GET_OPEN_TRADES, (_event, data) => {
     console.log(`Received from frontend: ${MessageSenderType.GET_OPEN_TRADES}`, data)
     processGetOpenTrades(data)
   })
+}
 
+const orderMessages = (): void => {
   ipcMain.on(MessageSenderType.CANCEL_ORDER, (_event, data) => {
     console.log(`Received from frontend: ${MessageSenderType.CANCEL_ORDER}`, data)
     processCancelOrder(data)
+  })
+
+  ipcMain.on(MessageSenderType.CREATE_ORDER, (_event, data) => {
+    console.log(`Received from frontend: ${MessageSenderType.CREATE_ORDER}`, data)
+    processCreateOrder(data)
   })
 }
